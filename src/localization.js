@@ -2,7 +2,7 @@ var template = {};
 tDocLoader();
 
 function t(key, params) {
-	var s = chrome.i18n.getMessage(key, params)
+	var s = browser.i18n.getMessage(key, params)
 	if (s == "") {
 		throw "Missing string '" + key + "'.";
 	}

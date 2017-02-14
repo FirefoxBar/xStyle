@@ -7,7 +7,7 @@ function saveAsFile(text, fileName, dialog) {
 
     return new Promise(function(resolve){
         var fileContent = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
-        chrome.downloads.download({filename: fileName, saveAs: true, url: fileContent}, resolve)
+        browser.downloads.download({filename: fileName, saveAs: true, url: fileContent}, resolve)
     });
 }
 

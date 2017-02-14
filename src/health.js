@@ -1,7 +1,7 @@
 healthCheck();
 
 function healthCheck() {
-	chrome.runtime.sendMessage({method: "healthCheck"}, function(ok) {
+	browser.runtime.sendMessage({method: "healthCheck"}).then(function(ok) {
 		if (ok === undefined) { // Chrome is starting up
 			healthCheck();
 		} else if (!ok && confirm(t("dbError"))) {

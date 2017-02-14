@@ -12,17 +12,17 @@ function requestStyles() {
 	// unless Chrome still starts up and the background page isn't fully loaded.
 	// (Note: in this case the function may be invoked again from applyStyles.)
 	var request = {method: "getStyles", matchUrl: location.href, enabled: true, asHash: true};
-	if (location.href.indexOf(chrome.extension.getURL("")) == 0) {
-		var bg = chrome.extension.getBackgroundPage();
+	if (location.href.indexOf(browser.extension.getURL("")) == 0) {
+		var bg = browser.extension.getBackgroundPage();
 		if (bg && bg.getStyles) {
 			// apply styles immediately, then proceed with a normal request that will update the icon
 			bg.getStyles(request, applyStyles);
 		}
 	}
-	chrome.runtime.sendMessage(request, applyStyles);
+	browser.runtime.sendMessage(request).then(applyStyles);
 }
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	// Also handle special request just for the pop-up
 	switch (request.method == "updatePopup" ? request.reason : request.method) {
 		case "styleDeleted":
@@ -38,7 +38,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			}
 		case "styleAdded":
 			if (request.style.enabled) {
-				chrome.runtime.sendMessage({method: "getStyles", matchUrl: location.href, enabled: true, id: request.style.id, asHash: true}, applyStyles);
+				browser.runtime.sendMessage({method: "getStyles", matchUrl: location.href, enabled: true, id: request.style.id, asHash: true}).then(applyStyles);
 			}
 			break;
 		case "styleApply":

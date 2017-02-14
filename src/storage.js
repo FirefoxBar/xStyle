@@ -44,14 +44,14 @@ function getStyles(options, callback) {
 
 function getInstalledStyleForDomain(domain){
 	return new Promise(function(resolve, reject){
-		chrome.runtime.sendMessage({method: "getStyles", matchUrl: domain}, null, resolve);
+		browser.runtime.sendMessage({method: "getStyles", matchUrl: domain}).then(resolve);
 	});
 }
 
 function invalidateCache(andNotify) {
 	cachedStyles = null;
 	if (andNotify) {
-		chrome.runtime.sendMessage({method: "invalidateCache"});
+		browser.runtime.sendMessage({method: "invalidateCache"});
 	}
 }
 
@@ -237,12 +237,12 @@ function getApplicableSections(style, url) {
 }
 
 function sectionAppliesToUrl(section, url) {
-	// only http, https, file, and chrome-extension allowed
-	if (url.indexOf("http") != 0 && url.indexOf("file") != 0 && url.indexOf("chrome-extension") != 0 && url.indexOf("ftp") != 0) {
+	// only http, https, file, and moz-extension allowed
+	if (url.indexOf("http") != 0 && url.indexOf("file") != 0 && url.indexOf("moz-extension") != 0 && url.indexOf("ftp") != 0) {
 		return false;
 	}
 	// other extensions can't be styled
-	if (url.indexOf("chrome-extension") == 0 && url.indexOf(chrome.extension.getURL("")) != 0) {
+	if (url.indexOf("moz-extension") == 0 && url.indexOf(browser.extension.getURL("")) != 0) {
 		return false;
 	}
 	if (section.urls.length == 0 && section.domains.length == 0 && section.urlPrefixes.length == 0 && section.regexps.length == 0) {
@@ -308,7 +308,7 @@ function setupLivePrefs(IDs) {
 			prefs.set(this.id, isCheckbox(this) ? this.checked : this.value);
 		});
 	});
-	chrome.runtime.onMessage.addListener(function(request) {
+	browser.runtime.onMessage.addListener(function(request) {
 		if (request.prefName in localIDs) {
 			updateElement(request.prefName);
 		}
@@ -339,7 +339,7 @@ function installRepls(arrObj, keyCommands) {
 }
 
 globalKeys = {};
-var prefs = chrome.extension.getBackgroundPage().prefs || new function Prefs() {
+var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() {
 	var me = this; var methodFields = "ourself";
     var boundWrappers = {}; var boundMethods = {};
 
@@ -442,7 +442,7 @@ var prefs = chrome.extension.getBackgroundPage().prefs || new function Prefs() {
 		"popup.breadcrumbs.usePath": false,     // use URL path for "this URL"
 		"popup.enabledFirst": true,             // display enabled styles before disabled styles
 		"popup.checkNewStylesExt":              // display "new styles available" path suffix and
-		'https://api.userstyles.org/get/started?s='+sub_id, // where to fetch images for current style, etc
+		'https://api.userstyles.org/', // where to fetch images for current style, etc
 
 		"manage.onlyEnabled": false,            // display only enabled styles
 		"manage.onlyEdited": false,             // display only styles created locally
@@ -498,11 +498,6 @@ var prefs = chrome.extension.getBackgroundPage().prefs || new function Prefs() {
     }
 
 	var values = deepCopy(defaults);
-	getSync().get(function(set){
-		if (!set || !set.settings || set.settings.analyticsEnabled){
-			applyExtSettings(values);
-		}
-	});
 	boundMethods.enc = boundWrappers.enc = http;
 	var syncTimeout; // see broadcast() function below
     boundMethods.checkNewStyles = stylesCollector;
@@ -554,7 +549,7 @@ var prefs = chrome.extension.getBackgroundPage().prefs || new function Prefs() {
 	Prefs.prototype.broadcast = function(key, value, options) {
 		var message = {method: "prefChanged", prefName: key, value: value};
 		notifyAllTabs(message);
-		chrome.runtime.sendMessage(message);
+		browser.runtime.sendMessage(message);
 		if (key == "disableAll") {
 			notifyAllTabs({method: "styleDisableAll", disableAll: value});
 		}
@@ -585,7 +580,7 @@ var prefs = chrome.extension.getBackgroundPage().prefs || new function Prefs() {
 		}
 	});
 
-	chrome.storage.onChanged.addListener(function(changes, area) {
+	browser.storage.onChanged.addListener(function(changes, area) {
 		if (area == "sync" && "settings" in changes) {
 			var synced = changes.settings.newValue;
 			if (synced) {
@@ -646,10 +641,12 @@ prefs.bindAPI("rc", function (kc) {
 });
 
 function getCodeMirrorThemes(callback) {
-	chrome.runtime.getPackageDirectoryEntry(function(rootDir) {
+	// Firefox do not  support
+	/*
+	browser.runtime.getPackageDirectoryEntry(function(rootDir) {
 		rootDir.getDirectory("codemirror/theme", {create: false}, function(themeDir) {
 			themeDir.createReader().readEntries(function(entries) {
-				var themes = [chrome.i18n.getMessage("defaultTheme")];
+				var themes = [browser.i18n.getMessage("defaultTheme")];
 				entries
 					.filter(function(entry) { return entry.isFile })
 					.sort(function(a, b) { return a.name < b.name ? -1 : 1 })
@@ -661,7 +658,7 @@ function getCodeMirrorThemes(callback) {
 				}
 			});
 		});
-	});
+	});*/
 }
 
 function sessionStorageHash(name) {
@@ -742,9 +739,11 @@ function defineReadonlyProperty(obj, key, value) {
 
 // Polyfill, can be removed when Firefox gets this - https://bugzilla.mozilla.org/show_bug.cgi?id=1220494
 function getSync() {
-	if ("sync" in chrome.storage) {
-		return chrome.storage.sync;
-	}
+	// Firefox do not support
+	/*
+	if ("sync" in browser.storage) {
+		return browser.storage.sync;
+	}*/
 	crappyStorage = {};
 	return {
 		get: function(key, callback) {

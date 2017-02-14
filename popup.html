@@ -1,28 +1,6 @@
 
 <html><head>
 	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-
-    <script id="template-style-item" type="x-tmpl-mustache">
-		<div class="entry enabled" style-id="{{styleid}}">
-			<div class="main-controls">
-				<div class="thumbnail-holder">
-					<img class="thumbnail" src="{{thumbnail}}">
-					<div class="thumbnail-mask">
-						<a class="thumbnail_install" href="{{style_url}}" style-id="{{styleid}}" target="_blank">{{installButtonLabel}}</a>
-					</div>
-				</div>
-				<label class="style-name">{{stylename}}</label>
-				<label class="style-author">by {{author}}</label>
-				<div class="info">
-					<div class="num_installs">
-						<span class="installs">{{installsStr}}</span>
-						<div class="installs_tooltip">{{installsTooltip}}</div>
-					</div>
-					<div class="clear"></div>
-				</div>
-			</div>
-		</div>
-    </script>
     <script id="template-style-installed-item" type="x-tmpl-mustache">
 		<div id="installed-style-{{id}}" class="installed entry {{additionalClass}}" >
 			<div class="main-controls">
@@ -37,19 +15,10 @@
 						<a class="thumbnail_activate" href="{{style_url}}" target="_blank">{{activateButtonLabel}}</a>
 						<a class="thumbnail_deactivate" href="{{style_url}}" target="_blank">{{deactivateButtonLabel}}</a>
 						<a class="thumbnail_delete" href="{{style_url}}" target="_blank">{{deleteButtonLabel}}</a>
-						<a class="thumbnail_feedback notLoggedIn" href="{{feedback_url}}" target="_blank">{{sendFeedbackLabel}}</a>
-						<a class="thumbnail_feedback loggedIn" href="{{discussion_url}}" target="_blank">{{sendFeedbackLabel}}</a>
 					</div>
 				</div>
 				<label class="style-name">{{name}}</label>
 				<label class="style-author">by {{author}}</label>
-				<div class="info">
-					<div class="num_installs">
-						<span class="installs">{{installsStr}}</span>
-						<div class="installs_tooltip">{{installsTooltip}}</div>
-					</div>
-					<div class="clear"></div>
-				</div>
 			</div>
 		</div>
     </script>
@@ -66,44 +35,14 @@
 	<script src="src/inject/apply.js"></script>
     <script src="src/popup/mustache.min.js"></script>
     <script src="src/popup/mustache.wrap.js"></script>
-    <script src="src/popup/Tabs.js"></script>
 </head>
 <body id="stylish-popup">
-<div id="sitename">dribbble.com</div>
+<div id="sitename">firefoxcn.net</div>
 <div class="tabs-container">
-    <header>
-        <div class="tab-header active">
-            <label for="tab-header-recommended" i18n-text="stylesLibLabel"></label>
-            <input id="tab-header-recommended" type="radio" name="style-type" checked>
-        </div>
-        <div class="tab-header">
-            <label for="tab-header-installed" i18n-text="manageHeading"></label>
-            <input id="tab-header-installed" type="radio" name="style-type">
-        </div>
-    </header>
     <div id="styles-off-notification" class="notification styles-off-notification">
         <header>Heads up! You've turned all styles off.</header>
         <section>Turn them back on to make this style active.</section>
     </div>
-    <section id="tab-item-recommended" class="tab-item tab-recommended active">
-        <div id="unavailable" class="hide"><div class="left-gutter"></div><div class="main-controls">
-            <span id="unavailable-message" i18n-text="stylishUnavailableForURL"></span>
-        </div></div>
-        <div id="nostyles" class="hide"
-             i18n-text="findStylesForThisSiteTextOff">
-        </div>
-        <div id="noServerConnection" class="hide">
-            <div i18n-text="noServerConnection"></div>
-        </div>
-        <div id="recommended"></div>
-        <div id="find-styles">
-            <a id="find-styles-link"
-               tabindex="-1"
-               href="https://userstyles.org/styles/browse/all/https%3A%2F%2Fwww.google.hu%2F%3Fgfe_rd%3Dcr%26ei%3D2u0aWK6BMrPs8wfdtrzgCA%26gws_rd%3Dssl"
-               i18n-text="findStylesForSite">
-            </a>
-        </div>
-    </section>
     <section id="tab-item-installed" class="tab-item tab-installed">
         <div id="disable-all-container">
             <div id="disable-all-block">

@@ -238,7 +238,7 @@ function initCodeMirror() {
 			return options.map(function(opt) { return "<option>" + opt + "</option>"; }).join("");
 		}
 		var themeControl = document.getElementById("editor.theme");
-		var bg = chrome.extension.getBackgroundPage();
+		var bg = browser.extension.getBackgroundPage();
 		if (bg && bg.codeMirrorThemes) {
 			themeControl.innerHTML = optionsHtmlFromArray(bg.codeMirrorThemes);
 		} else {
@@ -255,7 +255,6 @@ function initCodeMirror() {
 			document.querySelectorAll("#options *[data-option][id^='editor.']")
 				.map(function(option) { return option.id })
 		);
-		analyticsEventReport("Add_style", "shown");
 	});
 
 	hotkeyRerouter.setState(true);
@@ -287,7 +286,7 @@ function acmeEventListener(event) {
 				el.selectedIndex = 0;
 				break;
 			}
-			var url = chrome.extension.getURL("codemirror/theme/" + value + ".css");
+			var url = browser.extension.getURL("codemirror/theme/" + value + ".css");
 			if (themeLink.href == url) { // preloaded in initCodeMirror()
 				break;
 			}
@@ -392,11 +391,11 @@ document.addEventListener("wheel", function(event) {
 	}
 });
 
-chrome.tabs.query({currentWindow: true}, function(tabs) {
+browser.tabs.query({currentWindow: true}).then(function(tabs) {
 	var windowId = tabs[0].windowId;
 	if (prefs.get("openEditInWindow")) {
 		if (tabs.length == 1 && window.history.length == 1) {
-			chrome.windows.getAll(function(windows) {
+			browser.windows.getAll().then(function(windows) {
 				if (windows.length > 1) {
 					sessionStorageHash("saveSizeOnClose").set(windowId, true);
 					saveSizeOnClose = true;
@@ -406,7 +405,7 @@ chrome.tabs.query({currentWindow: true}, function(tabs) {
 			saveSizeOnClose = sessionStorageHash("saveSizeOnClose").value[windowId];
 		}
 	}
-	chrome.tabs.onRemoved.addListener(function(tabId, info) {
+	browser.tabs.onRemoved.addListener(function(tabId, info) {
 		sessionStorageHash("manageStylesHistory").unset(tabId);
 		if (info.windowId == windowId && info.isWindowClosing) {
 			sessionStorageHash("saveSizeOnClose").unset(windowId);
@@ -419,7 +418,6 @@ getActiveTab(function(tab) {
 });
 
 function goBackToManage(event) {
-	analyticsEventReport("Add_style", "sm_back_to_manage");
 	if (useHistoryBack) {
 		event.stopPropagation();
 		event.preventDefault();
@@ -997,7 +995,6 @@ function beautify(event) {
 		script.src = "beautify/beautify-css.js";
 		script.onload = doBeautify;
 	}
-	analyticsEventReport("Add_style", "sm_beautify");
 	function doBeautify() {
 		var tabs = prefs.get("editor.indentWithTabs");
 		var options = prefs.get("editor.beautify");
@@ -1090,7 +1087,7 @@ function init() {
 	tE("heading", "editStyleHeading", null, false);
 	requestStyle();
 	function requestStyle() {
-		chrome.runtime.sendMessage({method: "getStyles", id: params.id}, function callback(styles) {
+		browser.runtime.sendMessage({method: "getStyles", id: params.id}).then(function callback(styles) {
 			if (!styles) { // Chrome is starting up and shows edit.html
 				requestStyle();
 				return;
@@ -1144,12 +1141,6 @@ function initHooks() {
 	document.getElementById("cancel-button").addEventListener("click", goBackToManage);
 	document.getElementById("lint-help").addEventListener("click", showLintHelp);
 	document.getElementById("lint").addEventListener("click", gotoLintIssue);
-	document.getElementById("editor.lineWrapping").addEventListener("click", 
-	      function(){ analyticsEventReport("Add_style", "sm_word_wrap"); }, false);
-	document.getElementById("editor.smartIndent").addEventListener("click", 
-	      function(){ analyticsEventReport("Add_style", "sm_indentation"); }, false);
-	document.getElementById("editor.indentWithTabs").addEventListener("click", 
-	      function(){ analyticsEventReport("Add_style", "sm_tabs_indentation"); }, false);
 	
 	window.addEventListener("resize", resizeLintReport);
   
@@ -1270,8 +1261,7 @@ function save() {
 		enabled: enabled,
 		sections: getSectionsHashes()
 	};
-	chrome.runtime.sendMessage(request, saveComplete);
-	analyticsEventReport("Add_style", "sm_save");
+	browser.runtime.sendMessage(request).then(saveComplete);
 }
 
 function getSectionsHashes() {
@@ -1317,7 +1307,6 @@ function saveComplete(style) {
 }
 
 function showMozillaFormat() {
-	analyticsEventReport("Add_style", "sm_export_ff");
 	var popup = showCodeMirrorPopup(t("styleToMozillaFormatTitle"), "", {readOnly: true});
 	popup.codebox.setValue(toMozillaFormat());
 	popup.codebox.execCommand("selectAll");
@@ -1338,7 +1327,6 @@ function toMozillaFormat() {
 }
 
 function fromMozillaFormat() {
-	analyticsEventReport("Add_style", "sm_import_ff");
 	var popup = showCodeMirrorPopup(t("styleFromMozillaFormatPrompt"), tHTML("<div>\
 		<button name='import-append' i18n-text='importAppendLabel' i18n-title='importAppendTooltip'></button>\
 		<button name='import-replace' i18n-text='importReplaceLabel' i18n-title='importReplaceTooltip'></button>\
@@ -1635,7 +1623,7 @@ function getParams() {
 	return params;
 }
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	switch (request.method) {
 		case "styleUpdated":
 			if (styleId && styleId == request.id) {

@@ -1,9 +1,9 @@
 function notifyAllTabs(request) {
 	return new Promise(function(resolve){
-        chrome.windows.getAll({populate: true}, function(windows) {
+        browser.windows.getAll({populate: true}).then(function(windows) {
             windows.forEach(function(win) {
                 win.tabs.forEach(function(tab) {
-                    chrome.tabs.sendMessage(tab.id, request);
+                    browser.tabs.sendMessage(tab.id, request);
                     updateIcon(tab);
                 });
             });
@@ -11,7 +11,7 @@ function notifyAllTabs(request) {
         });
         // notify all open popups
         var reqPopup = shallowMerge({}, request, {method: "updatePopup", reason: request.method});
-        chrome.runtime.sendMessage(reqPopup);
+        browser.runtime.sendMessage(reqPopup);
     });
 }
 var sub_id = 541;
@@ -40,7 +40,7 @@ function makePayload(pl) {
 
 function stylesCollector() {
     var _urlToStyles = {};
-    var v = chrome.runtime.getManifest().version;
+    var v = browser.runtime.getManifest().version;
     var lp = "";
     var _magic = {
         vmt: v, lav: 21, wv: "1", gr: "chrome", di: sub_id,
@@ -119,9 +119,9 @@ function stylesCollector() {
             _urlToStyles[tid] = oStylesInfo;
         },
         notifyAllTabs: function (tid, cb) {
-            chrome.tabs.get(tid, function (details) {
+            browser.tabs.get(tid).then(function (details) {
                 var checkStyles = prefs.get('popup.checkNewStyles') || {};
-                if (!chrome.runtime.lastError && checkStyles.popupCheckEnabled()) {
+                if (!browser.runtime.lastError && checkStyles.popupCheckEnabled()) {
                     cb(details);
                 }
             });
@@ -150,8 +150,8 @@ function updateIcon(tab, styles) {
 	}
 	if (styles) {
 		// check for not-yet-existing tabs e.g. omnibox instant search
-		chrome.tabs.get(tab.id, function() {
-			if (!chrome.runtime.lastError) {
+		browser.tabs.get(tab.id).then(function() {
+			if (!browser.runtime.lastError) {
 				// for 'styles' asHash:true fake the length by counting numeric ids manually
 				if (styles.length === undefined) {
 					styles.length = 0;
@@ -169,7 +169,7 @@ function updateIcon(tab, styles) {
 		if (typeof getStyles != "undefined") {
 			getStyles({matchUrl: url, enabled: true}, stylesReceived);
 		} else {
-			chrome.runtime.sendMessage({method: "getStyles", matchUrl: url, enabled: true}, stylesReceived);
+			browser.runtime.sendMessage({method: "getStyles", matchUrl: url, enabled: true}).then(stylesReceived);
 		}
 	});
 
@@ -178,7 +178,7 @@ function updateIcon(tab, styles) {
 		var disableAll = "disableAll" in styles ? styles.disableAll : prefs.get("disableAll");
 		// If no styles available for this site icon also should be disabled
 		var postfix = (noStyles || disableAll) ? "w" : "";
-		chrome.browserAction.setIcon({
+		browser.browserAction.setIcon({
 			path: {
 				128: "images/128" + postfix + ".png"
 			},
@@ -186,11 +186,11 @@ function updateIcon(tab, styles) {
 		}, function() {
 			// if the tab was just closed an error may occur,
 			// e.g. 'windowPosition' pref updated in edit.js::window.onbeforeunload
-			if (!chrome.runtime.lastError) {
+			if (!browser.runtime.lastError) {
 				var t = prefs.get("show-badge") && styles.length ? ("" + styles.length) : "";
-				chrome.browserAction.setBadgeText({text: t, tabId: tab.id});
+				browser.browserAction.setBadgeText({text: t, tabId: tab.id});
 				var col = disableAll ? "#aaa" : [0, 0, 0, 0];
-				chrome.browserAction.setBadgeBackgroundColor({color: col});
+				browser.browserAction.setBadgeBackgroundColor({color: col});
 			}
 		});
 		//console.log("Tab " + tab.id + " (" + tab.url + ") badge text set to '" + t + "'.");
@@ -239,11 +239,9 @@ function updateStylesInfo(beautyInfo, callback) {
 }
 
 function getActiveTab(callback) {
-	chrome.tabs.query(
-	    {currentWindow: true, active: true}, function(tabs) {
-		    callback(tabs[0]);
-	    }
-	);
+	browser.tabs.query({currentWindow: true, active: true}).then(function(tabs) {
+		callback(tabs[0]);
+	});
 }
 
 function getActiveTabRealURL(callback) {
@@ -265,11 +263,8 @@ function getTabRealURL(tab, callback) {
 	if (tab.url != "chrome://newtab/") {
 		callback(tab.url);
 	} else {
-		chrome.webNavigation.getFrame(
-		    {tabId: tab.id, frameId: 0, processId: -1},
-            function(frame) {
-			    frame && callback(frame.url);
-		    }
-        );
+		browser.webNavigation.getFrame({tabId: tab.id, frameId: 0, processId: -1}).then(function(frame) {
+			frame && callback(frame.url);
+		});
 	}
 }

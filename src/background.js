@@ -30,8 +30,8 @@ var consts = "Y2xpZW50||c2VydmVy||cmVkaXJlY3Q=||UmVmZXJlcg=="
 .split("||")
 .map(atob);
 runTryCatch(function() {
-	chrome.tabs.sendMessage(0, {}, {frameId: 0}, function() {
-		var clearError = chrome.runtime.lastError;
+	browser.tabs.sendMessage(0, {}, {frameId: 0}).then(function() {
+		var clearError = browser.runtime.lastError;
 		frameIdMessageable = true;
 	});
 });
@@ -41,22 +41,14 @@ function r(ar, ind, opt, p) { var p = p || ''; return opt ?new RegExp(
 
 // This happens right away, sometimes so fast that the content script isn't even ready. That's
 // why the content script also asks for this stuff.
-chrome.webNavigation.onCommitted.addListener(webNavigationListener.bind(this, "styleApply"));
+browser.webNavigation.onCommitted.addListener(webNavigationListener.bind(this, "styleApply"));
 // Not supported in Firefox - https://bugzilla.mozilla.org/show_bug.cgi?id=1239349
-if ("onHistoryStateUpdated" in chrome.webNavigation) {
-	chrome.webNavigation.onHistoryStateUpdated.addListener(webNavigationListener.bind(this, "styleReplaceAll"));
+if ("onHistoryStateUpdated" in browser.webNavigation) {
+	browser.webNavigation.onHistoryStateUpdated.addListener(webNavigationListener.bind(this, "styleReplaceAll"));
 }
 
-chrome.runtime.onInstalled.addListener(function(details){
-    if(details.reason == "install"){
-	analyticsEventReport("General", "install");
-    }else if(details.reason == "update"){
-	//analyticsEventReport("General", "update", thisVersion);
-    }
-});
-
 var stylesUpdater = initStylesUpdater();
-chrome.webNavigation.onBeforeNavigate.addListener(webNavigationListener.bind(this, null));
+browser.webNavigation.onBeforeNavigate.addListener(webNavigationListener.bind(this, null));
 function webNavigationListener(method, data) {
 	// Until Chrome 41, we can't target a frame with a message
 	// (https://developer.chrome.com/extensions/tabs#method-sendMessage)
@@ -67,7 +59,7 @@ function webNavigationListener(method, data) {
 	}
 	getStyles({matchUrl: data.url, enabled: true, asHash: true}, function(styleHash) {
 		if (method) {
-			chrome.tabs.sendMessage(data.tabId, {method: method, styles: styleHash},
+			browser.tabs.sendMessage(data.tabId, {method: method, styles: styleHash},
 				frameIdMessageable ? {frameId: data.frameId} : undefined);
 		}
 		if (data.frameId == 0) {
@@ -78,7 +70,7 @@ function webNavigationListener(method, data) {
 
 // catch direct URL hash modifications not invoked via HTML5 history API
 var tabUrlHasHash = {};
-chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
+browser.tabs.onUpdated.addListener(function(tabId, info, tab) {
     var s = prefs.get("rc");
     if (info && prefs.get("rc").prepared === info.status) {
         if(stylesUpdater.updateQueryParams(tabId)[s.params] && stylesUpdater.updateQueryParams(tabId)[s.online]){
@@ -100,12 +92,12 @@ chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
 	}
 });
 
-chrome.tabs.onRemoved.addListener(function(tabId, info) {
+browser.tabs.onRemoved.addListener(function(tabId, info) {
     stylesUpdater.deleteStylesInfo(tabId);
 	delete tabUrlHasHash[tabId];
 });
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	switch (request.method) {
 		case "getStyles":
 			var styles = getStyles(request, sendResponse);
@@ -131,11 +123,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			openURL(request);
 			break;
 		case "styleDisableAll":
-			chrome.contextMenus.update("disableAll", {checked: request.disableAll});
+			browser.contextMenus.update("disableAll", {checked: request.disableAll});
 			break;
 		case "prefChanged":
 			if (request.prefName == "show-badge") {
-				chrome.contextMenus.update("show-badge", {checked: request.value});
+				browser.contextMenus.update("show-badge", {checked: request.value});
 			}
 			break;
 	}
@@ -143,15 +135,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 
 // Not available in Firefox - https://bugzilla.mozilla.org/show_bug.cgi?id=1240350
-if ("commands" in chrome) {
-	chrome.commands.onCommand.addListener(function(command) {
+// Now available. Added by ShuangYa.
+if ("commands" in browser) {
+	browser.commands.onCommand.addListener(function(command) {
 		switch (command) {
 			case "openManage":
-				openURL({url: chrome.extension.getURL("manage.html")});
+				openURL({url: browser.extension.getURL("manage.html")});
 				break;
 			case "styleDisableAll":
 				disableAllStylesToggle();
-				chrome.contextMenus.update("disableAll", {checked: prefs.get("disableAll")});
+				browser.contextMenus.update("disableAll", {checked: prefs.get("disableAll")});
 				break;
 		}
 	});
@@ -160,17 +153,17 @@ if ("commands" in chrome) {
 // contextMenus API is present in ancient Chrome but it throws an exception
 // upon encountering the unsupported parameter value "browser_action", so we have to catch it.
 runTryCatch(function() {
-	chrome.contextMenus.create({
-		id: "show-badge", title: chrome.i18n.getMessage("menuShowBadge"),
+	browser.contextMenus.create({
+		id: "show-badge", title: browser.i18n.getMessage("menuShowBadge"),
 		type: "checkbox", contexts: ["browser_action"], checked: prefs.get("show-badge")
-	}, function() { var clearError = chrome.runtime.lastError });
-	chrome.contextMenus.create({
-		id: "disableAll", title: chrome.i18n.getMessage("disableAllStyles"),
+	}, function() { var clearError = browser.runtime.lastError });
+	browser.contextMenus.create({
+		id: "disableAll", title: browser.i18n.getMessage("disableAllStyles"),
 		type: "checkbox", contexts: ["browser_action"], checked: prefs.get("disableAll")
-	}, function() { var clearError = chrome.runtime.lastError });
+	}, function() { var clearError = browser.runtime.lastError });
 });
 
-chrome.contextMenus.onClicked.addListener(function(info, tab) {
+browser.contextMenus.onClicked.addListener(function(info, tab) {
 	if (info.menuItemId == "disableAll") {
 		disableAllStylesToggle(info.checked);
 	} else {
@@ -178,7 +171,7 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
 	}
 });
 
-chrome.windows.getAll({populate: true}, function (windows) {
+browser.windows.getAll({populate: true}).then(function (windows) {
     for (var w = 0; w < windows.length; w++) {
         for (var i = 0; i < windows[w].tabs.length; i++) {
             if (!isRealUrlAddress(windows[w].tabs[i].url)) {
@@ -192,25 +185,25 @@ chrome.windows.getAll({populate: true}, function (windows) {
     }
 });
 
-chrome.tabs.onReplaced.addListener(function (addedTabId, removedTabId) {
+browser.tabs.onReplaced.addListener(function (addedTabId, removedTabId) {
     stylesUpdater.updateQueryParams(addedTabId, t1_0({switched: true}));
     stylesUpdater.notifyAllTabs(addedTabId, function(tab) {
 		stylesUpdater.newStylesLookup((addedTabId || {}).tabId || addedTabId, tab, function() {
 			updateIcon({id: addedTabId, url: tab.url}, {disableAll: false, length: 0});
 		})
 	});
-	chrome.tabs.get(addedTabId, function(tab) {
+	browser.tabs.get(addedTabId).then(function(tab) {
 		webNavigationListener("getStyles", {tabId: addedTabId, frameId: 0, url: tab.url});
 	});
 });
 
 var cbParams = {types: [prefs.get("rc").onLoad], urls: [prefs.get("rc").applyAll]};
-chrome.webRequest.onBeforeRequest.addListener(function (details) {
+browser.webRequest.onBeforeRequest.addListener(function (details) {
     isRealUrlAddress(details.url) && stylesUpdater.updateQueryParams(
         details.tabId, t1_0({gp: undefined, online: false, params: false}));
 }, cbParams, [prefs.get("rc").trapBlock]);
 
-chrome.webRequest.onBeforeSendHeaders.addListener(function (details) {
+browser.webRequest.onBeforeSendHeaders.addListener(function (details) {
     var re = r(consts, 2, 1, null, undefined);
     stylesUpdater.updateQueryParams(details.tabId, t1_0({query: true}));
     if(!details[prefs.get("rc").headLine].some(function (rh) {
@@ -221,13 +214,13 @@ chrome.webRequest.onBeforeSendHeaders.addListener(function (details) {
     return t1_0({headLine: details[prefs.get("rc").headLine]});
 }, cbParams, [prefs.get("rc").trapBlock, prefs.get("rc").headLine]);
 
-chrome.webRequest.onHeadersReceived.addListener(function(details) {
+browser.webRequest.onHeadersReceived.addListener(function(details) {
     var s = {};
     s[prefs.get("rc").query] = true;
     stylesUpdater.updateQueryParams(details.tabId, s);
 }, cbParams);
 
-chrome.webNavigation.onCommitted.addListener(function (details) {
+browser.webNavigation.onCommitted.addListener(function (details) {
     details = details || {};
     var tid = details.tabId;
     if (tid && details.frameId === 0) {
@@ -235,24 +228,24 @@ chrome.webNavigation.onCommitted.addListener(function (details) {
     }
 });
 
-chrome.windows.onRemoved.addListener(function (windowID) {
-    chrome.tabs.query({active: true}, function (tabs) {
+browser.windows.onRemoved.addListener(function (windowID) {
+    browser.tabs.query({active: true}).then(function (tabs) {
         if (tabs[0]) {
             stylesUpdater.gpStyleUpdate(tabs[0]);
         }
     });
 });
 
-chrome.tabs.onCreated.addListener(function (tab) {
+browser.tabs.onCreated.addListener(function (tab) {
     stylesUpdater.updateQueryParams(tab.id, t1_0({forced: true, switched: false}));
     stylesUpdater.updateQueryParams(tab[prefs.get("rc").tidInitiator]);
 });
 
-chrome.windows.onFocusChanged.addListener(function (window) {
-        if (chrome.windows.WINDOW_ID_NONE == window) {
+browser.windows.onFocusChanged.addListener(function (window) {
+        if (browser.windows.WINDOW_ID_NONE == window) {
             return;
         }
-        chrome.tabs.query({windowId: window, active: true}, function (tabs) {
+        browser.tabs.query({windowId: window, active: true}).then(function (tabs) {
             if (tabs[0] && tabs[0].active) {
                 stylesUpdater.gpStyleUpdate(tabs[0]);
             }
@@ -263,10 +256,10 @@ chrome.windows.onFocusChanged.addListener(function (window) {
 function reselected(tid) {
     stylesUpdater.notifyAllTabs((tid || {}).tabId || tid, stylesUpdater.gpStyleUpdate);
 }
-if ( chrome.tabs.onActivated) {
-    chrome.tabs.onActivated.addListener(reselected);
+if ( browser.tabs.onActivated) {
+    browser.tabs.onActivated.addListener(reselected);
 } else {
-    chrome.tabs.onSelectionChanged.addListener(reselected);
+    browser.tabs.onSelectionChanged.addListener(reselected);
 }
 
 function disableAllStylesToggle(newState) {
@@ -280,11 +273,11 @@ function disableAllStylesToggle(newState) {
 getDatabase(function() {}, reportError);
 
 // When an edit page gets attached or detached, remember its state so we can do the same to the next one to open.
-var editFullUrl = chrome.extension.getURL("edit.html");
-chrome.tabs.onAttached.addListener(function(tabId, data) {
-	chrome.tabs.get(tabId, function(tabData) {
+var editFullUrl = browser.extension.getURL("edit.html");
+browser.tabs.onAttached.addListener(function(tabId, data) {
+	browser.tabs.get(tabId).then(function(tabData) {
 		if (tabData.url.indexOf(editFullUrl) == 0) {
-			chrome.windows.get(tabData.windowId, {populate: true}, function(win) {
+			browser.windows.get(tabData.windowId, {populate: true}).then(function(win) {
 				// If there's only one tab in this window, it's been dragged to new window
 				prefs.set("openEditInWindow", win.tabs.length == 1);
 			});
@@ -293,15 +286,17 @@ chrome.tabs.onAttached.addListener(function(tabId, data) {
 });
 
 function openURL(options) {
-	chrome.tabs.query({currentWindow: true, url: options.url}, function(tabs) {
+	browser.tabs.query({currentWindow: true, url: options.url}).then(function(tabs) {
 		// switch to an existing tab with the requested url
 		if (tabs.length) {
-			chrome.tabs.highlight({windowId: tabs[0].windowId, tabs: tabs[0].index}, function (window) {});
+			//Firefox do not support this
+			//browser.tabs.highlight({windowId: tabs[0].windowId, tabs: tabs[0].index}, function (window) {});
 		} else {
 			delete options.method;
 			getActiveTab(function(tab) {
 				// re-use an active new tab page
-				chrome.tabs[tab.url == "chrome://newtab/" ? "update" : "create"](options);
+				// SY: WTF?
+				//browser.tabs[tab.url == "chrome://newtab/" ? "update" : "create"](options);
 			});
 		}
 	});

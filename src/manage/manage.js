@@ -5,11 +5,11 @@ var appliesToExtraTemplate = document.createElement("span");
 appliesToExtraTemplate.className = "applies-to-extra";
 appliesToExtraTemplate.innerHTML = " " + t('appliesDisplayTruncatedSuffix');
 
-chrome.runtime.sendMessage({method: "getStyles"}, showStyles);
+browser.runtime.sendMessage({method: "getStyles"}).then(showStyles);
 
 function showStyles(styles) {
 	if (!styles) { // Chrome is starting up
-		chrome.runtime.sendMessage({method: "getStyles"}, showStyles);
+		browser.runtime.sendMessage({method: "getStyles"}).then(showStyles);
 		return;
 	}
 	if (!installed) {
@@ -107,9 +107,9 @@ function createStyleElement(style) {
 				if (openWindow) {
 					var options = prefs.get("windowPosition");
 					options.url = url;
-					chrome.windows.create(options);
+					browser.windows.create(options);
 				} else {
-					chrome.runtime.sendMessage({
+					browser.runtime.sendMessage({
 						method: "openURL",
 						url: url,
 						active: openForegroundTab
@@ -123,7 +123,6 @@ function createStyleElement(style) {
 				});
 			}
 			var styleid = getGlobalId(event);
-			analyticsEventReport("Manage_installed_styles", "edit", styleid);
 		}
 	});
 	e.querySelector(".enable").addEventListener("click", function(event) { enable(event, true); }, false);
@@ -138,7 +137,6 @@ function enable(event, enabled) {
 	var id = getId(event);
 	enableStyle(id, enabled);
 	var styleid = getGlobalId(event);
-	analyticsEventReport("Manage_installed_styles", (!!enabled ? "enable" : "disable"), styleid);
 }
 
 function doDelete() {
@@ -147,7 +145,6 @@ function doDelete() {
 	}
 	var id = getId(event);
 	deleteStyle(id);
-	analyticsEventReport("Manage_installed_styles", "delete", getGlobalId(event));
 }
 
 function getId(event) {
@@ -175,7 +172,7 @@ function getStyleElement(event) {
 	return null;
 }
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	switch (request.method) {
 		case "styleUpdated":
 			handleUpdate(request.style);
@@ -209,7 +206,6 @@ function handleDelete(id) {
 function doCheckUpdate(event) {
 	checkUpdate(getStyleElement(event));
 	var styleid = getGlobalId(event);
-	analyticsEventReport("Manage_installed_styles", "check_uptate", styleid);
 }
 
 function applyUpdateAll() {
@@ -223,15 +219,12 @@ function applyUpdateAll() {
 	Array.prototype.forEach.call(document.querySelectorAll(".can-update .update"), function(button) {
 		button.click();
 	});
-	analyticsEventReport("Manage_installed_styles", "sm_install_update");
 }
 
 function addNewStyle(){
-      analyticsEventReport("Manage_installed_styles", "sm_write_new");
 }
 
 function checkUpdateAll() {
-	analyticsEventReport("Manage_installed_styles", "sm_check_updates_all");
 	var btnCheck = document.getElementById("check-all-updates");
 	var btnApply = document.getElementById("apply-all-updates");
 	var noUpdates = document.getElementById("update-all-no-updates");
@@ -272,7 +265,7 @@ function checkUpdate(element, callback) {
 	var originalMd5 = element.getAttribute("style-original-md5");
 
 	function handleSuccess(forceUpdate, serverJson) {
-		chrome.runtime.sendMessage({method: "getStyles", id: id}, function(styles) {
+		browser.runtime.sendMessage({method: "getStyles", id: id}).then(function(styles) {
 			var style = styles[0];
 			var needsUpdate = false;
 			if (!forceUpdate && codeIsEqual(style.sections, serverJson.sections)) {
@@ -383,8 +376,7 @@ function doUpdate(event) {
 
 	// updating the UI will be handled by the general update listener
 	lastUpdatedStyleId = updatedCode.id;
-	analyticsEventReport("Manage_installed_styles", "installe_update", getGlobalId(event));
-	chrome.runtime.sendMessage(updatedCode, function () {});
+	browser.runtime.sendMessage(updatedCode);
 }
 
 function codeIsEqual(a, b) {
@@ -452,7 +444,7 @@ function searchStyles(immediately) {
 		searchStyles.timeout = setTimeout(doSearch, 100);
 	}
 	function doSearch() {
-		chrome.runtime.sendMessage({method: "getStyles"}, function(styles) {
+		browser.runtime.sendMessage({method: "getStyles"}).then(function(styles) {
 			styles.forEach(function(style) {
 				var el = document.querySelector("[style-id='" + style.id + "']");
 				if (el) {
@@ -497,13 +489,6 @@ document.addEventListener("DOMContentLoaded", function() {
 	document.getElementById("apply-all-updates").addEventListener("click", applyUpdateAll);
 	document.getElementById("search").addEventListener("input", searchStyles);
 	
-	document.getElementById("get-styles-link").addEventListener("click", function(){
-	  analyticsEventReport("Manage_installed_styles", "sm_links", "get_styles"); });
-	document.getElementById("get-help-link").addEventListener("click", function(){ 
-	  analyticsEventReport("Manage_installed_styles", "sm_links", "get_help"); });
-	document.getElementById("get-pp-link").addEventListener("click", function(){
-	  analyticsEventReport("Manage_installed_styles", "sm_links", "read_pp"); });
-	
 	searchStyles(true); // re-apply filtering on history Back
 
 	setupLivePrefs([
@@ -517,12 +502,11 @@ document.addEventListener("DOMContentLoaded", function() {
 	document.querySelector("#analyticsEnabled").addEventListener("change", function(){
 		if (!this.checked && this.getAttribute("data-warned") != "1"){
 			this.setAttribute("data-warned", "1");
-			alert(chrome.i18n.getMessage("statsDisabled"));
+			alert(browser.i18n.getMessage("statsDisabled"));
 			prefs.get('popup.checkNewStyles').popupCheckDisable();
 		}else if (this.checked){
 			this.removeAttribute("data-warned");
 			prefs.get('popup.checkNewStyles').popupCheckEnable();
 		}
 	});
-	analyticsEventReport("Manage_installed_styles", "shown");
 });

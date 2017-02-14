@@ -13,32 +13,17 @@ var website;
 
 getActiveTab(updatePopUp);
 
-!function initUITabs(){
-    Tabs.bindHeaderToBody('#tab-header-recommended', '#tab-item-recommended');
-    Tabs.bindHeaderToBody('#tab-header-installed', '#tab-item-installed');
-	var storedTabId = parseInt(localStorage.getItem("lastTabId"));
-	menutype = "Library_menu";
-	if (!!storedTabId){
-		Tabs.setActiveTab(storedTabId);
-		menutype = "Installed_styles_menu";
-	}
-	Tabs.onTabChanged(function(e){
-		localStorage.setItem("lastTabId", e.newTabId);
-		menutype = (!!e.newTabId ? "Installed_styles_menu" : "Library_menu");
-		analyticsEventReport(menutype, "shown", website);
-	})
-	checkProcessInstalledFromPopup();
-}();
+checkProcessInstalledFromPopup();
 
 function checkProcessInstalledFromPopup(){
 	if (window.location.search == SEARCH_INSTALLED_FROM_POPUP
 		&& prefs.get("disableAll")
-		&& chrome.extension.getBackgroundPage().isBrowserSessionNew()){
+		&& browser.extension.getBackgroundPage().isBrowserSessionNew()){
 		var noti = document.getElementById("styles-off-notification");
 		noti.classList.add("bounceIn");
 		noti.classList.add("animated");
 		document.body.addEventListener('click', onAction);
-		chrome.extension.getBackgroundPage().setBrowserSessionNotNew();
+		browser.extension.getBackgroundPage().setBrowserSessionNotNew();
 		function onAction(){
 			noti.classList.remove("bounceIn");
 			noti.classList.add("bounceOut");
@@ -49,7 +34,7 @@ function checkProcessInstalledFromPopup(){
 
 function getInstalledStyles(){
 	return new Promise(function(resolve, reject){
-		chrome.runtime.sendMessage({method: "getStyles"}, resolve);
+		browser.runtime.sendMessage({method: "getStyles"}).then(resolve);
 	});
 }
 
@@ -102,49 +87,10 @@ function parseUrl(url){
 
 function updatePopUp(tab) {
 	website = getSiteName(tab.url);
-	analyticsEventReport(menutype, "shown", website);
 	updateSiteName(website);
 	updateCreateStyleLink(parseUrl(tab.url).hostname);
 
-	var urlWillWork = /^(file|http|https|ftps?|chrome\-extension):/.exec(tab.url);
-	if (!urlWillWork) {
-		document.body.classList.add("blocked");
-		document.getElementById("unavailable").classList.remove("hide");
-		document.getElementById("recommended").classList.add("hide");
-		return;
-	}
-
-	var hasStyles = chrome.extension.getBackgroundPage()
-        .prefs.get("checkNewStyles").haveNewStyles(tab.id);
-
-	var userAllowedServerConnection = prefs.get('popup.checkNewStyles').popupCheckEnabled();
-
-    if (hasStyles && userAllowedServerConnection){
-        var styles = chrome.extension.getBackgroundPage()
-            .prefs.get("checkNewStyles").getStyles(tab.id);
-
-        preProcessStyles(styles).then(function(styles){
-            showStyles(styles);
-        });
-    } else {
-        document.getElementById("nostyles").classList.remove("hide");
-		document.getElementById("recommended").classList.add("hide");
-		document.getElementById("find-styles").style.display = "none";
-		proceedToOptMessage();
-    }
-
-	document.querySelectorAll('#find-styles a').forEach(function (el) {
-		el.href = "https://userstyles.org/styles/browse/all/" +
-			encodeURIComponent("file" === urlWillWork[1] ? "file:" : tab.url);
-	});
-}
-
-function proceedToOptMessage(){
-	getSync().get(function(set){
-		if (!set.settings.analyticsEnabled){
-			displayOptMessage();
-		}
-	});
+	var urlWillWork = /^(file|http|https|ftps?|moz\-extension):/.exec(tab.url);
 }
 
 function displayOptMessage(){
@@ -153,8 +99,8 @@ function displayOptMessage(){
 	document.getElementById("nostyles").classList.add("hide");
 	document.getElementById("recommended").classList.add("hide");
 
-    var localSiteName = chrome.i18n.getMessage("noServerConnectionParam1"),
-        localSettingsName = chrome.i18n.getMessage("noServerConnectionParam2");
+    var localSiteName = browser.i18n.getMessage("noServerConnectionParam1"),
+        localSettingsName = browser.i18n.getMessage("noServerConnectionParam2");
 
     var message = noConnection.querySelector('div');
     message.innerHTML = message.innerHTML
@@ -207,8 +153,8 @@ function limitTo(styles, limit){
 
 function preProcessStyle(style){
     style.installsStr = preProcessInstalls(style.installs);
-    style.installsTooltip = chrome.i18n.getMessage("numberOfWeeklyInstalls");
-    style.installButtonLabel = chrome.i18n.getMessage("installButtonLabel");
+    style.installsTooltip = browser.i18n.getMessage("numberOfWeeklyInstalls");
+    style.installButtonLabel = browser.i18n.getMessage("installButtonLabel");
     return style;
 }
 
@@ -363,7 +309,7 @@ function openLinkInTabOrWindow(event) {
 		var options = {url: event.target.href}
 		var wp = prefs.get("windowPosition", {});
 		for (var k in wp) options[k] = wp[k];
-		chrome.windows.create(options);
+		browser.windows.create(options);
 	} else {
 		openLink(event);
 	}
@@ -371,11 +317,8 @@ function openLinkInTabOrWindow(event) {
 }
 
 function openLink(event) {
-	event.preventDefault();
-	if(event.target && event.target.id && "find-styles-link" === event.target.id)
-		analyticsEventReport("Library_menu", "see_more", website);
-	
-	chrome.runtime.sendMessage({method: "openURL", url: event.target.href});
+	event.preventDefault();	
+	browser.runtime.sendMessage({method: "openURL", url: event.target.href});
 	close();
 }
 
@@ -385,7 +328,7 @@ function handleUpdate(style) {
 		installed.replaceChild(createStyleElement(style), styleElement);
 	} else {
 		getActiveTabRealURL(function(url) {
-			if (chrome.extension.getBackgroundPage().getApplicableSections(style, url).length) {
+			if (browser.extension.getBackgroundPage().getApplicableSections(style, url).length) {
 				// a new style for the current url is installed
 				document.getElementById("unavailable").style.display = "none";
 				installed.appendChild(createStyleElement(style));
@@ -401,7 +344,7 @@ function handleDelete(id) {
 	}
 }
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	if (request.method == "updatePopup") {
 		switch (request.reason) {
 			case "styleAdded":
