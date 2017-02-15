@@ -38,7 +38,7 @@
 			"js": ["src/inject/apply.js"]
 		},
 		{
-			"matches": ["http://userstyles.org/*", "https://userstyles.org/*"],
+			"matches": ["http://userstyles.org/*", "https://userstyles.org/*", "http://*.firefoxcn.net/*", "https://*.firefoxcn.net/*", "https://*.github.io/*", "https://*.oschina.io/*"],
 			"run_at": "document_end",
 			"all_frames": false,
 			"js": ["src/inject/install.js"]
