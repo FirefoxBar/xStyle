@@ -238,7 +238,7 @@ function getApplicableSections(style, url) {
 
 function sectionAppliesToUrl(section, url) {
 	// only http, https, file, and moz-extension allowed
-	if (url.indexOf("http") != 0 && url.indexOf("file") != 0 && url.indexOf("moz-extension") != 0 && url.indexOf("ftp") != 0) {
+	if (url.indexOf("http") != 0 && url.indexOf("file") != 0 && url.indexOf("moz-extension") != 0 && url.indexOf("ftp") != 0 && url.indexOf('about:') != 0) {
 		return false;
 	}
 	// other extensions can't be styled
