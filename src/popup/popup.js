@@ -358,6 +358,6 @@ browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	}
 });
 
-document.querySelectorAll("#find-styles-link , #open-manage-link").forEach(function(el) {
+document.querySelectorAll(".open-manage-link").forEach(function(el) {
 	el.addEventListener("click", openLink, false);
 });

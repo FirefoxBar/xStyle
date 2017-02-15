@@ -286,19 +286,16 @@ browser.tabs.onAttached.addListener(function(tabId, data) {
 });
 
 function openURL(options) {
-	browser.tabs.query({currentWindow: true, url: options.url}).then(function(tabs) {
-		// switch to an existing tab with the requested url
-		if (tabs.length) {
-			//Firefox do not support this
-			//browser.tabs.highlight({windowId: tabs[0].windowId, tabs: tabs[0].index}, function (window) {});
-		} else {
-			delete options.method;
-			getActiveTab(function(tab) {
-				// re-use an active new tab page
-				// SY: WTF?
-				//browser.tabs[tab.url == "chrome://newtab/" ? "update" : "create"](options);
-			});
+	// Firefox do not support highlight a tab or switch to a tab
+	delete options.method;
+	getActiveTab(function(tab) {
+		// re-use an active new tab page
+		// Firefox may have more than 1 newtab url, so check all
+		var isNewTab = false;
+		if (tab.url.indexOf('about:newtab') === 0 || tab.url.indexOf('about:home') === 0) {
+			isNewTab = true;
 		}
+		browser.tabs[isNewTab ? "update" : "create"](options);
 	});
 }
 
