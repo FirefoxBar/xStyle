@@ -155,9 +155,9 @@ function getGlobalId(event){
 	var murl = getStyleElement(event).getAttribute("style-md5-url");
 	var matches = /\/(\d+)\.(md5)/.exec(murl);
 	if (matches && matches.length == 3){
-	    return parseInt(matches[1]);
+		return parseInt(matches[1]);
 	} else {
-	    return "local";
+		return "local";
 	}
 }
 

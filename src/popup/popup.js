@@ -1,6 +1,6 @@
 var IMAGE_URL_NOT_AVAILABLE = "n/a",
-    IMAGE_URL_DEFAULT = "images/image_na.png",
-	SEARCH_INSTALLED_FROM_POPUP = "?installedfrompopup";
+IMAGE_URL_DEFAULT = "images/image_na.png",
+SEARCH_INSTALLED_FROM_POPUP = "?installedfrompopup";
 
 var writeStyleTemplate = document.createElement("a");
 writeStyleTemplate.className = "write-style-link";
@@ -39,20 +39,20 @@ function getInstalledStyles(){
 }
 
 function parseStyleId(style){
-    var matches = STYLE_URL_ID_REGEX.exec(style.url);
-    if (matches && matches.length == 3){
-        return parseInt(matches[2]);
-    } else {
-        throw new Error("Can't retrieve style id. Url corrupted " + style.url);
-    }
+	var matches = STYLE_URL_ID_REGEX.exec(style.url);
+	if (matches && matches.length == 3){
+		return parseInt(matches[2]);
+	} else {
+		throw new Error("Can't retrieve style id. Url corrupted " + style.url);
+	}
 }
 
 function getOrParseStyleId(style){
-    if (style.styleid) {
-        return style.styleid;
-    }
+	if (style.styleid) {
+		return style.styleid;
+	}
 
-    var parsed;
+	var parsed;
 	try{
 		parsed = parseStyleId(style);
 		return parsed;
@@ -94,11 +94,11 @@ function updatePopUp(tab) {
 }
 
 function createLink(href, name){
-    var a = document.createElement('a');
-    a.href = href;
-    a.innerText = name;
-    a.target = "_blank";
-    return a;
+	var a = document.createElement('a');
+	a.href = href;
+	a.innerText = name;
+	a.target = "_blank";
+	return a;
 }
 
 function updateCreateStyleLink(tabDomain){
@@ -120,82 +120,82 @@ function preProcessStyles(styles){
 	return new Promise(function(resolve, reject){
 		var allStyles = styles.stylesCache.styles.popularstyles;
 		allStyles.forEach(preProcessStyle);
-        getInstalledStyles().then(function(installedStyles){
-            var filter = preProcessFilterInstalledGenerator(installedStyles);
-            allStyles = allStyles.filter(filter);
-            allStyles = limitTo(allStyles, styles.stylesCache.popularstylestoshow);
-            allStyles.forEach(preProcessImage);
-            resolve(allStyles);
-        });
+		getInstalledStyles().then(function(installedStyles){
+			var filter = preProcessFilterInstalledGenerator(installedStyles);
+			allStyles = allStyles.filter(filter);
+			allStyles = limitTo(allStyles, styles.stylesCache.popularstylestoshow);
+			allStyles.forEach(preProcessImage);
+			resolve(allStyles);
+		});
 	});
 }
 
 function limitTo(styles, limit){
-    return styles.filter(function(){
-        return limit-- > 0;
-    });
+	return styles.filter(function(){
+		return limit-- > 0;
+	});
 }
 
 function preProcessStyle(style){
-    style.installsStr = preProcessInstalls(style.installs);
-    style.installsTooltip = browser.i18n.getMessage("numberOfWeeklyInstalls");
-    style.installButtonLabel = browser.i18n.getMessage("installButtonLabel");
-    return style;
+	style.installsStr = preProcessInstalls(style.installs);
+	style.installsTooltip = browser.i18n.getMessage("numberOfWeeklyInstalls");
+	style.installButtonLabel = browser.i18n.getMessage("installButtonLabel");
+	return style;
 }
 
 function preProcessFilterInstalledGenerator(installedStyles){
 	return function preProcessFilterInstalled(style){
-	    return !styleIsInInstalled(style, installedStyles);
+		return !styleIsInInstalled(style, installedStyles);
 	};
 }
 
 function preProcessInstalls(installsSrc){
 	installsSrc = installsSrc || 1;
-    var installs, devider = 1;
-    if (installsSrc >= 1000000){
-        devider = 1000000;
-    } else if (installsSrc >= 1000){
-        devider = 1000;
-    }
+	var installs, devider = 1;
+	if (installsSrc >= 1000000){
+		devider = 1000000;
+	} else if (installsSrc >= 1000){
+		devider = 1000;
+	}
 
-    if (devider > 1){
-        installs = installsSrc / devider;
-        installs = installs.toFixed(1);
-        installs = installs.replace(".0", ""); // remove the decimal part if it is 0
-        switch (devider){
-            case 1000:
-                installs += "k";
-                break;
-            case 1000000:
-                installs += "m";
-                break;
-        }
-    } else {
-        installs = installsSrc;
-    }
+	if (devider > 1){
+		installs = installsSrc / devider;
+		installs = installs.toFixed(1);
+		installs = installs.replace(".0", ""); // remove the decimal part if it is 0
+		switch (devider){
+			case 1000:
+				installs += "k";
+				break;
+			case 1000000:
+				installs += "m";
+				break;
+		}
+	} else {
+		installs = installsSrc;
+	}
 
-    return installs;
+	return installs;
 }
 
 function preProcessImage(style){
-    if (!style.thumbnail ||
-        style.thumbnail.toLowerCase() == IMAGE_URL_NOT_AVAILABLE){
-        style.thumbnail = IMAGE_URL_DEFAULT;
-    }
-    return style;
+	if (!style.thumbnail ||
+		style.thumbnail.toLowerCase() == IMAGE_URL_NOT_AVAILABLE){
+		style.thumbnail = IMAGE_URL_DEFAULT;
+	}
+	return style;
 }
 
 function showStyles(styles) {
 	var allStyles = styles;
 	allStyles.forEach(function(el){
-        addStyleToRecommended(el);
+		addStyleToRecommended(el);
 	});
 }
 
 function addStyleToRecommended(style){
 	var styleEl = styleToElement(style);
 	bindInstallEvent(styleEl, style);
-    installed.appendChild(styleEl);
+	installed.appendChild(styleEl);
 }
 
 function bindInstallEvent(styleEl, style){
@@ -225,7 +225,7 @@ function onStyleInstalledFromPopup(styleData){
 }
 
 function styleToElement(style){
-    return MustacheTemplate.render("style-item", style);
+	return MustacheTemplate.render("style-item", style);
 }
 
 function createStyleElement(style) {

@@ -131,7 +131,7 @@ function getResource(url, callback) {
 			if (xhr.status >= 400) {
 				callback(null);
 			} else {
-		    callback(xhr.responseText);
+				callback(xhr.responseText);
 			}
 		}
 	};
