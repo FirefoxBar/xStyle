@@ -1,6 +1,22 @@
 var id_url = getMeta("xstyle-id-url") || getMeta("stylish-id-url");
 var code_url = getMeta("xstyle-code") || getMeta("stylish-code-chrome");
 var md5_url = getMeta("xstyle-md5-url") || getMeta("stylish-md5-url");
+
+if (typeof(getParams) !== 'function') {
+	function getParams() {
+		var params = {};
+		var urlParts = location.href.split("?", 2);
+		if (urlParts.length == 1) {
+			return params;
+		}
+		urlParts[1].split("&").forEach(function(keyValue) {
+			var splitKeyValue = keyValue.split("=", 2);
+			params[decodeURIComponent(splitKeyValue[0])] = decodeURIComponent(splitKeyValue[1]);
+		});
+		return params;
+	}
+}
+
 browser.runtime.sendMessage({method: "getStyles", url: id_url || location.href}).then(function(response) {
 	if (response.length == 0) {
 		sendEvent("styleCanBeInstalled");
@@ -90,8 +106,19 @@ function styleInstall () {
 document.addEventListener("stylishInstall", styleInstall, false);
 document.addEventListener("xstyleInstall", styleInstall, false);
 // For a special website
-if (window.location.href.indexOf('https://ext.firefoxcn.net/xstyle/install/open') === 0) {
-	//Bind 
+if (window.location.href.indexOf('https://ext.firefoxcn.net/xstyle/install/open.html') === 0) {
+	var params = getParams();
+	if (params.code) {
+		getResource(params.code, function(code) {
+			var json = JSON.parse(code);
+			if (confirm(browser.i18n.getMessage('styleInstall', [json.name]))) {
+				json.method = "saveStyle";
+				browser.runtime.sendMessage(json).then(function(response) {
+					sendEvent("styleInstalled");
+				});
+			}
+		});
+	}
 }
 
 function styleUpdate() {
