@@ -1,6 +1,6 @@
 browser.runtime.sendMessage({method: "getStyles", url: getMeta("stylish-id-url") || location.href}).then(function(response) {
 	if (response.length == 0) {
-		sendEvent("styleCanBeInstalledChrome");
+		sendEvent("styleCanBeInstalled");
 	} else {
 		var installedStyle = response[0];
 		// maybe an update is needed
@@ -9,16 +9,16 @@ browser.runtime.sendMessage({method: "getStyles", url: getMeta("stylish-id-url")
 		if (md5Url && installedStyle.md5Url && installedStyle.originalMd5) {
 			getResource(md5Url, function(md5) {
 				if (md5 == installedStyle.originalMd5) {
-					sendEvent("styleAlreadyInstalledChrome", {updateUrl: installedStyle.updateUrl});
+					sendEvent("styleAlreadyInstalled", {updateUrl: installedStyle.updateUrl});
 				} else {
-					sendEvent("styleCanBeUpdatedChrome", {updateUrl: installedStyle.updateUrl});
+					sendEvent("styleCanBeUpdated", {updateUrl: installedStyle.updateUrl});
 				}
 			});
 		} else {
-			getResource(getMeta("stylish-code-chrome"), function(code) {
+			getResource(getMeta("stylish-code"), function(code) {
 				// this would indicate a failure (a style with settings?).
 				if (code == null) {
-					sendEvent("styleCanBeUpdatedChrome", {updateUrl: installedStyle.updateUrl});
+					sendEvent("styleCanBeUpdated", {updateUrl: installedStyle.updateUrl});
 				}
 				var json = JSON.parse(code);
 				if (json.sections.length == installedStyle.sections.length) {
@@ -28,11 +28,11 @@ browser.runtime.sendMessage({method: "getStyles", url: getMeta("stylish-id-url")
 						});
 					})) {
 						// everything's the same
-						sendEvent("styleAlreadyInstalledChrome", {updateUrl: installedStyle.updateUrl});
+						sendEvent("styleAlreadyInstalled", {updateUrl: installedStyle.updateUrl});
 						return;
 					};
 				}
-				sendEvent("styleCanBeUpdatedChrome", {updateUrl: installedStyle.updateUrl});
+				sendEvent("styleCanBeUpdated", {updateUrl: installedStyle.updateUrl});
 			});
 		}
 	}
@@ -65,36 +65,35 @@ function sendEvent(type, data) {
 	if (typeof data == "undefined") {
 		data = null;
 	}
-	var stylishEvent = new CustomEvent(type, {detail: data});
-	document.dispatchEvent(stylishEvent);
+	var newEvent = new CustomEvent(type, {detail: data});
+	document.dispatchEvent(newEvent);
 }
 
-document.addEventListener("stylishInstallChrome", function() {
+document.addEventListener("stylishInstall", function() {
 	getResource(getMeta("stylish-description"), function(name) {
 		if (confirm(browser.i18n.getMessage('styleInstall', [name]))) {
-			getResource(getMeta("stylish-code-chrome"), function(code) {
+			getResource(getMeta("stylish-code"), function(code) {
 				// check for old style json
 				var json = JSON.parse(code);
 				json.method = "saveStyle";
 				browser.runtime.sendMessage(json).then(function(response) {
-					sendEvent("styleInstalledChrome");
+					sendEvent("styleInstalled");
 				});
 			});
-			getResource(getMeta("stylish-install-ping-url-chrome"));
 		}	
 	});
 }, false);
 
-document.addEventListener("stylishUpdateChrome", function() {
+document.addEventListener("stylishUpdate", function() {
 	browser.runtime.sendMessage({method: "getStyles", url: getMeta("stylish-id-url") || location.href}).then(function(response) {
 		var style = response[0];
 		if (confirm(browser.i18n.getMessage('styleUpdate', [style.name]))) {
-			getResource(getMeta("stylish-code-chrome"), function(code) {
+			getResource(getMeta("stylish-code"), function(code) {
 				var json = JSON.parse(code);
 				json.method = "saveStyle";
 				json.id = style.id;
 				browser.runtime.sendMessage(json).then(function() {
-					sendEvent("styleInstalledChrome");
+					sendEvent("styleInstalled");
 				});
 			});
 		}	
