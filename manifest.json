@@ -20,7 +20,7 @@
 	],
 	"content_security_policy": "script-src 'self' object-src 'self'",
 	"background": {
-		"scripts": ["src/refilter.js", "src/messaging.js", "src/storage-websql.js", "src/storage.js", "src/analytics.js", "src/background.js"]
+		"scripts": ["src/refilter.js", "src/messaging.js", "src/storage-websql.js", "src/storage.js", "src/background.js"]
 	},
 	"commands": {
 	  "openManage": {
@@ -42,12 +42,6 @@
 			"run_at": "document_end",
 			"all_frames": false,
 			"js": ["src/inject/install.js"]
-		},
-		{
-			"matches": ["http://userstyles.org/**?autofb", "https://userstyles.org/**?autofb"],
-			"run_at": "document_end",
-			"all_frames": false,
-			"js": ["src/inject/auto-feedback-forward.js"]
 		}
 	],
 	"options_page": "manage.html",

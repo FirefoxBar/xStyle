@@ -1,5 +1,10 @@
 var STYLISH_DUMP_FILE_EXT     = ".txt";
 var STYLISH_DEFAULT_SAVE_NAME = "stylish-mm-dd-yyy" + STYLISH_DUMP_FILE_EXT;
+var FIREFOX_VERSION = 0;
+if (/Firefox\/(\d+)\.(\d+)/.test(navigator.userAgent)) {
+	FIREFOX_VERSION = navigator.userAgent.match(/Firefox\/(\d+)\.(\d+)/);
+	FIREFOX_VERSION = parseFloat(FIREFOX_VERSION[1] + '.' + FIREFOX_VERSION[2]);
+}
 
 function saveAsFile(text, fileName, dialog) {
     fileName = fileName || STYLISH_DEFAULT_SAVE_NAME;
@@ -7,7 +12,14 @@ function saveAsFile(text, fileName, dialog) {
 
     return new Promise(function(resolve){
         var fileContent = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
-        browser.downloads.download({filename: fileName, saveAs: true, url: fileContent}, resolve)
+		var blob = new Blob([text]);
+		var fileUrl = URL.createObjectURL(blob);
+		var option = {filename: fileName, url: fileUrl};
+		// Firefox supported saveAs since version 52
+		if (FIREFOX_VERSION >= 52) {
+			option.saveAs = true;
+		}
+        browser.downloads.download().then(resolve);
     });
 }
 
