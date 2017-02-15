@@ -1,5 +1,5 @@
 function getDatabase(ready, error) {
-	var dbOpenRequest = window.indexedDB.open("stylish", 2);
+	var dbOpenRequest = window.indexedDB.open("xstyle", 2);
 	dbOpenRequest.onsuccess = function(e) {
 		ready(e.target.result);
 	};

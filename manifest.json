@@ -1,9 +1,9 @@
 {
 	"name": "__MSG_extName__",
-	"short_name": "Stylish",
-	"version": "1.7.0",
+	"short_name": "xStyle",
+	"version": "1.0.0",
 	"description": "__MSG_description__",
-	"homepage_url": "https://userstyles.org",
+	"homepage_url": "http://team.firefoxcn.net",
 	"manifest_version": 2,
 	"icons": {
 		"128": "images/128.png"
@@ -49,7 +49,7 @@
 		"default_icon": {
 			"128": "images/128w.png"
 		},
-		"default_title": "Stylish",
+		"default_title": "xStyle",
 		"default_popup": "popup.html"
 	},
 	"default_locale": "en"

@@ -15,7 +15,7 @@ function showStyles(styles) {
 	if (!installed) {
 		// "getStyles" message callback is invoked before document is loaded,
 		// postpone the action until DOMContentLoaded is fired
-		document.stylishStyles = styles;
+		document.xstyleStyles = styles;
 		return;
 	}
 	styles.sort(function(a, b) { return a.name.localeCompare(b.name)});
@@ -479,9 +479,9 @@ function initFilter(className, node) {
 
 document.addEventListener("DOMContentLoaded", function() {
 	installed = document.getElementById("installed");
-	if (document.stylishStyles) {
-		showStyles(document.stylishStyles);
-		delete document.stylishStyles;
+	if (document.xstyleStyles) {
+		showStyles(document.xstyleStyles);
+		delete document.xstyleStyles;
 	}
 
 	document.getElementById("check-all-updates").addEventListener("click", checkUpdateAll);

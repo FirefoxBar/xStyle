@@ -95,28 +95,28 @@ var webSqlStorage = {
 
 	getDatabase: function(ready, error) {
 		try {
-			stylishDb = openDatabase('stylish', '', 'Stylish Styles', 5*1024*1024);
+			xstyleDb = openDatabase('xstyle', '', 'xStyle Styles', 5*1024*1024);
 		} catch (ex) {
 			error();
 			throw ex;
 		}
-		if (stylishDb.version == "") {
+		if (xstyleDb.version == "") {
 			// It didn't already exist, we have nothing to migrate.
 			ready(null);
 			return;
 		}
-		if (stylishDb.version == "1.0") {
-			webSqlStorage.dbV11(stylishDb, error, ready);
-		} else if (stylishDb.version == "1.1") {
-			webSqlStorage.dbV12(stylishDb, error, ready);
-		} else if (stylishDb.version == "1.2") {
-			webSqlStorage.dbV13(stylishDb, error, ready);
-		} else if (stylishDb.version == "1.3") {
-			webSqlStorage.dbV14(stylishDb, error, ready);
-		} else if (stylishDb.version == "1.4") {
-			webSqlStorage.dbV15(stylishDb, error, ready);
+		if (xstyleDb.version == "1.0") {
+			webSqlStorage.dbV11(xstyleDb, error, ready);
+		} else if (xstyleDb.version == "1.1") {
+			webSqlStorage.dbV12(xstyleDb, error, ready);
+		} else if (xstyleDb.version == "1.2") {
+			webSqlStorage.dbV13(xstyleDb, error, ready);
+		} else if (xstyleDb.version == "1.3") {
+			webSqlStorage.dbV14(xstyleDb, error, ready);
+		} else if (xstyleDb.version == "1.4") {
+			webSqlStorage.dbV15(xstyleDb, error, ready);
 		} else {
-			ready(stylishDb);
+			ready(xstyleDb);
 		}
 	},
 

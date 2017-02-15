@@ -1,5 +1,5 @@
-var STYLISH_DUMP_FILE_EXT     = ".txt";
-var STYLISH_DEFAULT_SAVE_NAME = "stylish-mm-dd-yyy" + STYLISH_DUMP_FILE_EXT;
+var XSTYLE_DUMP_FILE_EXT     = ".txt";
+var XSTYLE_DEFAULT_SAVE_NAME = "xstyle-mm-dd-yyy" + XSTYLE_DUMP_FILE_EXT;
 var FIREFOX_VERSION = 0;
 if (/Firefox\/(\d+)\.(\d+)/.test(navigator.userAgent)) {
 	FIREFOX_VERSION = navigator.userAgent.match(/Firefox\/(\d+)\.(\d+)/);
@@ -7,7 +7,7 @@ if (/Firefox\/(\d+)\.(\d+)/.test(navigator.userAgent)) {
 }
 
 function saveAsFile(text, fileName, dialog) {
-    fileName = fileName || STYLISH_DEFAULT_SAVE_NAME;
+    fileName = fileName || XSTYLE_DEFAULT_SAVE_NAME;
     dialog = typeof dialog === "boolean" ? dialog : true;
 
     return new Promise(function(resolve){
@@ -36,7 +36,7 @@ function loadFromFile(formatToFilter){
         var fileInput = document.createElement('input');
         fileInput.style = "display: none;";
         fileInput.type = "file";
-        fileInput.accept = formatToFilter || STYLISH_DUMP_FILE_EXT;
+        fileInput.accept = formatToFilter || XSTYLE_DUMP_FILE_EXT;
         fileInput.acceptCharset = "utf8";
 
         document.body.appendChild(fileInput);

@@ -1,4 +1,4 @@
-var STYLISH_DUMPFILE_EXTENSION = ".json";
+var XSTYLE_DUMPFILE_EXTENSION = ".json";
 
 var saveButton = document.getElementById("file-all-styles"),
     loadButton = document.getElementById("unfile-all-styles");
@@ -14,7 +14,7 @@ function onSaveToFileClick(){
 }
 
 function onLoadFromFileClick(){
-    loadFromFile(STYLISH_DUMPFILE_EXTENSION).then(function(rawText){
+    loadFromFile(XSTYLE_DUMPFILE_EXTENSION).then(function(rawText){
         var json = JSON.parse(rawText);
 
         var i = 0, nextStyle;
@@ -39,5 +39,5 @@ function onLoadFromFileClick(){
 }
 
 function generateFileName(){
-    return "stylish-" + moment().format("MM-DD-YYYY") + STYLISH_DUMPFILE_EXTENSION;
+    return "xstyle-" + moment().format("MM-DD-YYYY") + XSTYLE_DUMPFILE_EXTENSION;
 }
