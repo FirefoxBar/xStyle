@@ -1,6 +1,6 @@
 {
 	"extName": {
-		"message": "Stylish - 為任何網站量身打造專屬佈景主題"
+		"message": "xStyle"
 	},
 	"appliesToEverything": {
 		"message": "全部",
@@ -66,10 +66,6 @@
 		"message": "是",
 		"description": "'Yes' button in a confirm dialog"
 	},
-	"findStylesForSite": {
-		"message": "為此網站尋找更多樣式",
-		"description": "Text for a link that gets a list of styles for the current site"
-	},
 	"manageHeading": {
 		"message": "已安裝的樣式",
 		"description": "Heading for the manage page"
@@ -111,7 +107,7 @@
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
 	"styleInstall": {
-		"message": "安裝 '$stylename$' 到 Stylish ？",
+		"message": "安裝 '$stylename$' 到 xStyle ？",
 		"description": "Confirmation when installing a style",
 		"placeholders": {
 			"stylename": {
@@ -246,10 +242,6 @@
 		"message": "您沒有為此網頁安裝任何樣式",
 		"description": "Text displayed when no styles are installed for the current site"
 	},
-	"numberOfWeeklyInstalls": {
-		"message": "每週安裝數",
-		"description": "Text of popup when hovering over installs icon"
-	},
 	"appliesDisplayTruncatedSuffix": {
 		"message": "以及更多",
 		"description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
@@ -263,7 +255,7 @@
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
 	"manageTitle": {
-		"message": "Stylish",
+		"message": "xStyle",
 		"description": "Title for the manage page"
 	},
 	"writeStyleFor": {
@@ -307,9 +299,9 @@
 		"message": "Mozilla格式",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
-	"stylishUnavailableForURL": {
-		"message": "（ Stylish 不能在諸如此類的網頁上生效。）",
-		"description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
+	"xStyleUnavailableForURL": {
+		"message": "（ xStyle 不能在諸如此類的網頁上生效。）",
+		"description": "Note in the toolbar pop-up when on a URL xStyle can't affect"
 	},
 	"sectionRemove": {
 		"message": "移除樣式段",
@@ -360,7 +352,7 @@
 		"description": "Label for the button to import and overwrite current style"
 	},
 	"dbError": {
-		"message": "使用 Stylish 資料庫時出現錯誤。你想訪問可能包含解決辦法的網頁嗎？",
+		"message": "使用 xStyle 資料庫時出現錯誤。你想訪問可能包含解決辦法的網頁嗎？",
 		"description": "Prompt when a DB error is encountered"
 	},
 	"importAppendTooltip": {
@@ -374,10 +366,6 @@
 	"replaceAll": {
 		"message": "替換所有",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
-	},
-	"analyticsEnabled": {
-		"message": "傳送匿名資料給 Stylish 開發人員 ",
-		"description": "Label for the enable analytics setting"
 	},
 	"editGotoLine": {
 		"message": "跳到行（或 line:col ）",
@@ -436,23 +424,11 @@
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"description": {
-		"message": "利用 Stylish 使用者樣式管理程式，將整個網站改頭換面。有了 Stylish，您可以為許多網站安裝佈景主題和面板，還可以自創樣式。",
+		"message": "利用 xStyle 使用者樣式管理程式，將整個網站改頭換面。有了 xStyle，您可以為許多網站安裝佈景主題和面板，還可以自創樣式。",
 		"description": "Extension description"
 	},
-	"noServerConnection": {
-		"message": "您已選擇不同意，將不會直接在 Stylish 看到此網站可用的樣式。請前往 Userstyles.org 查看可用的樣式，或是更新您的設定以便在此查看樣式。",
-		"description": "Message which is shown when user deselected sending anonymous data to server AND has some styles installed."
-	},
-	"noServerConnectionParam1": {
-		"message": "Userstyles.org",
-		"description": "text of link to website in noServerConnection"
-	},
-	"noServerConnectionParam2": {
-		"message": "設定",
-		"description": "text of link to settings in noServerConnection"
-	},
 	"statsDisabled": {
-		"message": "選擇不同意表示您無法直接在 Stylish 附加元件看到可用的樣式。請前往 Userstyles.org 取得樣式，您隨時可以選擇同意。",
+		"message": "選擇不同意表示您無法直接在 xStyle 附加元件看到可用的樣式。請前往 Userstyles.org 取得樣式，您隨時可以選擇同意。",
 		"description": "Alert message that is displayed when user hit on 'Send anonymous...' checkbox inside manage page"
 	},
 	"chooseStyleFromLib": {

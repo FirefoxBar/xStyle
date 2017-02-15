@@ -1,6 +1,6 @@
 {
     "extName": {
-        "message": "Stylish - Custom themes for any website"
+        "message": "xStyle"
     },
 	"addStyleLabel": {
 		"message": "Write new style",
@@ -9,10 +9,6 @@
 	"addStyleTitle": {
 		"message": "Add Style",
 		"description": "Title of the page for adding styles"
-	},
-	"analyticsEnabled": {
-		"message": "Send anonymous data to Stylish developers",
-		"description": "Label for the enable analytics setting"
 	},
 	"appliesAdd": {
 		"message": "Add",
@@ -120,7 +116,7 @@
 		"description": "'Yes' button in a confirm dialog"
 	},
 	"dbError": {
-		"message": "An error has occurred using the Stylish database. Would you like to visit a web page with possible solutions?",
+		"message": "An error has occurred using the xStyle database. Would you like to visit a web page with possible solutions?",
 		"description": "Prompt when a DB error is encountered"
 	},
 	"defaultTheme": {
@@ -136,7 +132,7 @@
 		"description": "Confirmation before deleting a style"
 	},
 	"description": {
-		"message": "Restyle the web with Stylish, a user styles manager. With Stylish you can install themes & skins for many sites and create your own.",
+		"message": "Restyle the web with xStyle, a user styles manager. With xStyle you can install themes & skins for many sites and create your own.",
 		"description": "Extension description"
 	},
 	"disableAllStyles": {
@@ -191,10 +187,6 @@
 	"findStylesForThisSiteLink": {
 		"description": "text for link (<a>) after findStylesForThisSiteText",
 		"message": "Choose them."
-	},
-	"findStylesForSite": {
-		"message": "Find more styles for this site",
-		"description": "Text for a link that gets a list of styles for the current site"
 	},
 	"helpAlt": {
 		"message": "Help",
@@ -273,7 +265,7 @@
 		"description": "Help text on the manage page: read privacy policy"
 	},
 	"manageTitle": {
-		"message": "Stylish",
+		"message": "xStyle",
 		"description": "Title for the manage page"
 	},
 	"menuShowBadge": {
@@ -284,10 +276,6 @@
 		"message": "You don't have any styles installed for this web page",
 		"description": "Text displayed when no styles are installed for the current site"
 	},
-    "numberOfWeeklyInstalls": {
-      "message": "Number of weekly installs",
-      "description": "Text of popup when hovering over installs icon"
-    },
 	"openManage": {
 		"message": "Manage Styles",
 		"description": "Link to open the manage page."
@@ -365,7 +353,7 @@
 		"description": "Label for the enabled state of styles"
 	},
 	"styleInstall": {
-		"message": "Install '$stylename$' into Stylish?",
+		"message": "Install '$stylename$' into xStyle?",
 		"description": "Confirmation when installing a style",
 		"placeholders": {
 			"stylename": {
@@ -410,9 +398,9 @@
 			}
 		}
 	},
-	"stylishUnavailableForURL": {
-		"message": "(Stylish does not work on pages like this.)",
-		"description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
+	"xStyleUnavailableForURL": {
+		"message": "(xStyle does not work on pages like this.)",
+		"description": "Note in the toolbar pop-up when on a URL xStyle can't affect"
 	},
 	"undo": {
 		"message": "Undo",
@@ -454,22 +442,6 @@
 	"writeStyleForURL": {
 		"message": "this URL",
 		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
-	},
-	"noServerConnection": {
-		"message": "You chose to opt-out from seeing available styles for this site directly on Stylish. Visit %noServerConnectionParam1% to see available styles, or update your %noServerConnectionParam2% to see them here.",
-		"description": "Message which is shown when user deselected sending anonymous data to server AND has some styles installed."
-	},
-	"noServerConnectionParam1": {
-		"message": "Userstyles.org",
-		"description": "text of link to website in noServerConnection"
-	},
-	"noServerConnectionParam2": {
-		"message": "Settings",
-		"description": "text of link to settings in noServerConnection"
-	},
-	"statsDisabled": {
-		"message": "Opting out means you won't be able to see available styles directly on the Stylish add on. Visit Userstyles.org to reach them, or opt back in at any time.",
-		"description": "Alert message that is displayed when user hit on 'Send anonymous...' checkbox inside manage page"
 	},
 	"chooseStyleFromLib": {
 		"message": "Choose a style from the Styles Library"

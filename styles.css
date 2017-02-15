@@ -432,7 +432,7 @@ body > .actions {
 #unavailable{
     height: 407px;
 }
-#nostyles, #unavailable-message, #noServerConnection{
+#nostyles, #unavailable-message{
     height: 57px;
     font-size: 16px;
     font-weight: 500;

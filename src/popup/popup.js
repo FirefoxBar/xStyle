@@ -93,21 +93,6 @@ function updatePopUp(tab) {
 	var urlWillWork = /^(file|http|https|ftps?|moz\-extension):/.exec(tab.url);
 }
 
-function displayOptMessage(){
-	var noConnection = document.getElementById("noServerConnection");
-    noConnection.classList.remove("hide");
-	document.getElementById("nostyles").classList.add("hide");
-	document.getElementById("recommended").classList.add("hide");
-
-    var localSiteName = browser.i18n.getMessage("noServerConnectionParam1"),
-        localSettingsName = browser.i18n.getMessage("noServerConnectionParam2");
-
-    var message = noConnection.querySelector('div');
-    message.innerHTML = message.innerHTML
-        .replace("%noServerConnectionParam1%", createLink("https://userstyles.org", localSiteName).outerHTML)
-        .replace("%noServerConnectionParam2%", createLink("/manage.html", localSettingsName).outerHTML);
-}
-
 function createLink(href, name){
     var a = document.createElement('a');
     a.href = href;

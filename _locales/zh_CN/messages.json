@@ -1,6 +1,6 @@
 {
 	"extName": {
-		"message": "Stylish-为任意网站自定义主题"
+		"message": "xStyle"
 	},
 	"appliesToEverything": {
 		"message": "全部",
@@ -66,10 +66,6 @@
 		"message": "是",
 		"description": "'Yes' button in a confirm dialog"
 	},
-	"findStylesForSite": {
-		"message": "为此网站查找更多样式",
-		"description": "Text for a link that gets a list of styles for the current site"
-	},
 	"manageHeading": {
 		"message": "已安装样式",
 		"description": "Heading for the manage page"
@@ -111,7 +107,7 @@
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
 	"styleInstall": {
-		"message": "要将“$stylename$”安装到 Stylish 中吗？",
+		"message": "要将“$stylename$”安装到 xStyle 中吗？",
 		"description": "Confirmation when installing a style",
 		"placeholders": {
 			"stylename": {
@@ -246,10 +242,6 @@
 		"message": "您未为此网页安装任何样式",
 		"description": "Text displayed when no styles are installed for the current site"
 	},
-	"numberOfWeeklyInstalls": {
-		"message": "每周安装次数",
-		"description": "Text of popup when hovering over installs icon"
-	},
 	"appliesDisplayTruncatedSuffix": {
 		"message": "等等",
 		"description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
@@ -263,7 +255,7 @@
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
 	"manageTitle": {
-		"message": "Stylish",
+		"message": "xStyle",
 		"description": "Title for the manage page"
 	},
 	"writeStyleFor": {
@@ -307,9 +299,9 @@
 		"message": "Mozilla 格式",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
-	"stylishUnavailableForURL": {
-		"message": "(Stylish在这样的页面上不工作)",
-		"description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
+	"xstyleUnavailableForURL": {
+		"message": "(xStyle在这样的页面上不工作)",
+		"description": "Note in the toolbar pop-up when on a URL xStyle can't affect"
 	},
 	"sectionRemove": {
 		"message": "删除此部分",
@@ -360,7 +352,7 @@
 		"description": "Label for the button to import and overwrite current style"
 	},
 	"dbError": {
-		"message": "应用Stylish数据库时发生了一个错误。您想要访问包含可能的解决方案的网页吗？",
+		"message": "应用xStyle数据库时发生了一个错误。您想要访问包含可能的解决方案的网页吗？",
 		"description": "Prompt when a DB error is encountered"
 	},
 	"importAppendTooltip": {
@@ -374,10 +366,6 @@
 	"replaceAll": {
 		"message": "全部替换",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
-	},
-	"analyticsEnabled": {
-		"message": "向Stylish开发人员发送匿名数据",
-		"description": "Label for the enable analytics setting"
 	},
 	"editGotoLine": {
 		"message": "跳转至行（或行:列）",
@@ -436,24 +424,8 @@
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"description": {
-		"message": "利用用户样式管理器Stylish来重新编辑网站的样式。您可利用Stylish为许多网站安装主题和皮肤，也可创建自己的主题和皮肤。",
+		"message": "利用用户样式管理器xStyle来重新编辑网站的样式。您可利用xStyle为许多网站安装主题和皮肤，也可创建自己的主题和皮肤。",
 		"description": "Extension description"
-	},
-	"noServerConnection": {
-		"message": "您选择退出在Stylish上直接查看此网站可用的样式。访问Userstyles.org查看可用样式，或更新您的设置以在此处查看。",
-		"description": "Message which is shown when user deselected sending anonymous data to server AND has some styles installed."
-	},
-	"noServerConnectionParam1": {
-		"message": "Userstyles.org",
-		"description": "text of link to website in noServerConnection"
-	},
-	"noServerConnectionParam2": {
-		"message": "设置",
-		"description": "text of link to settings in noServerConnection"
-	},
-	"statsDisabled": {
-		"message": "退出意味着无法在Stylish插件上直接查看可用样式。访问Userstyles.org以查看，或随时返回。",
-		"description": "Alert message that is displayed when user hit on 'Send anonymous...' checkbox inside manage page"
 	},
 	"chooseStyleFromLib": {
 		"message": "从样式库选择样式"
