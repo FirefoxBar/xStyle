@@ -115,18 +115,6 @@
 			}
 		}
 	},
-	"manageTextGetStyles": {
-		"message": "Get styles on userstyles.org",
-		"description": "Help text on the manage page: get more styles"
-	},
-	"manageTextGetHelp": {
-		"message": "Get help",
-		"description": "Help text on the manage page: get help"
-	},
-	"manageTextReadPP": {
-		"message": "Read the privacy policy",
-		"description": "Help text on the manage page: read privacy policy"
-	},
 	"searchStyles": {
 		"message": "搜索內容",
 		"description": "Label for the search filter textbox on the Manage styles page"
@@ -426,10 +414,6 @@
 	"description": {
 		"message": "利用 xStyle 使用者樣式管理程式，將整個網站改頭換面。有了 xStyle，您可以為許多網站安裝佈景主題和面板，還可以自創樣式。",
 		"description": "Extension description"
-	},
-	"statsDisabled": {
-		"message": "選擇不同意表示您無法直接在 xStyle 附加元件看到可用的樣式。請前往 Userstyles.org 取得樣式，您隨時可以選擇同意。",
-		"description": "Alert message that is displayed when user hit on 'Send anonymous...' checkbox inside manage page"
 	},
 	"chooseStyleFromLib": {
 		"message": "從樣式庫選擇樣式"

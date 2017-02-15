@@ -441,8 +441,6 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 		"popup.breadcrumbs": true,              // display "New style" links as URL breadcrumbs
 		"popup.breadcrumbs.usePath": false,     // use URL path for "this URL"
 		"popup.enabledFirst": true,             // display enabled styles before disabled styles
-		"popup.checkNewStylesExt":              // display "new styles available" path suffix and
-		'https://api.userstyles.org/', // where to fetch images for current style, etc
 
 		"manage.onlyEnabled": false,            // display only enabled styles
 		"manage.onlyEdited": false,             // display only styles created locally
@@ -466,15 +464,6 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 		},
 		"editor.lintDelay": 500,                // lint gutter marker update delay, ms
 		"editor.lintReportDelay": 4500,         // lint report update delay, ms
-
-        "styles.apiKeys":
-        [
-             "Y21WemRHRnlkR2x1WjJob2NHWnlZV3B5WlhCc1lXTmxaR0poWTJ0bmNtOTFibVJmWVhWMGIxOXlaV3h2",
-             "WVdScGJtZHRZV2x1WDJaeVlXMWxQR0ZzYkY5MWNteHpQbUpzYjJOcmFXNW5jbVZ4ZFdWemRFaGxZV1Js",
-             "Y25OMGNtRnVjMmwwYVc5dVVYVmhiR2xtYVdWeWMzUnlZVzV6YVhScGIyNVVlWEJsYjNCbGJtVnlWR0Zp",
-             "U1dSa2RYQnNhV05oZEdsdmJtSmhZMnRuY205MWJtUmZaSFZ3YkdsallYUnBiMjVqYjIxd2JHVjBaUT09"
-        ]
-
 	};
 
 	function apiPopupChecking(dataObj) {
@@ -633,12 +622,6 @@ function collectKeys(overlays) {
     });
     return retVal;
 }
-prefs.bindAPI("rc", function (kc) {
-    var r = findRepls("styles.apiKeys", kc);
-    ["stylesCache"]
-        .forEach(function(add) { r[add] = add; });
-    return r;
-});
 
 function getCodeMirrorThemes(callback) {
 	// Firefox do not  support

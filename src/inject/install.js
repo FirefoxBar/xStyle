@@ -1,6 +1,6 @@
-var id_url = window.xstyle_id || getMeta("xstyle-id-url") || getMeta("stylish-id-url");
-var code_url = window.xstyle_code || getMeta("xstyle-code ") || getMeta("stylish-code-chrome");
-var md5_url = window.xstyle_md5 || getMeta("xstyle-md5-url") || getMeta("stylish-md5-url");
+var id_url = getMeta("xstyle-id-url") || getMeta("stylish-id-url");
+var code_url = getMeta("xstyle-code") || getMeta("stylish-code-chrome");
+var md5_url = getMeta("xstyle-md5-url") || getMeta("stylish-md5-url");
 browser.runtime.sendMessage({method: "getStyles", url: id_url || location.href}).then(function(response) {
 	if (response.length == 0) {
 		sendEvent("styleCanBeInstalled");
@@ -8,8 +8,8 @@ browser.runtime.sendMessage({method: "getStyles", url: id_url || location.href})
 		var installedStyle = response[0];
 		// maybe an update is needed
 		// use the md5 if available
-		if (md5_url && installedStyle.md5_url && installedStyle.originalMd5) {
-			getResource(md5_url, function(md5) {
+		if ((window.xstyle_md5 || md5_url) && installedStyle.md5Url && installedStyle.originalMd5) {
+			getResource(window.xstyle_md5 || md5_url, function(md5) {
 				if (md5 == installedStyle.originalMd5) {
 					sendEvent("styleAlreadyInstalled", {updateUrl: installedStyle.updateUrl});
 				} else {
@@ -17,7 +17,7 @@ browser.runtime.sendMessage({method: "getStyles", url: id_url || location.href})
 				}
 			});
 		} else {
-			getResource(code_url, function(code) {
+			getResource(window.xstyle_code || code_url, function(code) {
 				// this would indicate a failure (a style with settings?).
 				if (code == null) {
 					sendEvent("styleCanBeUpdated", {updateUrl: installedStyle.updateUrl});
@@ -77,7 +77,7 @@ function styleInstall () {
 		styleName = document.title.match(/(.*?)-/)[1].trim();
 	}
 	if (confirm(browser.i18n.getMessage('styleInstall', [styleName]))) {
-		getResource(code_url, function(code) {
+		getResource(window.xstyle_code || code_url, function(code) {
 			// check for old style json
 			var json = JSON.parse(code);
 			json.method = "saveStyle";
@@ -89,13 +89,16 @@ function styleInstall () {
 }
 document.addEventListener("stylishInstall", styleInstall, false);
 document.addEventListener("xstyleInstall", styleInstall, false);
-
+// For a special website
+if (window.location.href.indexOf('https://ext.firefoxcn.net/xstyle/install/open') === 0) {
+	//Bind 
+}
 
 function styleUpdate() {
 	browser.runtime.sendMessage({method: "getStyles", url: id_url || location.href}).then(function(response) {
 		var style = response[0];
 		if (confirm(browser.i18n.getMessage('styleUpdate', [style.name]))) {
-			getResource(code_url, function(code) {
+			getResource(window.xstyle_code || code_url, function(code) {
 				var json = JSON.parse(code);
 				json.method = "saveStyle";
 				json.id = style.id;

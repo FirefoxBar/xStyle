@@ -1,7 +1,5 @@
 var ENABLED_CLASS = "enabled",
     DISABLED_CLASS = "disabled",
-    FORUM_DISCUSSION_URL_PATTERN = "https://forum.userstyles.org/post/discussion?Discussion/StyleID={{ID}}",
-    USER_CHECK_AUTH_URL = "https://userstyles.org/login/check",
     ZERO_INSTALLED_CLASS = "zero-installed";
 
 function getActiveTabPromise() {
@@ -125,8 +123,6 @@ function preProcessInstalledStyle(style){
     style.inactive_str = browser.i18n.getMessage("styleInactiveLabel");
     style.style_edit_url = "edit.html?id=" + style.id;
     style.styleId = getOrParseStyleId(style);
-    style.feedback_url = style.url+"?autofb#discussions-area";
-    style.discussion_url = FORUM_DISCUSSION_URL_PATTERN.replace("{{ID}}", style.styleId);
 }
 
 function addStyleToInstalled(style){

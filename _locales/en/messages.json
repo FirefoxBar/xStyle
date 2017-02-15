@@ -252,18 +252,6 @@
 		"message": "Only created locally",
 		"description": "Checkbox to show only locally edited styles"
 	},
-	"manageTextGetStyles": {
-		"message": "Get styles on userstyles.org",
-		"description": "Help text on the manage page: get more styles"
-	},
-	"manageTextGetHelp": {
-		"message": "Get help",
-		"description": "Help text on the manage page: get help"
-	},
-	"manageTextReadPP": {
-		"message": "Read the privacy policy",
-		"description": "Help text on the manage page: read privacy policy"
-	},
 	"manageTitle": {
 		"message": "xStyle",
 		"description": "Title for the manage page"

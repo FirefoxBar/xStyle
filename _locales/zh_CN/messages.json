@@ -115,18 +115,6 @@
 			}
 		}
 	},
-	"manageTextGetStyles": {
-		"message": "访问 userstyles.org 获取样式",
-		"description": "Help text on the manage page: get more styles"
-	},
-	"manageTextGetHelp": {
-		"message": "获取帮助",
-		"description": "Help text on the manage page: get help"
-	},
-	"manageTextReadPP": {
-		"message": "阅读隐私政策",
-		"description": "Help text on the manage page: read privacy policy"
-	},
 	"searchStyles": {
 		"message": "搜索内容",
 		"description": "Label for the search filter textbox on the Manage styles page"
