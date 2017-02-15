@@ -1,11 +1,13 @@
 var IMAGE_URL_NOT_AVAILABLE = "n/a",
 IMAGE_URL_DEFAULT = "images/image_na.png",
-SEARCH_INSTALLED_FROM_POPUP = "?installedfrompopup";
+ENABLED_CLASS = "enabled",
+DISABLED_CLASS = "disabled",
+ZERO_INSTALLED_CLASS = "zero-installed";
 
 var writeStyleTemplate = document.createElement("a");
 writeStyleTemplate.className = "write-style-link";
 
-var installed = document.getElementById("recommended");
+var installed = document.getElementById("installed");
 
 var STYLE_URL_ID_REGEX = /(styles\/)(\d+)/;
 var menutype;
@@ -13,46 +15,161 @@ var website;
 
 getActiveTab(updatePopUp);
 
-checkProcessInstalledFromPopup();
-
-function checkProcessInstalledFromPopup(){
-	if (window.location.search == SEARCH_INSTALLED_FROM_POPUP
-		&& prefs.get("disableAll")
-		&& browser.extension.getBackgroundPage().isBrowserSessionNew()){
-		var noti = document.getElementById("styles-off-notification");
-		noti.classList.add("bounceIn");
-		noti.classList.add("animated");
-		document.body.addEventListener('click', onAction);
-		browser.extension.getBackgroundPage().setBrowserSessionNotNew();
-		function onAction(){
-			noti.classList.remove("bounceIn");
-			noti.classList.add("bounceOut");
-			document.body.removeEventListener('click', onAction);
-		}
-	}
-}
-
-function getInstalledStyles(){
-	return new Promise(function(resolve, reject){
-		browser.runtime.sendMessage({method: "getStyles"}).then(resolve);
+function getActiveTabPromise() {
+	return new Promise(function(resolve){
+		browser.tabs.query({currentWindow: true, active: true}).then(function(tabs) {
+			resolve(tabs[0]);
+		});
 	});
 }
 
-function parseStyleId(style){
-	var matches = STYLE_URL_ID_REGEX.exec(style.url);
-	if (matches && matches.length == 3){
-		return parseInt(matches[2]);
-	} else {
-		throw new Error("Can't retrieve style id. Url corrupted " + style.url);
+function getBodyEl(){
+	return document.body;
+}
+
+function getZeroStylesEl(){
+	return document.getElementById("zerostyles");
+}
+
+function getInstalledStylesEl(){
+	var installed = document.getElementById("installed");
+	if (installed){
+		getInstalledStylesEl = function(){
+			return installed;
+		}
+	}
+	return installed;
+}
+
+function getInstalledStylesTabContainer(){
+	var installedTab = document.getElementById("tab-item-installed");
+	return installedTab;
+}
+
+function getDisableAllCheckbox(){
+	return document.getElementById("disable-all-checkbox");
+}
+
+function getDisableAllContainer(){
+	return document.getElementById("disable-all-container");
+}
+
+function sendDisableAll(value){
+	return new Promise(function(resolve){
+		if (value === undefined || value === null) {
+			value = !prefs.get("disableAll");
+		}
+		prefs.set("disableAll", value);
+		notifyAllTabs({method: "styleDisableAll", disableAll: value})
+			.then(resolve);
+	});
+}
+
+function isDisabledAll(){
+	return browser.extension.getBackgroundPage().prefs.get("disableAll");
+}
+
+function buildDomainForFiltering(url){
+	var parsed = parseUrl(url);
+	return parsed.protocol + "//" + parsed.hostname + "/";
+}
+
+getActiveTabPromise().then(function(currentTab){
+	getInstalledStyleForDomain(currentTab.url).then(renderInstalledTab);
+});
+
+function renderInstalledTab(styles){
+	renderForAllCases();
+	if (styles.length == 0){
+		renderPageForNoStyles();
+	}else{
+		renderPageWithStyles(styles);
 	}
 }
 
-function getOrParseStyleId(style){
-	if (style.styleid) {
-		return style.styleid;
-	}
+function renderPageForNoStyles(){
+	getInstalledStylesTabContainer().classList.add(ZERO_INSTALLED_CLASS);
+	getZeroStylesEl().classList.remove('hide');
+	getInstalledStylesEl().classList.add('hide');
+}
 
-	var parsed;
+function isStyleLocal(style){
+    return !style.url && !style.styleid;
+}
+
+function preProcessImage(style){
+    if (!style.thumbnail ||
+        style.thumbnail.toLowerCase() == IMAGE_URL_NOT_AVAILABLE){
+        style.thumbnail = IMAGE_URL_DEFAULT;
+    }
+    return style;
+}
+
+function preProcessLocalStyle(style){
+    // mind that preProcessInstalledStyle will still be
+    // called but after this
+    style.styleid = "local" + style.id;
+    preProcessImage(style);
+    style.screenshot = style.thumbnail;
+}
+
+function renderPageWithStyles(styles){
+	getInstalledStylesTabContainer().classList.remove(ZERO_INSTALLED_CLASS);
+	getZeroStylesEl().classList.add('hide');
+	getInstalledStylesEl().classList.remove('hide');
+	var sif = new StyleInfoFetcher().setRequester(new SessionCachedRequester());
+	styles.forEach(function(style){
+		if (!isStyleLocal(style)){
+			sif.getStyleInfoByUrl(style.url).then(function(styleInfo){
+				Object.assign(style, styleInfo);
+				return style;
+			}).then(addStyleToInstalled);
+		}else{
+			preProcessLocalStyle(style);
+			addStyleToInstalled(style);
+		}
+	})
+}
+
+function preProcessInstalls(installsSrc){
+	installsSrc = installsSrc || 1;
+    var installs, devider = 1;
+    if (installsSrc >= 1000000){
+        devider = 1000000;
+    } else if (installsSrc >= 1000){
+        devider = 1000;
+    }
+    if (devider > 1){
+        installs = installsSrc / devider;
+        installs = installs.toFixed(1);
+        installs = installs.replace(".0", ""); // remove the decimal part if it is 0
+        switch (devider){
+            case 1000:
+                installs += "k";
+                break;
+            case 1000000:
+                installs += "m";
+                break;
+        }
+    } else {
+        installs = installsSrc;
+    }
+    return installs;
+}
+
+function preProcessStyle(style){
+    style.installsStr = preProcessInstalls(style.installs);
+    style.installsTooltip = browser.i18n.getMessage("numberOfWeeklyInstalls");
+    style.installButtonLabel = browser.i18n.getMessage("installButtonLabel");
+    return style;
+}
+
+function getOrParseStyleId(style){
+    if (style.styleid) {
+        return style.styleid;
+    }
+
+    var parsed;
 	try{
 		parsed = parseStyleId(style);
 		return parsed;
@@ -62,21 +179,109 @@ function getOrParseStyleId(style){
 	}
 }
 
-function styleIsInInstalled(style, installedStyles){
-	for(var i = 0; i < installedStyles.length; i++){
-		var current = installedStyles[i];
-		if (current.url){
-			var currentStyleId = getOrParseStyleId(current);
-			if (style.styleid === currentStyleId){
-				return true;
-			}
-		} else {
-			if (style.id === current.id){
-				return true;
-			}
+function preProcessInstalledStyle(style){
+    style.installs = style.weekly_installs;
+    preProcessStyle(style);
+    style.editButtonLabel = "edit";
+    style.activateButtonLabel = browser.i18n.getMessage("enableStyleLabel");
+    style.deactivateButtonLabel = browser.i18n.getMessage("disableStyleLabel");
+    style.deleteButtonLabel = browser.i18n.getMessage("deleteStyleLabel");
+    style.sendFeedbackLabel = browser.i18n.getMessage("sendFeedbackLabel");
+    style.additionalClass = style.enabled ? "enabled" : "disabled";
+    style.active_str = browser.i18n.getMessage("styleActiveLabel");
+    style.inactive_str = browser.i18n.getMessage("styleInactiveLabel");
+    style.style_edit_url = "edit.html?id=" + style.id;
+    style.styleId = getOrParseStyleId(style);
+}
+
+function addStyleToInstalled(style){
+	preProcessInstalledStyle(style);
+	var el = installedStyleToElement(style);
+	bindHandlers(el, style);
+	getInstalledStylesEl().appendChild(el);
+	return el;
+}
+
+function installedStyleToElement(style){
+	return MustacheTemplate.render("style-installed-item", style);
+}
+
+function renderAllSwitch(){
+	if (!isDisabledAll()){
+		getDisableAllCheckbox().checked = true;
+		getInstalledStylesEl().classList.remove("all-off");
+		getInstalledStylesEl().classList.add("all-on");
+		getBodyEl().classList.remove("all-off");
+		getBodyEl().classList.add("all-on");
+	}else{
+		getInstalledStylesEl().classList.remove("all-on");
+		getInstalledStylesEl().classList.add("all-off");
+		getBodyEl().classList.remove("all-on");
+		getBodyEl().classList.add("all-off");
+	}
+}
+
+function renderForAllCases(){
+	renderAllSwitch();
+	getDisableAllCheckbox().addEventListener('change', onDisableAllCheckboxChange);
+	setTimeout(function(){
+		getDisableAllContainer().classList.add("animation-on");
+	}, 200);
+}
+
+function onDisableAllCheckboxChange(){
+	sendDisableAll(!this.checked).then(renderAllSwitch);
+}
+
+function bindHandlers(el, style){
+	el.querySelector(".thumbnail_edit").addEventListener('click', openLinkInTabOrWindow, false);
+	el.querySelector(".thumbnail_activate").addEventListener('click', onActivateClick(style));
+	el.querySelector(".thumbnail_deactivate").addEventListener('click', onDeactivateClick(style));
+	el.querySelector(".thumbnail_delete").addEventListener('click', onDeleteStyleClick(style));
+}
+
+function onActivateClick(style){
+	return function(e){
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		enableStyle(style.id, true).then(onActivationStatusChanged(style.id, true));
+	};
+}
+
+function onDeactivateClick(style){
+	return function(e){
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		enableStyle(style.id, false).then(onActivationStatusChanged(style.id, false));
+	}
+}
+
+function onDeleteStyleClick(style){
+	return function(e){
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		deleteStyle(style.id).then(onStyleDeleted(style));
+	}
+}
+
+function onStyleDeleted(style){
+	return function(){
+		var old = document.getElementById("installed-style-"+style.id);
+		var parent = old.parentNode;
+		parent.removeChild(old);
+		if (getInstalledStylesEl().childNodes.length == 0){
+			renderPageForNoStyles();
 		}
 	}
-	return false;
+}
+
+function onActivationStatusChanged(styleId, enabled){
+	return function(){
+		var old = document.getElementById("installed-style-"+styleId);
+		old.classList.remove(ENABLED_CLASS);
+		old.classList.remove(DISABLED_CLASS);
+		old.classList.add(enabled?ENABLED_CLASS : DISABLED_CLASS);
+	}
 }
 
 function parseUrl(url){
@@ -93,14 +298,6 @@ function updatePopUp(tab) {
 	var urlWillWork = /^(file|http|https|ftps?|moz\-extension):/.exec(tab.url);
 }
 
-function createLink(href, name){
-	var a = document.createElement('a');
-	a.href = href;
-	a.innerText = name;
-	a.target = "_blank";
-	return a;
-}
-
 function updateCreateStyleLink(tabDomain){
 	var createNewStyleLink = document.getElementById('write-new-style-link');
 	createNewStyleLink.href += "?domain="+tabDomain;
@@ -114,178 +311,6 @@ function getSiteName(tabUrl){
 	var a = document.createElement('a');
 	a.href = tabUrl;
 	return a.hostname;
-}
-
-function preProcessStyles(styles){
-	return new Promise(function(resolve, reject){
-		var allStyles = styles.stylesCache.styles.popularstyles;
-		allStyles.forEach(preProcessStyle);
-		getInstalledStyles().then(function(installedStyles){
-			var filter = preProcessFilterInstalledGenerator(installedStyles);
-			allStyles = allStyles.filter(filter);
-			allStyles = limitTo(allStyles, styles.stylesCache.popularstylestoshow);
-			allStyles.forEach(preProcessImage);
-			resolve(allStyles);
-		});
-	});
-}
-
-function limitTo(styles, limit){
-	return styles.filter(function(){
-		return limit-- > 0;
-	});
-}
-
-function preProcessStyle(style){
-	style.installsStr = preProcessInstalls(style.installs);
-	style.installsTooltip = browser.i18n.getMessage("numberOfWeeklyInstalls");
-	style.installButtonLabel = browser.i18n.getMessage("installButtonLabel");
-	return style;
-}
-
-function preProcessFilterInstalledGenerator(installedStyles){
-	return function preProcessFilterInstalled(style){
-		return !styleIsInInstalled(style, installedStyles);
-	};
-}
-
-function preProcessInstalls(installsSrc){
-	installsSrc = installsSrc || 1;
-	var installs, devider = 1;
-	if (installsSrc >= 1000000){
-		devider = 1000000;
-	} else if (installsSrc >= 1000){
-		devider = 1000;
-	}
-
-	if (devider > 1){
-		installs = installsSrc / devider;
-		installs = installs.toFixed(1);
-		installs = installs.replace(".0", ""); // remove the decimal part if it is 0
-		switch (devider){
-			case 1000:
-				installs += "k";
-				break;
-			case 1000000:
-				installs += "m";
-				break;
-		}
-	} else {
-		installs = installsSrc;
-	}
-
-	return installs;
-}
-
-function preProcessImage(style){
-	if (!style.thumbnail ||
-		style.thumbnail.toLowerCase() == IMAGE_URL_NOT_AVAILABLE){
-		style.thumbnail = IMAGE_URL_DEFAULT;
-	}
-	return style;
-}
-
-function showStyles(styles) {
-	var allStyles = styles;
-	allStyles.forEach(function(el){
-		addStyleToRecommended(el);
-	});
-}
-
-function addStyleToRecommended(style){
-	var styleEl = styleToElement(style);
-	bindInstallEvent(styleEl, style);
-	installed.appendChild(styleEl);
-}
-
-function bindInstallEvent(styleEl, style){
-	styleEl.querySelector("a.thumbnail_install").addEventListener('click', onThumbnailInstallClick(style));
-}
-
-function onThumbnailInstallClick(style){
-	return function(e){
-		e.preventDefault();
-		installStyleFromPopup(style);
-	}
-}
-
-function installStyleFromPopup(style){
-	new Requester()
-		.get(style.style_url.replace("styles/", "styles/chrome/") + ".json?")
-		.then(function(data){
-			var styleObj = JSON.parse(data);
-			saveStyle(styleObj, function(){
-				onStyleInstalledFromPopup(styleObj)
-			});
-		});
-}
-
-function onStyleInstalledFromPopup(styleData){
-	window.location.search = SEARCH_INSTALLED_FROM_POPUP;
-}
-
-function styleToElement(style){
-	return MustacheTemplate.render("style-item", style);
-}
-
-function createStyleElement(style) {
-	var e = template.style.cloneNode(true);
-	var checkbox = e.querySelector(".checker");
-	checkbox.id = "style-" + style.id;
-	checkbox.checked = style.enabled;
-
-	e.setAttribute("class", "entry " + (style.enabled ? "enabled" : "disabled"));
-	e.setAttribute("style-id", style.id);
-	var styleName = e.querySelector(".style-name");
-	styleName.appendChild(document.createTextNode(style.name));
-	styleName.setAttribute("for", "style-" + style.id);
-	styleName.checkbox = checkbox;
-	var editLink = e.querySelector(".style-edit-link");
-	editLink.setAttribute("href", editLink.getAttribute("href") + style.id);
-	editLink.addEventListener("click", openLinkInTabOrWindow, false);
-
-	styleName.addEventListener("click", function() { this.checkbox.click(); event.preventDefault(); });
-	// clicking the checkbox will toggle it, and this will run after that happens
-	checkbox.addEventListener("click", function() { enable(event, event.target.checked); }, false);
-	e.querySelector(".enable").addEventListener("click", function() { enable(event, true); }, false);
-	e.querySelector(".disable").addEventListener("click", function() { enable(event, false); }, false);
-
-	e.querySelector(".delete").addEventListener("click", function() { doDelete(event, false); }, false);
-	return e;
-}
-
-function enable(event, enabled) {
-	var id = getId(event);
-	enableStyle(id, enabled);
-}
-
-function doDelete() {
-	// Opera can't do confirms in popups
-	if (getBrowser() != "Opera") {
-		if (!confirm(t('deleteStyleConfirm'))) {
-			return;
-		}
-	}
-	var id = getId(event);
-	deleteStyle(id);
-}
-
-function getBrowser() {
-	if (navigator.userAgent.indexOf("OPR") > -1) {
-		return "Opera";
-	}
-	return "Chrome";
-}
-
-function getId(event) {
-	var e = event.target;
-	while (e) {
-		if (e.hasAttribute("style-id")) {
-			return e.getAttribute("style-id");
-		}
-		e = e.parentNode;
-	}
-	return null;
 }
 
 function openLinkInTabOrWindow(event) {
@@ -310,13 +335,13 @@ function openLink(event) {
 function handleUpdate(style) {
 	var styleElement = installed.querySelector("[style-id='" + style.id + "']");
 	if (styleElement) {
-		installed.replaceChild(createStyleElement(style), styleElement);
+		installed.replaceChild(installedStyleToElement(style), styleElement);
 	} else {
 		getActiveTabRealURL(function(url) {
-			if (browser.extension.getBackgroundPage().getApplicableSections(style, url).length) {
+			if (chrome.extension.getBackgroundPage().getApplicableSections(style, url).length) {
 				// a new style for the current url is installed
 				document.getElementById("unavailable").style.display = "none";
-				installed.appendChild(createStyleElement(style));
+				installed.appendChild(installedStyleToElement(style));
 			}
 		});
 	}
