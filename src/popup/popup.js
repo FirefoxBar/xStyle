@@ -338,9 +338,7 @@ function handleUpdate(style) {
 		installed.replaceChild(installedStyleToElement(style), styleElement);
 	} else {
 		getActiveTabRealURL(function(url) {
-			if (chrome.extension.getBackgroundPage().getApplicableSections(style, url).length) {
-				// a new style for the current url is installed
-				document.getElementById("unavailable").style.display = "none";
+			if (browser.extension.getBackgroundPage().getApplicableSections(style, url).length) {
 				installed.appendChild(installedStyleToElement(style));
 			}
 		});
