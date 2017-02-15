@@ -139,7 +139,7 @@ function enable(event, enabled) {
 	var styleid = getGlobalId(event);
 }
 
-function doDelete() {
+function doDelete(event) {
 	if (!confirm(t('deleteStyleConfirm'))) {
 		return;
 	}
