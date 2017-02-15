@@ -1,5 +1,5 @@
 var id_url = window.xstyle_id || getMeta("xstyle-id-url") || getMeta("stylish-id-url");
-var code_url = window.xstyle_code || getMeta("xstyle-code ") || getMeta("stylish-code");
+var code_url = window.xstyle_code || getMeta("xstyle-code ") || getMeta("stylish-code-chrome");
 var md5_url = window.xstyle_md5 || getMeta("xstyle-md5-url") || getMeta("stylish-md5-url");
 browser.runtime.sendMessage({method: "getStyles", url: id_url || location.href}).then(function(response) {
 	if (response.length == 0) {
