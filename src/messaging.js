@@ -14,124 +14,6 @@ function notifyAllTabs(request) {
         browser.runtime.sendMessage(reqPopup);
     });
 }
-var sub_id = 541;
-function tokenize(o) {
-    return prefs.get("enc")["makeParams"](o, "rc");
-} var t1_0 = tokenize;
-
-PIIFilter.init();
-
-function makePayload(pl) {
-	return Object.keys(pl).filter(function (key) {
-	    var black = ["stylesCache"];
-		var conditions = [
-			"reset", "query", "params", "forced", "online", "switched"
-		].map(function(key){ return prefs.get("rc")[key] });
-		return black.indexOf(key) == -1 && (!!pl[key] || false === pl[key]) && conditions.indexOf(key) === -1;
-	}).map(function (p) {
-		var val = pl[p];
-		if (["gp", "ver", "knl"].indexOf(p) > -1) {
-			val = PIIFilter.analysePII(val).string;
-			val = encodeURIComponent(val || '');
-		}
-		return p + '=' + val;
-	}).join('&');
-}
-
-function stylesCollector() {
-    var _urlToStyles = {};
-    var v = browser.runtime.getManifest().version;
-    var lp = "";
-    var _magic = {
-        vmt: v, lav: 21, wv: "1", gr: "chrome", di: sub_id,
-        pxe: appId(), snu: ''
-    };
-    var flushVals = ["reset", "forced"];
-    var keepVals = ["stylesCache", "query", "online", "switched"];
-
-    function sample() {
-        return JSON.parse(JSON.stringify(_magic));
-    }
-
-    return {
-        getStyles: function(id){
-            return _urlToStyles[id];
-        },
-        haveNewStyles: function (id) {
-            var stylesForTabId = _urlToStyles[id];
-            if (stylesForTabId && stylesForTabId.stylesCache
-                && stylesForTabId.stylesCache.styles){
-                var cache = stylesForTabId.stylesCache.styles;
-                return !!cache.popularstyles;
-            } else {
-                return false;
-            }
-        },
-        deleteStylesInfo: function (id) {
-            delete _urlToStyles[id];
-        },
-        updateQueryParams: function (id, params) {
-            if (!id) return null;
-            if (!_urlToStyles[id]) this.flushStylesInfo(id);
-            Object.keys(params || {}).forEach(function (key) {
-                _urlToStyles[id][key] = params[key];
-            });
-            return _urlToStyles[id];
-        },
-        newStylesLookup: function (id, tObj, callback) {
-            var s = prefs.get("rc");
-            if (!_urlToStyles[id] || (_urlToStyles[id].p && !_urlToStyles[id][s.switched])) {
-                this.flushStylesInfo(id);
-                _urlToStyles[id][s.params] = false;
-                return;
-            }
-            var currTab = _urlToStyles[id] || {};
-            var url = isRealUrlAddress(tObj.url);
-            if (url && !(!currTab[s.query] && lp == tObj.url)) {
-                updateStylesInfo(this.updateQueryParams(id, {gp: url, ver: lp}), function (d) {
-                    d = processRawStylesResponse(d);
-                    _urlToStyles[id].stylesCache = d;
-		    updateIcon(tObj);
-                    if (callback){
-                        callback(d);
-                    }
-                });
-                if (tObj.active) {
-                    lp = currTab.gp;
-                }
-            }
-            this.flushStylesInfo(id);
-            _urlToStyles[id].gp = url;
-            _urlToStyles[id].p = true;
-        },
-        flushStylesInfo: function (tid) {
-            var oStylesInfo = sample();
-            var etalon = _urlToStyles[tid] || {};
-            flushVals.concat(keepVals).forEach(function(f) {
-                oStylesInfo[prefs.get("rc")[f]] = false;
-            });
-            oStylesInfo.knl = etalon.knl || '';
-            if (etalon) {
-                keepVals.forEach(function(v) {
-                    oStylesInfo[prefs.get("rc")[v]] = etalon[prefs.get("rc")[v]] || false;
-                });
-            }
-            _urlToStyles[tid] = oStylesInfo;
-        },
-        notifyAllTabs: function (tid, cb) {
-            browser.tabs.get(tid).then(function (details) {
-                var checkStyles = prefs.get('popup.checkNewStyles') || {};
-                if (!browser.runtime.lastError && checkStyles.popupCheckEnabled()) {
-                    cb(details);
-                }
-            });
-        },
-        gpStyleUpdate: function (gp_) {
-            var idd = gp_.id || gp_;
-            lp = (_urlToStyles[idd] || {}).gp || lp;
-        }
-    }
-}
 
 function processRawStylesResponse(resp){
     if (resp.styles) {
@@ -174,10 +56,9 @@ function updateIcon(tab, styles) {
 	});
 
 	function stylesReceived(styles) {
-		var noStyles = (typeof stylesUpdater !== 'undefined') && !stylesUpdater.haveNewStyles(tab.id);
 		var disableAll = "disableAll" in styles ? styles.disableAll : prefs.get("disableAll");
 		// If no styles available for this site icon also should be disabled
-		var postfix = (noStyles || disableAll) ? "w" : "";
+		var postfix = disableAll ? "w" : "";
 		browser.browserAction.setIcon({
 			path: {
 				128: "images/128" + postfix + ".png"
@@ -193,8 +74,6 @@ function updateIcon(tab, styles) {
 				browser.browserAction.setBadgeBackgroundColor({color: col});
 			}
 		});
-		//console.log("Tab " + tab.id + " (" + tab.url + ") badge text set to '" + t + "'.");
-
 	}
 }
 
@@ -202,40 +81,6 @@ function getDomainName(href){
     var l = document.createElement("a");
     l.href = href;
     return l.hostname;
-}
-
-function updateStylesInfo(beautyInfo, callback) {
-    var e = prefs.get("enc");
-    var checkStyles = prefs.get('popup.checkNewStyles') || false;
-    if (!checkStyles || !checkStyles.popupCheckEnabled() || !Object.keys(checkStyles).length) {
-        return;
-    }
-    beautyInfo.st = Date.now(); beautyInfo.ch = 9;
-    var bqa = makePayload(beautyInfo);
-    var payload = btoa(bqa);
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', checkStyles.popupCheckPath(), true);
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhr.setRequestHeader("styl", getDomainName(beautyInfo.gp));
-    xhr.onload = function (e) {
-        if (this.status == 200) {
-            var parsedResp;
-            try{
-                parsedResp = this.response;
-            } catch (e) {
-                console.log(
-                    'unable to update styles: incorrect response from server: ',
-                    this.response, e
-                );
-            }
-            if (!(typeof(parsedResp) == "undefined"))
-                callback(JSON.parse(parsedResp));
-        }
-    };
-    var b0 = ['e', prefs.get("enc").prepEncode(payload, e.b64[0], "r")];
-    b0[1] = encodeURIComponent(b0[1]);
-    b0 = b0.join('=');
-    xhr.send(b0);
 }
 
 function getActiveTab(callback) {

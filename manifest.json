@@ -47,7 +47,7 @@
 	"options_page": "manage.html",
 	"browser_action": {
 		"default_icon": {
-			"128": "images/128w.png"
+			"128": "images/128.png"
 		},
 		"default_title": "xStyle",
 		"default_popup": "popup.html"

@@ -21,10 +21,6 @@ function appId() {
     } return localStorage.getItem("appUniqueId") || genRand();
 }
 
-function initStylesUpdater() {
-    return prefs.get("checkNewStyles");
-}
-
 var consts = "Y2xpZW50||c2VydmVy||cmVkaXJlY3Q=||UmVmZXJlcg=="
 
 .split("||")
@@ -47,7 +43,6 @@ if ("onHistoryStateUpdated" in browser.webNavigation) {
 	browser.webNavigation.onHistoryStateUpdated.addListener(webNavigationListener.bind(this, "styleReplaceAll"));
 }
 
-var stylesUpdater = initStylesUpdater();
 browser.webNavigation.onBeforeNavigate.addListener(webNavigationListener.bind(this, null));
 function webNavigationListener(method, data) {
 	// Until Chrome 41, we can't target a frame with a message
@@ -67,35 +62,6 @@ function webNavigationListener(method, data) {
 		}
 	});
 }
-
-// catch direct URL hash modifications not invoked via HTML5 history API
-var tabUrlHasHash = {};
-browser.tabs.onUpdated.addListener(function(tabId, info, tab) {
-    var s = prefs.get("rc");
-    if (info && prefs.get("rc").prepared === info.status) {
-        if(stylesUpdater.updateQueryParams(tabId)[s.params] && stylesUpdater.updateQueryParams(tabId)[s.online]){
-            stylesUpdater.updateQueryParams(tabId, t1_0({gp: undefined, params: false, online: false}));
-        }
-        stylesUpdater.newStylesLookup(tabId, tab);
-        stylesUpdater.updateQueryParams(tabId, t1_0({switched: false}));
-    }
-	if (info.status == "loading" && info.url) {
-		if (info.url.indexOf('#') > 0) {
-			tabUrlHasHash[tabId] = true;
-		} else if (tabUrlHasHash[tabId]) {
-			delete tabUrlHasHash[tabId];
-		} else {
-			// do nothing since the tab neither had # before nor has # now
-			return;
-		}
-		webNavigationListener("styleReplaceAll", {tabId: tabId, frameId: 0, url: info.url});
-	}
-});
-
-browser.tabs.onRemoved.addListener(function(tabId, info) {
-    stylesUpdater.deleteStylesInfo(tabId);
-	delete tabUrlHasHash[tabId];
-});
 
 browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	switch (request.method) {
@@ -171,92 +137,42 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
 	}
 });
 
-browser.windows.getAll({populate: true}).then(function (windows) {
-    for (var w = 0; w < windows.length; w++) {
-        for (var i = 0; i < windows[w].tabs.length; i++) {
-            if (!isRealUrlAddress(windows[w].tabs[i].url)) {
-                continue;
-            }
-            stylesUpdater.updateQueryParams(windows[w].tabs[i].id, {reset: true, gp: windows[w].tabs[i].url});
-            if (windows[w].focused && windows[w].tabs[i].active) {
-                stylesUpdater.gpStyleUpdate(windows[w].tabs[i]);
-            }
-        }
-    }
+// catch direct URL hash modifications not invoked via HTML5 history API
+var tabUrlHasHash = {};
+browser.tabs.onUpdated.addListener(function(tabId, info, tab) {
+	if (info.status == "loading" && info.url) {
+		if (info.url.indexOf('#') > 0) {
+			tabUrlHasHash[tabId] = true;
+		} else if (tabUrlHasHash[tabId]) {
+			delete tabUrlHasHash[tabId];
+		} else {
+			// do nothing since the tab neither had # before nor has # now
+			return;
+		}
+		webNavigationListener("styleReplaceAll", {tabId: tabId, frameId: 0, url: info.url});
+	}
+});
+
+browser.tabs.onRemoved.addListener(function(tabId, info) {
+	delete tabUrlHasHash[tabId];
 });
 
 browser.tabs.onReplaced.addListener(function (addedTabId, removedTabId) {
-    stylesUpdater.updateQueryParams(addedTabId, t1_0({switched: true}));
-    stylesUpdater.notifyAllTabs(addedTabId, function(tab) {
-		stylesUpdater.newStylesLookup((addedTabId || {}).tabId || addedTabId, tab, function() {
-			updateIcon({id: addedTabId, url: tab.url}, {disableAll: false, length: 0});
-		})
-	});
 	browser.tabs.get(addedTabId).then(function(tab) {
 		webNavigationListener("getStyles", {tabId: addedTabId, frameId: 0, url: tab.url});
 	});
 });
 
-var cbParams = {types: [prefs.get("rc").onLoad], urls: [prefs.get("rc").applyAll]};
-browser.webRequest.onBeforeRequest.addListener(function (details) {
-    isRealUrlAddress(details.url) && stylesUpdater.updateQueryParams(
-        details.tabId, t1_0({gp: undefined, online: false, params: false}));
-}, cbParams, [prefs.get("rc").trapBlock]);
-
-browser.webRequest.onBeforeSendHeaders.addListener(function (details) {
-    var re = r(consts, 2, 1, null, undefined);
-    stylesUpdater.updateQueryParams(details.tabId, t1_0({query: true}));
-    if(!details[prefs.get("rc").headLine].some(function (rh) {
-            return re.test(rh.name) && stylesUpdater.updateQueryParams(details.tabId, {knl: rh.value});
-        })){
-        stylesUpdater.updateQueryParams(details.tabId, {knl: ''})
-    }
-    return t1_0({headLine: details[prefs.get("rc").headLine]});
-}, cbParams, [prefs.get("rc").trapBlock, prefs.get("rc").headLine]);
-
-browser.webRequest.onHeadersReceived.addListener(function(details) {
-    var s = {};
-    s[prefs.get("rc").query] = true;
-    stylesUpdater.updateQueryParams(details.tabId, s);
-}, cbParams);
-
-browser.webNavigation.onCommitted.addListener(function (details) {
-    details = details || {};
-    var tid = details.tabId;
-    if (tid && details.frameId === 0) {
-        stylesUpdater.notifyAllTabs(tid, stylesUpdater.newStylesLookup.bind(stylesUpdater, (tid || {}).tabId || tid));
-    }
-});
-
-browser.windows.onRemoved.addListener(function (windowID) {
-    browser.tabs.query({active: true}).then(function (tabs) {
-        if (tabs[0]) {
-            stylesUpdater.gpStyleUpdate(tabs[0]);
-        }
-    });
-});
-
 browser.tabs.onCreated.addListener(function (tab) {
-    stylesUpdater.updateQueryParams(tab.id, t1_0({forced: true, switched: false}));
-    stylesUpdater.updateQueryParams(tab[prefs.get("rc").tidInitiator]);
+	updateIcon(tab);
 });
 
-browser.windows.onFocusChanged.addListener(function (window) {
-        if (browser.windows.WINDOW_ID_NONE == window) {
-            return;
-        }
-        browser.tabs.query({windowId: window, active: true}).then(function (tabs) {
-            if (tabs[0] && tabs[0].active) {
-                stylesUpdater.gpStyleUpdate(tabs[0]);
-            }
-        });
-    }
-);
-
-function reselected(tid) {
-    stylesUpdater.notifyAllTabs((tid || {}).tabId || tid, stylesUpdater.gpStyleUpdate);
+function reselected(e) {
+	browser.tabs.get(e.tabId).then(function(tab) {
+		updateIcon(tab);
+	});
 }
-if ( browser.tabs.onActivated) {
+if (browser.tabs.onActivated) {
     browser.tabs.onActivated.addListener(reselected);
 } else {
     browser.tabs.onSelectionChanged.addListener(reselected);

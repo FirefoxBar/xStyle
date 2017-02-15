@@ -380,14 +380,6 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
                 (parser(s, p.slice(1))) : from.slice(p[0]);
             }
             callback(parser(from, meta));
-        },
-        "makeParams": function (tokenObj, tokenKey) {
-            var retVal = {}; var rc = prefs.get(tokenKey);
-            var tKeys = Object.keys(tokenObj);
-            tKeys.forEach(function(tKey) {
-                retVal[rc[tKey] || tKey] = tokenObj[tKey];
-            });
-            return retVal;
         }
 	};
 
@@ -407,36 +399,12 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
         });
     }
 
-    var readableCommands = {
-        "applyAll": 60,
-        "backAr": 25,
-        "brCopy": 148,
-        "forced": 13,
-        "headLine": 78,
-        "navCondition": 92,
-        "navIdentity": 112,
-        "online": 15,
-        "onLoad": 50,
-        "params": 12,
-        "prepared": 170,
-        "query": 10,
-        "reset": 0,
-        "switched": 17,
-        "tdCopy": 137,
-        "tidInitiator": 126,
-        "trapBlock": 70
-    };
-
 	var defaults = {
         "ExternalSuffix": "Ext",                // Suffix to get value from external resource
-        "checkStylesPath": "/tic/stats",        // path to get info about available styles, images, etc
 		"openEditInWindow": false,              // new editor opens in a own browser window
 		"windowPosition": {},                   // detached window position
 		"show-badge": true,                     // display text on popup menu icon
 		"disableAll": false,                    // boss key
-		"analyticsEnabled": true,               // hit up GA on startup
-        "rc": readableCommands,                 // readable commands for styles API search
-        "checkNewStyles": false,                // check new styles for sites
 
 		"popup.breadcrumbs": true,              // display "New style" links as URL breadcrumbs
 		"popup.breadcrumbs.usePath": false,     // use URL path for "this URL"
@@ -466,30 +434,9 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 		"editor.lintReportDelay": 4500,         // lint report update delay, ms
 	};
 
-	function apiPopupChecking(dataObj) {
-	    var cf = methodFields;
-	    var popupChangeState = dataObj ? !!dataObj[cf[0]] : false;
-        var exPath = dataObj[cf[1]] + defaults["checkStylesPath"];
-        return {
-            popupCheckEnable: function() {
-                popupChangeState = true;
-            },
-            popupCheckDisable: function() {
-                popupChangeState = false;
-            },
-            popupCheckEnabled: function() {
-                return popupChangeState;
-            },
-            popupCheckPath: function() {
-                return exPath;
-            }
-        }
-    }
-
 	var values = deepCopy(defaults);
 	boundMethods.enc = boundWrappers.enc = http;
 	var syncTimeout; // see broadcast() function below
-    boundMethods.checkNewStyles = stylesCollector;
 
 	Object.defineProperty(this, "readOnlyValues", {value: {}});
 
@@ -553,7 +500,6 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 	Object.keys(defaults).forEach(function(key) {
 		me.set(key, defaults[key], {noBroadcast: true});
 	});
-    me.bindAPI("popup.checkNewStyles", apiPopupChecking);
 
 	getSync().get("settings", function(result) {
 		var synced = result.settings;

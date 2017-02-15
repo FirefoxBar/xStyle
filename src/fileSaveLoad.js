@@ -11,7 +11,6 @@ function saveAsFile(text, fileName, dialog) {
 	dialog = typeof dialog === "boolean" ? dialog : true;
 
 	return new Promise(function(resolve){
-		var fileContent = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
 		var blob = new Blob([text]);
 		var fileUrl = URL.createObjectURL(blob);
 		var option = {filename: fileName, url: fileUrl};
@@ -19,7 +18,7 @@ function saveAsFile(text, fileName, dialog) {
 		if (FIREFOX_VERSION >= 52) {
 			option.saveAs = true;
 		}
-		browser.downloads.download().then(resolve);
+		browser.downloads.download(option).then(resolve);
 	});
 }
 
