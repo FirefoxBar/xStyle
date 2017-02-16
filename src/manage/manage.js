@@ -127,6 +127,7 @@ function createStyleElement(style) {
 	});
 	e.querySelector(".enable").addEventListener("click", function(event) { enable(event, true); }, false);
 	e.querySelector(".disable").addEventListener("click", function(event) { enable(event, false); }, false);
+	e.querySelector(".export").addEventListener("click", doExport, false);
 	e.querySelector(".check-update").addEventListener("click", doCheckUpdate, false);
 	e.querySelector(".update").addEventListener("click", doUpdate, false);
 	e.querySelector(".delete").addEventListener("click", doDelete, false);
@@ -145,6 +146,23 @@ function doDelete(event) {
 	}
 	var id = getId(event);
 	deleteStyle(id);
+}
+
+function doExport(event) {
+	var id = getId(event);
+	browser.runtime.sendMessage({method: "getStyles", id: id}).then(function(styles) {
+		var style = styles[0];
+		var originalMd5 = md5(JSON.stringify(style.sections));
+		var result = {"name": style.name, "updateUrl": null, "md5Url": null, "originalMd5": originalMd5, "url": "https://ext.firefoxcn.net/xstyle/md5namespace/" + originalMd5, "sections": style.sections};
+		saveAsFile(JSON.stringify(result), 'xstyle-' + originalMd5 + '.json');
+		// Copy md5 to clipboard
+		if (FIREFOX_VERSION >= 51) {
+			var copyText = document.createElement("input");
+			copyText.value = originalMd5;
+			copyText.select();
+			document.execCommand("Copy");
+		}
+	});
 }
 
 function getId(event) {
@@ -219,9 +237,6 @@ function applyUpdateAll() {
 	Array.prototype.forEach.call(document.querySelectorAll(".can-update .update"), function(button) {
 		button.click();
 	});
-}
-
-function addNewStyle(){
 }
 
 function checkUpdateAll() {
@@ -485,7 +500,6 @@ document.addEventListener("DOMContentLoaded", function() {
 	}
 
 	document.getElementById("check-all-updates").addEventListener("click", checkUpdateAll);
-	document.getElementById("add-style-label").addEventListener("click", addNewStyle);
 	document.getElementById("apply-all-updates").addEventListener("click", applyUpdateAll);
 	document.getElementById("search").addEventListener("input", searchStyles);
 	

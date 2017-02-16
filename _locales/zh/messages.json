@@ -403,6 +403,10 @@
 		"message": "修改",
 		"description": "Label for the button to go to the edit style page"
 	},
+	"exportStyleLabel": {
+		"message": "导出",
+		"description": "Export a style as a json file"
+	},
 	"cm_theme": {
 		"message": "主题",
 		"description": "Label for the style editor's CSS theme."

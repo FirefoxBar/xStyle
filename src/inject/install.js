@@ -128,7 +128,6 @@ if (window.location.href.indexOf('https://ext.firefoxcn.net/xstyle/install/open.
 	}
 }
 
-
 function getMeta(name) {
 	var e = document.querySelector("link[rel='" + name + "']");
 	return e ? e.getAttribute("href") : null;

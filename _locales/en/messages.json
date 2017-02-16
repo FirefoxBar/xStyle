@@ -155,6 +155,10 @@
 		"message": "Edit",
 		"description": "Label for the button to go to the edit style page"
 	},
+	"exportStyleLabel": {
+		"message": "Export",
+		"description": "Export a style as a json file"
+	},
 	"editStyleTitle": {
 		"message": "Edit Style $stylename$",
 		"description": "Title of the page for editing styles",
