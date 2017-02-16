@@ -419,11 +419,11 @@
 		"message": "利用用户样式管理器xStyle来重新编辑网站的样式。您可利用xStyle为许多网站安装主题和皮肤，也可创建自己的主题和皮肤。",
 		"description": "Extension description"
 	},
-	"chooseStyleFromLib": {
-		"message": "从样式库选择样式"
-	},
 	"createOwnStyle": {
 		"message": "创建自己的样式"
+	},
+	"popupHaveNoStyle": {
+		"message": "您没有安装任何适用于本网站的样式"
 	},
 	"ON": {
 		"message": "开"

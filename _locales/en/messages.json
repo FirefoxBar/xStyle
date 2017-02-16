@@ -435,12 +435,12 @@
 		"message": "this URL",
 		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
 	},
-	"chooseStyleFromLib": {
-		"message": "Choose a style from the Styles Library"
-	},
     "createOwnStyle": {
         "message": "Create your own style"
     },
+	"popupHaveNoStyle": {
+		"message": "You don’t have any styles installed for this site."
+	},
     "ON": {
         "message": "ON"
     },

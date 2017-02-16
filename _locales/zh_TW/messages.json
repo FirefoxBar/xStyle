@@ -419,11 +419,11 @@
 		"message": "利用 xStyle 使用者樣式管理程式，將整個網站改頭換面。有了 xStyle，您可以為許多網站安裝佈景主題和面板，還可以自創樣式。",
 		"description": "Extension description"
 	},
-	"chooseStyleFromLib": {
-		"message": "從樣式庫選擇樣式"
-	},
 	"createOwnStyle": {
 		"message": "建立您自己的樣式"
+	},
+	"popupHaveNoStyle": {
+		"message": "您沒有安裝任何適用於本網站的樣式"
 	},
 	"ON": {
 		"message": "開啟"
