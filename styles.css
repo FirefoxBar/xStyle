@@ -83,7 +83,7 @@ body.blocked > DIV {
 	opacity: 0.7;
 }
 
-#zerostyles {
+#zerostyles, #unavailable {
 	height: 366px;
 }
 #recommended.disabled .style-name {
@@ -600,7 +600,7 @@ body > .actions {
 /** SWIPE **/
 
 /**< zero styles **/
-#zerostyles{
+#zerostyles, #unavailable{
 	font-size: 16px;
 	font-weight: 500;
 	font-style: normal;
@@ -608,16 +608,14 @@ body > .actions {
 	text-align: center;
 	color: #2c3e50;
 	padding:25px;
-}
-
-#zerostyles .message{
-	margin-top:130px;
-}
-
-#zerostyles{
 	position:relative;
 	padding-left:23px;
 	padding-right:23px;
+}
+
+#zerostyles .message,
+#unavailable .message {
+	margin-top:130px;
 }
 
 #chose_style, #create_style {

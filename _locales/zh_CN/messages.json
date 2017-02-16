@@ -287,8 +287,8 @@
 		"message": "Mozilla 格式",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
-	"xstyleUnavailableForURL": {
-		"message": "(xStyle在这样的页面上不工作)",
+	"xStyleUnavailableForURL": {
+		"message": "xStyle 在此类页面上无效",
 		"description": "Note in the toolbar pop-up when on a URL xStyle can't affect"
 	},
 	"sectionRemove": {

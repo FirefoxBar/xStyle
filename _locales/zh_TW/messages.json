@@ -288,7 +288,7 @@
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
 	"xStyleUnavailableForURL": {
-		"message": "（ xStyle 不能在諸如此類的網頁上生效。）",
+		"message": "xStyle 不能在諸如此類的網頁上生效",
 		"description": "Note in the toolbar pop-up when on a URL xStyle can't affect"
 	},
 	"sectionRemove": {

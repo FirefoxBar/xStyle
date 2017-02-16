@@ -31,6 +31,10 @@ function getZeroStylesEl(){
 	return document.getElementById("zerostyles");
 }
 
+function getUnavailableEl(){
+	return document.getElementById("unavailable");
+}
+
 function getInstalledStylesEl(){
 	var installed = document.getElementById("installed");
 	if (installed){
@@ -75,8 +79,19 @@ function buildDomainForFiltering(url){
 }
 
 getActiveTabPromise().then(function(currentTab){
-	getInstalledStyleForDomain(currentTab.url).then(renderInstalledTab);
+	if (currentTab.url.indexOf('about:') === 0) {
+		renderPageForUnavailable();
+	} else {
+		getInstalledStyleForDomain(currentTab.url).then(renderInstalledTab);
+	}
 });
+
+function renderPageForUnavailable() {
+	renderForAllCases();
+	getZeroStylesEl().classList.add('hide');
+	getInstalledStylesEl().classList.add('hide');
+	getUnavailableEl().classList.remove('hide');
+}
 
 function renderInstalledTab(styles){
 	renderForAllCases();
@@ -159,7 +174,6 @@ function preProcessInstalls(installsSrc){
 
 function preProcessStyle(style){
     style.installsStr = preProcessInstalls(style.installs);
-    style.installsTooltip = browser.i18n.getMessage("numberOfWeeklyInstalls");
     style.installButtonLabel = browser.i18n.getMessage("installButtonLabel");
     return style;
 }
@@ -293,9 +307,7 @@ function parseUrl(url){
 function updatePopUp(tab) {
 	website = getSiteName(tab.url);
 	updateSiteName(website);
-	updateCreateStyleLink(parseUrl(tab.url).hostname);
-
-	var urlWillWork = /^(file|http|https|ftps?|moz\-extension):/.exec(tab.url);
+	updateCreateStyleLink(getSiteName(tab.url));
 }
 
 function updateCreateStyleLink(tabDomain){
@@ -308,6 +320,9 @@ function updateSiteName(siteName){
 }
 
 function getSiteName(tabUrl){
+	if (tabUrl.indexOf('about:') === 0) {
+		return /about:(\w+)/.exec(tabUrl)[0];
+	}
 	var a = document.createElement('a');
 	a.href = tabUrl;
 	return a.hostname;

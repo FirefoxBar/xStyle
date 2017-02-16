@@ -22,10 +22,8 @@
 			</div>
 		</div>
     </script>
-
     <link rel="stylesheet" href="animate.css"/>
 	<link rel="stylesheet" href="styles.css"/>
-	
 	<script src="src/localization.js"></script>
 	<script src="src/health.js"></script>
 	<script src="src/storage.js"></script>
@@ -58,19 +56,20 @@
                 </div>
             </div>
         </div>
-        <div id="zerostyles" class="">
+        <div id="unavailable" class="hide">
+			<div class="message" i18n-text="xStyleUnavailableForURL"></div>
+        </div>
+        <div id="zerostyles" class="hide">
 			<div class="message" i18n-text="popupHaveNoStyle"></div>
             <div id="create_style" i18n-text="createOwnStyle"></div>
         </div>
-        <div id="installed" class="hide notLoggedIn"></div>
+        <div id="installed" class="hide"></div>
     </section>
 </div>
-
 <div class="bottom_controls">
     <a id="write-new-style-link" class="add_style open-manage-link" href="/edit.html" target="_blank" tabindex="-1" i18n-text="openCreate"></a>
 	<a class="manage_styles open-manage-link" href="/manage.html" target="_blank" tabindex="-1" i18n-text="openManage"></a>
 </div>
-
 <script src="src/popup/object.assign.polyfill.js"></script>
 <script src="src/popup/Requester.js"></script>
 <script src="src/popup/MemCachedRequester.js"></script>
