@@ -333,9 +333,10 @@ function openLink(event) {
 }
 
 function handleUpdate(style) {
-	var styleElement = installed.querySelector("[style-id='" + style.id + "']");
+	var styleElement = installed.querySelector("#installed-style-" + style.id);
 	if (styleElement) {
-		installed.replaceChild(installedStyleToElement(style), styleElement);
+		installed.removeChild(styleElement);
+		addStyleToInstalled(style);
 	} else {
 		getActiveTabRealURL(function(url) {
 			if (browser.extension.getBackgroundPage().getApplicableSections(style, url).length) {
