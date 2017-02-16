@@ -7,15 +7,15 @@
 		"description": "Text displayed for styles that apply to all sites"
 	},
 	"defaultTheme": {
-		"message": "默認",
+		"message": "預設",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
 	"manageOnlyEdited": {
-		"message": "只顯示已禁用的樣式",
+		"message": "只顯示使用者修改過的樣式",
 		"description": "Checkbox to show only locally edited styles"
 	},
 	"exportLabel": {
-		"message": "導出",
+		"message": "匯出",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
 	"issues": {
@@ -23,7 +23,7 @@
 		"description": "Label for the CSSLint issues block on the style edit page"
 	},
 	"cm_tabSize": {
-		"message": "Tab大小",
+		"message": "Tab縮排寬度",
 		"description": "Label for the text box controlling tab size option for the style editor."
 	},
 	"enableStyleLabel": {
@@ -43,7 +43,7 @@
 		"description": "Label for the button to check a single style for an update"
 	},
 	"importAppendLabel": {
-		"message": "追加到樣式",
+		"message": "附加到樣式",
 		"description": "Label for the button to import a style and append to the existing sections"
 	},
 	"updateAllCheckSucceededNoUpdate": {
@@ -51,15 +51,15 @@
 		"description": "Text that displays when an update all check completed and no updates are available"
 	},
 	"styleFromMozillaFormatPrompt": {
-		"message": "粘貼Mozilla格式代碼",
+		"message": "貼上Mozilla格式的代碼",
 		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
 	},
 	"helpAlt": {
-		"message": "幫助",
+		"message": "說明",
 		"description": "Alternate text for help buttons"
 	},
 	"search": {
-		"message": "搜索",
+		"message": "搜尋",
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
 	},
 	"confirmYes": {
@@ -83,11 +83,11 @@
 		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
 	},
 	"sectionAdd": {
-		"message": "再添加一個樣式段",
+		"message": "再新增一個樣式段",
 		"description": "Label for the button to add a section"
 	},
 	"styleSaveLabel": {
-		"message": "保存",
+		"message": "儲存",
 		"description": "Label for save button for style editing"
 	},
 	"confirmStop": {
@@ -99,11 +99,11 @@
 		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
 	},
 	"appliesAdd": {
-		"message": "添加",
+		"message": "新增",
 		"description": "Label for the button to add an 'applies' entry"
 	},
 	"appliesRegexpOption": {
-		"message": "匹配正則表示式的網址",
+		"message": "符合正規表示式的網址",
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
 	"styleInstall": {
@@ -116,15 +116,15 @@
 		}
 	},
 	"searchStyles": {
-		"message": "搜索內容",
+		"message": "搜尋內容",
 		"description": "Label for the search filter textbox on the Manage styles page"
 	},
 	"disableStyleLabel": {
-		"message": "禁用",
+		"message": "停用",
 		"description": "Label for the button to disable a style"
 	},
 	"prefShowBadge": {
-		"message": "在工具欄按鈕上顯示當前網站已生效的樣式表數目。",
+		"message": "在工具列按鈕上顯示目前網站已生效的樣式數目。",
 		"description": "Label for the checkbox controlling toolbar badge text."
 	},
 	"menuShowBadge": {
@@ -140,11 +140,11 @@
 		"description": "Label for cancel button for style editing"
 	},
 	"styleChangesNotSaved": {
-		"message": "你已經修改了此樣式，但尚未保存。",
+		"message": "你已經修改了此樣式，但尚未儲存。",
 		"description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
 	},
 	"importLabel": {
-		"message": "導入",
+		"message": "匯入",
 		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
 	},
 	"updateCheckFailServerUnreachable": {
@@ -156,11 +156,11 @@
 		"description": "Label for filters container"
 	},
 	"applyAllUpdates": {
-		"message": "應用所有更新",
+		"message": "套用所有更新",
 		"description": "Label for the button to apply all detected updates"
 	},
 	"deleteStyleConfirm": {
-		"message": "確定要刪除這個樣式嗎？",
+		"message": "您是否要刪除這個樣式？",
 		"description": "Confirmation before deleting a style"
 	},
 	"styleBadRegexp": {
@@ -211,11 +211,11 @@
 		"description": "Option to make the style apply to the entered string as a URL prefix"
 	},
 	"searchRegexp": {
-		"message": "使用/re/句法正則表達式搜索",
+		"message": "使用/re/句法正規表示式搜尋",
 		"description": "Label after the search input field in the editor shown on Ctrl-F"
 	},
 	"importReplaceTooltip": {
-		"message": "棄用當前樣式內容并用導入樣式覆蓋",
+		"message": "棄用目前樣式內容并用匯入樣式覆蓋",
 		"description": "Label for the button to import and overwrite current style"
 	},
 	"installButtonLabel": {
@@ -239,7 +239,7 @@
 		"description": "Label for the button to remove an 'applies' entry"
 	},
 	"styleToMozillaFormatTitle": {
-		"message": "Mozilla格式樣式表",
+		"message": "Mozilla格式的樣式",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
 	"manageTitle": {
@@ -251,7 +251,7 @@
 		"description": "Label for toolbar pop-up that precedes the links to write a new style"
 	},
 	"replace": {
-		"message": "替換",
+		"message": "取代",
 		"description": "Label before the replace input field in the editor shown on Ctrl-H"
 	},
 	"appliesLabel": {
@@ -263,7 +263,7 @@
 		"description": "Link to open the manage page."
 	},
 	"openCreate": {
-		"message": "建立新樣式",
+		"message": "編寫新樣式",
 		"description": "Link to open the creation page."
 	},
 	"updateCheckFailBadResponseCode": {
@@ -296,11 +296,11 @@
 		"description": "Label for the button to remove a section"
 	},
 	"disableAllStyles": {
-		"message": "禁用所有樣式",
+		"message": "停用所有樣式",
 		"description": "Label for the checkbox that turns all enabled styles off."
 	},
 	"undoGlobal": {
-		"message": "撤銷（全局）",
+		"message": "復原（全域）",
 		"description": "CSS-beautify global Undo button label"
 	},
 	"updateCompleted": {
@@ -316,7 +316,7 @@
 		"description": "Label for the code for a section"
 	},
 	"cm_smartIndent": {
-		"message": "使用智能縮進",
+		"message": "使用智慧縮排",
 		"description": "Label for the checkbox controlling smart indentation option for the style editor."
 	},
 	"appliesHelp": {
@@ -332,7 +332,7 @@
 		"description": "Option to make the style apply to the entered string as a URL"
 	},
 	"addStyleTitle": {
-		"message": "添加樣式",
+		"message": "新增樣式",
 		"description": "Title of the page for adding styles"
 	},
 	"importReplaceLabel": {
@@ -344,7 +344,7 @@
 		"description": "Prompt when a DB error is encountered"
 	},
 	"importAppendTooltip": {
-		"message": "追加導入的樣式到當前樣式",
+		"message": "附加匯入的樣式到目前樣式",
 		"description": "Tooltip for the button to import a style and append to the existing sections"
 	},
 	"helpKeyMapHotkey": {
@@ -352,7 +352,7 @@
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"replaceAll": {
-		"message": "替換所有",
+		"message": "全部取代",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
 	},
 	"editGotoLine": {
@@ -372,7 +372,7 @@
 		"description": "'No' button in a confirm dialog"
 	},
 	"undo": {
-		"message": "撤銷",
+		"message": "復原",
 		"description": "Button label"
 	},
 	"cm_keyMap": {
@@ -380,11 +380,11 @@
 		"description": "Label for the drop-down list controlling the keymap for the style editor."
 	},
 	"cm_indentWithTabs": {
-		"message": "用Tab鍵智能縮進",
+		"message": "用Tab鍵智慧縮排",
 		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
 	},
 	"replaceWith": {
-		"message": "替換為",
+		"message": "取代成",
 		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
 	},
 	"deleteStyleLabel": {
@@ -404,7 +404,7 @@
 		"description": "Label for the button to go to the edit style page"
 	},
 	"exportStyleLabel": {
-		"message": "导出",
+		"message": "匯出",
 		"description": "Export a style as a json file"
 	},
 	"cm_theme": {
@@ -420,7 +420,7 @@
 		"description": "Extension description"
 	},
 	"createOwnStyle": {
-		"message": "建立您自己的樣式"
+		"message": "編寫您自己的樣式"
 	},
 	"popupHaveNoStyle": {
 		"message": "您沒有安裝任何適用於本網站的樣式"
