@@ -667,9 +667,8 @@ function defineReadonlyProperty(obj, key, value) {
 	Object.defineProperty(obj, key, {value: copy, configurable: true})
 }
 
-// Polyfill, can be removed when Firefox gets this - https://bugzilla.mozilla.org/show_bug.cgi?id=1220494
 function getSync() {
-	// Firefox do not support sync, use local to instead it
+	// Firefox do not support sync, use local to instead of it
 	if ("sync" in browser.storage) {
 		return browser.storage.sync;
 	}

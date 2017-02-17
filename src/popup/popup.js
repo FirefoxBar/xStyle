@@ -184,7 +184,7 @@ function getOrParseStyleId(style){
 function preProcessInstalledStyle(style){
     style.installs = style.weekly_installs;
     preProcessStyle(style);
-    style.editButtonLabel = "edit";
+    style.editButtonLabel = browser.i18n.getMessage("editStyleLabel");;
     style.activateButtonLabel = browser.i18n.getMessage("enableStyleLabel");
     style.deactivateButtonLabel = browser.i18n.getMessage("disableStyleLabel");
     style.deleteButtonLabel = browser.i18n.getMessage("deleteStyleLabel");
@@ -239,10 +239,10 @@ function onDisableAllCheckboxChange(){
 }
 
 function bindHandlers(el, style){
-	el.querySelector(".thumbnail_edit").addEventListener('click', openLinkInTabOrWindow, false);
-	el.querySelector(".thumbnail_activate").addEventListener('click', onActivateClick(style));
-	el.querySelector(".thumbnail_deactivate").addEventListener('click', onDeactivateClick(style));
-	el.querySelector(".thumbnail_delete").addEventListener('click', onDeleteStyleClick(style));
+	el.querySelector(".edit").addEventListener('click', openLinkInTabOrWindow, false);
+	el.querySelector(".activate").addEventListener('click', onActivateClick(style));
+	el.querySelector(".deactivate").addEventListener('click', onDeactivateClick(style));
+	el.querySelector(".delete").addEventListener('click', onDeleteStyleClick(style));
 }
 
 function onActivateClick(style){

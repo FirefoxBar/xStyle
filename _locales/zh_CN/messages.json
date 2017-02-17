@@ -400,7 +400,7 @@
 		"description": "Checkbox to show only enabled styles"
 	},
 	"editStyleLabel": {
-		"message": "修改",
+		"message": "编辑",
 		"description": "Label for the button to go to the edit style page"
 	},
 	"exportStyleLabel": {

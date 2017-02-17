@@ -4,21 +4,18 @@
     <script id="template-style-installed-item" type="x-tmpl-mustache">
 		<div id="installed-style-{{id}}" class="installed entry {{additionalClass}}" >
 			<div class="main-controls">
-				<div class="thumbnail-holder">
-					<img class="thumbnail" src="{{screenshot}}"/>
-					<div class="activation_info">
-					    <span class="activation_status active">{{active_str}}</span>
-					    <span class="activation_status inactive">{{inactive_str}}</span>
-                    </div>
-					<div class="thumbnail-mask">
-					    <a class="thumbnail_edit" href="{{style_edit_url}}" target="_blank">{{editButtonLabel}}</a>
-						<a class="thumbnail_activate" href="{{style_url}}" target="_blank">{{activateButtonLabel}}</a>
-						<a class="thumbnail_deactivate" href="{{style_url}}" target="_blank">{{deactivateButtonLabel}}</a>
-						<a class="thumbnail_delete" href="{{style_url}}" target="_blank">{{deleteButtonLabel}}</a>
-					</div>
+				<div class="title">
+					<span class="activation_status active"></span>
+					<span class="activation_status inactive"></span>
+					<span class="style-name">{{name}}</span>
 				</div>
-				<label class="style-name">{{name}}</label>
-				<label class="style-author">by {{author}}</label>
+				<div class="action">
+					<span class="style-author">by {{author}}</span>
+					<a class="edit" href="{{style_edit_url}}" target="_blank">{{editButtonLabel}}</a>
+					<a class="activate" href="{{style_url}}" target="_blank">{{activateButtonLabel}}</a>
+					<a class="deactivate" href="{{style_url}}" target="_blank">{{deactivateButtonLabel}}</a>
+					<a class="delete" href="{{style_url}}" target="_blank">{{deleteButtonLabel}}</a>
+				</div>
 			</div>
 		</div>
     </script>
