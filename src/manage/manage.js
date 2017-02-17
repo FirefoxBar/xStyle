@@ -158,9 +158,12 @@ function doExport(event) {
 		// Copy md5 to clipboard
 		if (FIREFOX_VERSION >= 51) {
 			var copyText = document.createElement("input");
+			copyText.style = "position:fixed;top:-10px;left:-10px;width:1px;height:1px;display:block";
+			document.getElementsByTagName('body')[0].appendChild(copyText);
 			copyText.value = originalMd5;
 			copyText.select();
 			document.execCommand("Copy");
+			copyText.remove();
 		}
 	});
 }
