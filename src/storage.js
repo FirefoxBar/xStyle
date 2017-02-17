@@ -1,18 +1,18 @@
 function getDatabase(ready, error) {
-	var dbOpenRequest = window.indexedDB.open("xstyle", 2);
+	var dbOpenRequest = window.indexedDB.open("xstyle", 1);
 	dbOpenRequest.onsuccess = function(e) {
 		ready(e.target.result);
 	};
 	dbOpenRequest.onerror = function(event) {
-		console.log(event.target.errorCode);
+		console.log(event);
 		if (error) {
 			error(event);
 		}
 	};
 	dbOpenRequest.onupgradeneeded = function(event) {
 		if (event.oldVersion == 0) {
-			var os = event.target.result.createObjectStore("styles", {keyPath: 'id', autoIncrement: true});
-			webSqlStorage.migrate();
+			// Installed
+			event.target.result.createObjectStore("styles", {keyPath: 'id', autoIncrement: true});
 		}
 	}
 };
