@@ -684,7 +684,9 @@ function getSync() {
 							crappyStorage[property] = source[property];
 					}
 			}
-			callback();
+			if (callback) {
+				callback();
+			}
 		}
 	}
 }
