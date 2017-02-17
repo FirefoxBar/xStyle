@@ -1,7 +1,10 @@
 {
-    "extName": {
-        "message": "xStyle"
-    },
+	"OFF": {
+		"message": "OFF"
+	},
+	"ON": {
+		"message": "ON"
+	},
 	"addStyleLabel": {
 		"message": "Write new style",
 		"description": "Label for the button to go to the add style page"
@@ -37,7 +40,7 @@
 	},
 	"appliesLabel": {
 		"message": "Applies to",
-		"description": "Label for 'applies to' fields on the edit\/add screen"
+		"description": "Label for 'applies to' fields on the edit/add screen"
 	},
 	"appliesRegexpOption": {
 		"message": "URLs matching the regexp",
@@ -66,6 +69,9 @@
 	"applyAllUpdates": {
 		"message": "Apply all updates",
 		"description": "Label for the button to apply all detected updates"
+	},
+	"bckpInstStyles": {
+		"message": "Backup all installed styles"
 	},
 	"checkAllUpdates": {
 		"message": "Check all styles for updates",
@@ -115,6 +121,9 @@
 		"message": "Yes",
 		"description": "'Yes' button in a confirm dialog"
 	},
+	"createOwnStyle": {
+		"message": "Create your own style"
+	},
 	"dbError": {
 		"message": "An error has occurred using the xStyle database. Would you like to visit a web page with possible solutions?",
 		"description": "Prompt when a DB error is encountered"
@@ -123,13 +132,13 @@
 		"message": "default",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
-	"deleteStyleLabel": {
-		"message": "Delete",
-		"description": "Label for the button to delete a style"
-	},
 	"deleteStyleConfirm": {
 		"message": "Are you sure you want to delete this style?",
 		"description": "Confirmation before deleting a style"
+	},
+	"deleteStyleLabel": {
+		"message": "Delete",
+		"description": "Label for the button to delete a style"
 	},
 	"description": {
 		"message": "Restyle the web with xStyle, a user styles manager. With xStyle you can install themes & skins for many sites and create your own.",
@@ -155,10 +164,6 @@
 		"message": "Edit",
 		"description": "Label for the button to go to the edit style page"
 	},
-	"exportStyleLabel": {
-		"message": "Export",
-		"description": "Export a style as a json file"
-	},
 	"editStyleTitle": {
 		"message": "Edit Style $stylename$",
 		"description": "Title of the page for editing styles",
@@ -176,37 +181,24 @@
 		"message": "Export",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
-	"findStylesForThisSiteTextOff": {
-		"description": "Text for a link that gets a list of styles for another sites when there are no styles available for current site",
-		"message": "There are no styles available for this site. You can be the first to create one!"
+	"exportStyleLabel": {
+		"message": "Export",
+		"description": "Export a style as a json file"
 	},
-	"findStylesForThisSiteLinkOff": {
-		"description": "text for link (<a>) after findStylesForThisSiteTextOff",
-		"message": "Find for others."
-	},
-	"findStylesForThisSiteText": {
-		"description": "Text for a link that gets a list of styles for the current site",
-		"message": "There are styles for this site. "
-	},
-	"findStylesForThisSiteLink": {
-		"description": "text for link (<a>) after findStylesForThisSiteText",
-		"message": "Choose them."
+	"extName": {
+		"message": "xStyle"
 	},
 	"helpAlt": {
 		"message": "Help",
 		"description": "Alternate text for help buttons"
 	},
-	"helpKeyMapHotkey": {
-		"message": "Press a hotkey",
-		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
-	},
 	"helpKeyMapCommand": {
 		"message": "Type a command name",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
-	"importLabel": {
-		"message": "Import",
-		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+	"helpKeyMapHotkey": {
+		"message": "Press a hotkey",
+		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"importAppendLabel": {
 		"message": "Append to style",
@@ -216,6 +208,10 @@
 		"message": "Append the imported style to current style",
 		"description": "Tooltip for the button to import a style and append to the existing sections"
 	},
+	"importLabel": {
+		"message": "Import",
+		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+	},
 	"importReplaceLabel": {
 		"message": "Overwrite style",
 		"description": "Label for the button to import and overwrite current style"
@@ -224,10 +220,10 @@
 		"message": "Discard contents of current style and overwrite it with the imported style",
 		"description": "Label for the button to import and overwrite current style"
 	},
-    "installButtonLabel": {
-        "message": "Install Style",
-        "description": "Label inside the install button"
-    },
+	"installButtonLabel": {
+		"message": "Install Style",
+		"description": "Label inside the install button"
+	},
 	"installUpdate": {
 		"message": "Install update",
 		"description": "Label for the button to install an update for a single style"
@@ -237,7 +233,7 @@
 		"description": "Label for the CSSLint issues block on the style edit page"
 	},
 	"issuesHelp": {
-		"message": "The issues found by <a href='https:\/\/github.com\/CSSLint\/csslint' target='_blank'>CSSLint<\/a> with these rules enabled:",
+		"message": "The issues found by <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> with these rules enabled:",
 		"description": "Help popup message for the CSSLint issues block on the style edit page"
 	},
 	"manageFilters": {
@@ -248,13 +244,13 @@
 		"message": "Installed Styles",
 		"description": "Heading for the manage page"
 	},
-	"manageOnlyEnabled": {
-		"message": "Only enabled styles",
-		"description": "Checkbox to show only enabled styles"
-	},
 	"manageOnlyEdited": {
 		"message": "Only created locally",
 		"description": "Checkbox to show only locally edited styles"
+	},
+	"manageOnlyEnabled": {
+		"message": "Only enabled styles",
+		"description": "Checkbox to show only enabled styles"
 	},
 	"manageTitle": {
 		"message": "xStyle",
@@ -268,17 +264,20 @@
 		"message": "You don't have any styles installed for this web page",
 		"description": "Text displayed when no styles are installed for the current site"
 	},
-	"openManage": {
-		"message": "Manage Styles",
-		"description": "Link to open the manage page."
-	},
 	"openCreate": {
 		"message": "Create New Style",
 		"description": "Link to open the creation page."
 	},
+	"openManage": {
+		"message": "Manage Styles",
+		"description": "Link to open the manage page."
+	},
 	"optionsHeading": {
 		"message": "Options",
 		"description": "Heading for options section on manage page."
+	},
+	"popupHaveNoStyle": {
+		"message": "You don’t have any styles installed for this site."
 	},
 	"prefShowBadge": {
 		"message": "Show number of styles active for the current site on the toolbar button",
@@ -295,6 +294,9 @@
 	"replaceWith": {
 		"message": "Replace with",
 		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
+	},
+	"retrieveBckp": {
+		"message": "Retrieve Backup"
 	},
 	"search": {
 		"message": "Search",
@@ -324,6 +326,12 @@
 		"message": "Remove section",
 		"description": "Label for the button to remove a section"
 	},
+	"sendFeedbackLabel": {
+		"message": "Send Feedback"
+	},
+	"styleActiveLabel": {
+		"message": "ACTIVE"
+	},
 	"styleBadRegexp": {
 		"message": "Regexp is invalid.",
 		"description": "Validation message for a bad regexp in a style"
@@ -344,6 +352,13 @@
 		"message": "Enabled",
 		"description": "Label for the enabled state of styles"
 	},
+	"styleFromMozillaFormatPrompt": {
+		"message": "Paste the Mozilla-format code",
+		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
+	},
+	"styleInactiveLabel": {
+		"message": "INACTIVE"
+	},
 	"styleInstall": {
 		"message": "Install '$stylename$' into xStyle?",
 		"description": "Confirmation when installing a style",
@@ -357,6 +372,10 @@
 		"message": "Enter a name.",
 		"description": "Error displayed when user saves without providing a name"
 	},
+	"styleMozillaFormatHeading": {
+		"message": "Mozilla Format",
+		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
+	},
 	"styleSaveLabel": {
 		"message": "Save",
 		"description": "Label for save button for style editing"
@@ -365,21 +384,13 @@
 		"message": "Sections",
 		"description": "Title for the style sections section"
 	},
-	"styleMozillaFormatHeading": {
-		"message": "Mozilla Format",
-		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
-	},
-	"styleFromMozillaFormatPrompt": {
-		"message": "Paste the Mozilla-format code",
-		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
+	"styleToMozillaFormatHelp": {
+		"message": "The Mozilla format of the code can be used with Stylish for Firefox and can be submitted to userstyles.org.",
+		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
 	},
 	"styleToMozillaFormatTitle": {
 		"message": "Style in Mozilla format",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
-	},
-	"styleToMozillaFormatHelp": {
-		"message": "The Mozilla format of the code can be used with Stylish for Firefox and can be submitted to userstyles.org.",
-		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
 	},
 	"styleUpdate": {
 		"message": "Are you sure you want to update '$stylename$'?",
@@ -390,9 +401,8 @@
 			}
 		}
 	},
-	"xStyleUnavailableForURL": {
-		"message": "xStyle does not work on pages like this.",
-		"description": "Note in the toolbar pop-up when on a URL xStyle can't affect"
+	"stylesLibLabel": {
+		"message": "Styles Library"
 	},
 	"undo": {
 		"message": "Undo",
@@ -401,6 +411,10 @@
 	"undoGlobal": {
 		"message": "Undo (global)",
 		"description": "CSS-beautify global Undo button label"
+	},
+	"updateAllCheckSucceededNoUpdate": {
+		"message": "All styles are up to date.",
+		"description": "Text that displays when an update all check completed and no updates are available"
 	},
 	"updateCheckFailBadResponseCode": {
 		"message": "Update failed - server responded with code $code$.",
@@ -419,10 +433,6 @@
 		"message": "Style is up to date.",
 		"description": "Text that displays when an update check completed and no update is available"
 	},
-	"updateAllCheckSucceededNoUpdate": {
-		"message": "All styles are up to date.",
-		"description": "Text that displays when an update all check completed and no updates are available"
-	},
 	"updateCompleted": {
 		"message": "Update completed.",
 		"description": "Text that displays when an update completed"
@@ -435,34 +445,8 @@
 		"message": "this URL",
 		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
 	},
-    "createOwnStyle": {
-        "message": "Create your own style"
-    },
-	"popupHaveNoStyle": {
-		"message": "You don’t have any styles installed for this site."
-	},
-    "ON": {
-        "message": "ON"
-    },
-    "OFF": {
-        "message": "OFF"
-    },
-    "styleActiveLabel": {
-        "message": "ACTIVE"
-    },
-    "styleInactiveLabel": {
-        "message": "INACTIVE"
-    },
-    "sendFeedbackLabel": {
-        "message": "Send Feedback"
-    },
-    "bckpInstStyles": {
-        "message": "Backup all installed styles"
-    },
-    "retrieveBckp": {
-        "message": "Retrieve Backup"
-    },
-    "stylesLibLabel": {
-        "message": "Styles Library"
-    }
+	"xStyleUnavailableForURL": {
+		"message": "xStyle does not work on pages like this.",
+		"description": "Note in the toolbar pop-up when on a URL xStyle can't affect"
+	}
 }

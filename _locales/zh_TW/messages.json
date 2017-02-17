@@ -1,7 +1,10 @@
 {
-    "extName": {
-        "message": "xStyle"
-    },
+	"OFF": {
+		"message": "關閉"
+	},
+	"ON": {
+		"message": "開啟"
+	},
 	"addStyleLabel": {
 		"message": "編寫新樣式",
 		"description": "Label for the button to go to the add style page"
@@ -37,7 +40,7 @@
 	},
 	"appliesLabel": {
 		"message": "作用於",
-		"description": "Label for 'applies to' fields on the edit\/add screen"
+		"description": "Label for 'applies to' fields on the edit/add screen"
 	},
 	"appliesRegexpOption": {
 		"message": "符合正規表示式的網址",
@@ -66,6 +69,9 @@
 	"applyAllUpdates": {
 		"message": "套用所有更新",
 		"description": "Label for the button to apply all detected updates"
+	},
+	"bckpInstStyles": {
+		"message": "備份所有已安裝的樣式"
 	},
 	"checkAllUpdates": {
 		"message": "檢查更新：所有樣式",
@@ -115,6 +121,9 @@
 		"message": "是",
 		"description": "'Yes' button in a confirm dialog"
 	},
+	"createOwnStyle": {
+		"message": "編寫您自己的樣式"
+	},
 	"dbError": {
 		"message": "使用 xStyle 資料庫時出現錯誤。您想瀏覽可能包含解決辦法的網頁嗎？",
 		"description": "Prompt when a DB error is encountered"
@@ -123,13 +132,13 @@
 		"message": "預設",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
-	"deleteStyleLabel": {
-		"message": "刪除",
-		"description": "Label for the button to delete a style"
-	},
 	"deleteStyleConfirm": {
 		"message": "您是否要刪除這個樣式？",
 		"description": "Confirmation before deleting a style"
+	},
+	"deleteStyleLabel": {
+		"message": "刪除",
+		"description": "Label for the button to delete a style"
 	},
 	"description": {
 		"message": "利用 xStyle 使用者樣式管理程式，將整個網站改頭換面。有了 xStyle，您可以為許多網站安裝佈景主題和面板外觀，還可以自創樣式。",
@@ -155,10 +164,6 @@
 		"message": "編輯",
 		"description": "Label for the button to go to the edit style page"
 	},
-	"exportStyleLabel": {
-		"message": "匯出",
-		"description": "Export a style as a json file"
-	},
 	"editStyleTitle": {
 		"message": "編輯樣式 $stylename$",
 		"description": "Title of the page for editing styles",
@@ -176,37 +181,24 @@
 		"message": "匯出",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
-	"findStylesForThisSiteTextOff": {
-		"description": "Text for a link that gets a list of styles for another sites when there are no styles available for current site",
-		"message": "這網站沒有可用樣式。您可以做第一位編寫者！"
+	"exportStyleLabel": {
+		"message": "匯出",
+		"description": "Export a style as a json file"
 	},
-	"findStylesForThisSiteLinkOff": {
-		"description": "text for link (<a>) after findStylesForThisSiteTextOff",
-		"message": "尋找其他。"
-	},
-	"findStylesForThisSiteText": {
-		"description": "Text for a link that gets a list of styles for the current site",
-		"message": "這網站有可用樣式。"
-	},
-	"findStylesForThisSiteLink": {
-		"description": "text for link (<a>) after findStylesForThisSiteText",
-		"message": "選用它們。"
+	"extName": {
+		"message": "xStyle"
 	},
 	"helpAlt": {
 		"message": "說明",
 		"description": "Alternate text for help buttons"
 	},
-	"helpKeyMapHotkey": {
-		"message": "按下熱鍵",
-		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
-	},
 	"helpKeyMapCommand": {
 		"message": "鍵入命令名稱",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
-	"importLabel": {
-		"message": "匯入",
-		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+	"helpKeyMapHotkey": {
+		"message": "按下熱鍵",
+		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"importAppendLabel": {
 		"message": "附加到樣式",
@@ -216,6 +208,10 @@
 		"message": "將匯入的樣式附加到目前樣式",
 		"description": "Tooltip for the button to import a style and append to the existing sections"
 	},
+	"importLabel": {
+		"message": "匯入",
+		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+	},
 	"importReplaceLabel": {
 		"message": "覆寫樣式",
 		"description": "Label for the button to import and overwrite current style"
@@ -224,10 +220,10 @@
 		"message": "棄用目前樣式內容並匯入樣式覆寫",
 		"description": "Label for the button to import and overwrite current style"
 	},
-    "installButtonLabel": {
-        "message": "安裝樣式",
-        "description": "Label inside the install button"
-    },
+	"installButtonLabel": {
+		"message": "安裝樣式",
+		"description": "Label inside the install button"
+	},
 	"installUpdate": {
 		"message": "安裝更新",
 		"description": "Label for the button to install an update for a single style"
@@ -248,13 +244,13 @@
 		"message": "已安裝的樣式",
 		"description": "Heading for the manage page"
 	},
-	"manageOnlyEnabled": {
-		"message": "只顯示已啟用的樣式",
-		"description": "Checkbox to show only enabled styles"
-	},
 	"manageOnlyEdited": {
 		"message": "只顯示使用者編寫的樣式",
 		"description": "Checkbox to show only locally edited styles"
+	},
+	"manageOnlyEnabled": {
+		"message": "只顯示已啟用的樣式",
+		"description": "Checkbox to show only enabled styles"
 	},
 	"manageTitle": {
 		"message": "xStyle",
@@ -268,17 +264,20 @@
 		"message": "您沒有為此網頁安裝任何樣式",
 		"description": "Text displayed when no styles are installed for the current site"
 	},
-	"openManage": {
-		"message": "管理樣式",
-		"description": "Link to open the manage page."
-	},
 	"openCreate": {
 		"message": "編寫新樣式",
 		"description": "Link to open the creation page."
 	},
+	"openManage": {
+		"message": "管理樣式",
+		"description": "Link to open the manage page."
+	},
 	"optionsHeading": {
 		"message": "選項",
 		"description": "Heading for options section on manage page."
+	},
+	"popupHaveNoStyle": {
+		"message": "您沒有安裝任何作用於本網站的樣式。"
 	},
 	"prefShowBadge": {
 		"message": "在工具列按鈕上顯示：作用於目前網站的樣式數目。",
@@ -295,6 +294,9 @@
 	"replaceWith": {
 		"message": "取代成",
 		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
+	},
+	"retrieveBckp": {
+		"message": "擷取備份"
 	},
 	"search": {
 		"message": "搜尋",
@@ -324,6 +326,12 @@
 		"message": "移除樣式段",
 		"description": "Label for the button to remove a section"
 	},
+	"sendFeedbackLabel": {
+		"message": "傳送意見回饋"
+	},
+	"styleActiveLabel": {
+		"message": "作用中"
+	},
 	"styleBadRegexp": {
 		"message": "正規表示式無效。",
 		"description": "Validation message for a bad regexp in a style"
@@ -344,6 +352,13 @@
 		"message": "已啟用",
 		"description": "Label for the enabled state of styles"
 	},
+	"styleFromMozillaFormatPrompt": {
+		"message": "貼上Mozilla格式的代碼",
+		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
+	},
+	"styleInactiveLabel": {
+		"message": "已停用"
+	},
 	"styleInstall": {
 		"message": "是否要安裝 '$stylename$' 到 xStyle ？",
 		"description": "Confirmation when installing a style",
@@ -357,6 +372,10 @@
 		"message": "請輸入名稱。",
 		"description": "Error displayed when user saves without providing a name"
 	},
+	"styleMozillaFormatHeading": {
+		"message": "Mozilla格式",
+		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
+	},
 	"styleSaveLabel": {
 		"message": "儲存",
 		"description": "Label for save button for style editing"
@@ -365,21 +384,13 @@
 		"message": "樣式段",
 		"description": "Title for the style sections section"
 	},
-	"styleMozillaFormatHeading": {
-		"message": "Mozilla格式",
-		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
-	},
-	"styleFromMozillaFormatPrompt": {
-		"message": "貼上Mozilla格式的代碼",
-		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
+	"styleToMozillaFormatHelp": {
+		"message": "Mozilla格式的樣式代碼能在火狐版Stylish使用，也可以提交至 userstyles.org 。",
+		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
 	},
 	"styleToMozillaFormatTitle": {
 		"message": "Mozilla格式的樣式",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
-	},
-	"styleToMozillaFormatHelp": {
-		"message": "Mozilla格式的樣式代碼能在火狐版Stylish使用，也可以提交至 userstyles.org 。",
-		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
 	},
 	"styleUpdate": {
 		"message": "您是否確認要更新 '$stylename$' ？",
@@ -390,9 +401,8 @@
 			}
 		}
 	},
-	"xStyleUnavailableForURL": {
-		"message": "xStyle 不能作用於此類網頁",
-		"description": "Note in the toolbar pop-up when on a URL xStyle can't affect"
+	"stylesLibLabel": {
+		"message": "樣式列表"
 	},
 	"undo": {
 		"message": "復原",
@@ -401,6 +411,10 @@
 	"undoGlobal": {
 		"message": "復原（全域）",
 		"description": "CSS-beautify global Undo button label"
+	},
+	"updateAllCheckSucceededNoUpdate": {
+		"message": "所有樣式皆為最新版。",
+		"description": "Text that displays when an update all check completed and no updates are available"
 	},
 	"updateCheckFailBadResponseCode": {
 		"message": "更新失敗 – 伺服器傳回代碼 $code$ 。",
@@ -419,10 +433,6 @@
 		"message": "樣式已是最新版本。",
 		"description": "Text that displays when an update check completed and no update is available"
 	},
-	"updateAllCheckSucceededNoUpdate": {
-		"message": "所有樣式皆為最新版。",
-		"description": "Text that displays when an update all check completed and no updates are available"
-	},
 	"updateCompleted": {
 		"message": "更新完成。",
 		"description": "Text that displays when an update completed"
@@ -435,34 +445,8 @@
 		"message": "此網址",
 		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
 	},
-    "createOwnStyle": {
-        "message": "編寫您自己的樣式"
-    },
-	"popupHaveNoStyle": {
-		"message": "您沒有安裝任何作用於本網站的樣式。"
-	},
-    "ON": {
-        "message": "開啟"
-    },
-    "OFF": {
-        "message": "關閉"
-    },
-    "styleActiveLabel": {
-        "message": "作用中"
-    },
-    "styleInactiveLabel": {
-        "message": "已停用"
-    },
-    "sendFeedbackLabel": {
-        "message": "傳送意見回饋"
-    },
-    "bckpInstStyles": {
-        "message": "備份所有已安裝的樣式"
-    },
-    "retrieveBckp": {
-        "message": "擷取備份"
-    },
-    "stylesLibLabel": {
-        "message": "樣式列表"
-    }
+	"xStyleUnavailableForURL": {
+		"message": "xStyle 不能作用於此類網頁",
+		"description": "Note in the toolbar pop-up when on a URL xStyle can't affect"
+	}
 }
