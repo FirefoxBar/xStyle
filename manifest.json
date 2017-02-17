@@ -1,4 +1,11 @@
 {
+	"applications": {
+		"gecko": {
+			"id": "xstyle@addon.firefoxcn.net",
+			"strict_min_version": "45.0",
+			"strict_max_version": "55.0"
+		}
+	},
 	"name": "__MSG_extName__",
 	"short_name": "xStyle",
 	"version": "1.0.0",
@@ -24,15 +31,14 @@
 		"scripts": ["src/refilter.js", "src/messaging.js", "src/storage-websql.js", "src/storage.js", "src/background.js"]
 	},
 	"commands": {
-	  "openManage": {
-		"description": "__MSG_openManage__"
-	  },
-	  "styleDisableAll": {
-		"description": "__MSG_disableAllStyles__"
-	  }
+		"openManage": {
+			"description": "__MSG_openManage__"
+		},
+		"styleDisableAll": {
+			"description": "__MSG_disableAllStyles__"
+		}
 	},
-	"content_scripts": [
-		{
+	"content_scripts": [{
 			"matches": ["<all_urls>"],
 			"run_at": "document_start",
 			"all_frames": true,
