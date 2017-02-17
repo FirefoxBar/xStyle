@@ -97,7 +97,7 @@ function renderInstalledTab(styles){
 	renderForAllCases();
 	if (styles.length == 0){
 		renderPageForNoStyles();
-	}else{
+	} else {
 		renderPageWithStyles(styles);
 	}
 }
@@ -106,10 +106,6 @@ function renderPageForNoStyles(){
 	getInstalledStylesTabContainer().classList.add(ZERO_INSTALLED_CLASS);
 	getZeroStylesEl().classList.remove('hide');
 	getInstalledStylesEl().classList.add('hide');
-}
-
-function isStyleLocal(style){
-    return !style.url && !style.styleid;
 }
 
 function preProcessImage(style){
@@ -132,18 +128,10 @@ function renderPageWithStyles(styles){
 	getInstalledStylesTabContainer().classList.remove(ZERO_INSTALLED_CLASS);
 	getZeroStylesEl().classList.add('hide');
 	getInstalledStylesEl().classList.remove('hide');
-	var sif = new StyleInfoFetcher().setRequester(new SessionCachedRequester());
 	styles.forEach(function(style){
-		if (!isStyleLocal(style)){
-			sif.getStyleInfoByUrl(style.url).then(function(styleInfo){
-				Object.assign(style, styleInfo);
-				return style;
-			}).then(addStyleToInstalled);
-		}else{
-			preProcessLocalStyle(style);
-			addStyleToInstalled(style);
-		}
-	})
+		preProcessLocalStyle(style);
+		addStyleToInstalled(style);
+	});
 }
 
 function preProcessInstalls(installsSrc){
@@ -211,6 +199,9 @@ function preProcessInstalledStyle(style){
 function addStyleToInstalled(style){
 	preProcessInstalledStyle(style);
 	var el = installedStyleToElement(style);
+	if (style.author === undefined) {
+		el.querySelector('.style-author').style.display = 'none';
+	}
 	bindHandlers(el, style);
 	getInstalledStylesEl().appendChild(el);
 	return el;
