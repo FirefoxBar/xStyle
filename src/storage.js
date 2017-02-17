@@ -98,6 +98,7 @@ function filterStyles(styles, options) {
 }
 
 function saveStyle(o, callback) {
+	delete o["method"];
 	getDatabase(function(db) {
 		var tx = db.transaction(["styles"], "readwrite");
 		var os = tx.objectStore("styles");
@@ -668,25 +669,11 @@ function defineReadonlyProperty(obj, key, value) {
 
 // Polyfill, can be removed when Firefox gets this - https://bugzilla.mozilla.org/show_bug.cgi?id=1220494
 function getSync() {
-	// Firefox do not support
-	/*
+	// Firefox do not support sync, use local to instead it
 	if ("sync" in browser.storage) {
 		return browser.storage.sync;
-	}*/
-	crappyStorage = {};
-	return {
-		get: function(key, callback) {
-			callback(crappyStorage[key] || {});
-		},
-		set: function(source, callback) {
-			for (var property in source) {
-					if (source.hasOwnProperty(property)) {
-							crappyStorage[property] = source[property];
-					}
-			}
-			if (callback) {
-				callback();
-			}
-		}
+	}
+	if ("local" in browser.storage) {
+		return browser.storage.local;
 	}
 }
