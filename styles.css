@@ -659,4 +659,12 @@ body > .actions {
 	left: -34px;
 	top: 8px;
 }
+#getFromUserstyle{
+	background-image:url(images/u.png);
+	height: 20px;
+	width: 20px;
+	position: absolute;
+	top: 15px;
+	right: 10px
+}
 /** zero styles >**/

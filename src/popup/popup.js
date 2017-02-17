@@ -317,6 +317,7 @@ function updateCreateStyleLink(tabDomain){
 
 function updateSiteName(siteName){
 	document.getElementById('sitename').innerHTML = siteName;
+	document.getElementById('getFromUserstyle').href = "https://userstyles.org/styles/browse/all/" + siteName;
 }
 
 function getSiteName(tabUrl){
