@@ -67,10 +67,10 @@ function updateIcon(tab, styles) {
 		}, function() {
 			// if the tab was just closed an error may occur,
 			// e.g. 'windowPosition' pref updated in edit.js::window.onbeforeunload
-			if (!browser.runtime.lastError) {
-				var t = prefs.get("show-badge") && styles.length ? ("" + styles.length) : "";
+			if (!browser.runtime.lastError && prefs.get("show-badge")) {
+				var t = styles.length ? styles.length.toString() : "";
 				browser.browserAction.setBadgeText({text: t, tabId: tab.id});
-				browser.browserAction.setBadgeBackgroundColor({color: "#000"});
+				browser.browserAction.setBadgeBackgroundColor({color: "#333"});
 			}
 		});
 	}
