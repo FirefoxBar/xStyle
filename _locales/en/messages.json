@@ -326,9 +326,6 @@
 		"message": "Remove section",
 		"description": "Label for the button to remove a section"
 	},
-	"sendFeedbackLabel": {
-		"message": "Send Feedback"
-	},
 	"styleActiveLabel": {
 		"message": "ACTIVE"
 	},

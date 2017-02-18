@@ -326,9 +326,6 @@
 		"message": "删除此部分",
 		"description": "Label for the button to remove a section"
 	},
-	"sendFeedbackLabel": {
-		"message": "发送反馈"
-	},
 	"styleActiveLabel": {
 		"message": "激活"
 	},

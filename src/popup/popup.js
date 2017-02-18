@@ -1,6 +1,4 @@
-var IMAGE_URL_NOT_AVAILABLE = "n/a",
-IMAGE_URL_DEFAULT = "images/image_na.png",
-ENABLED_CLASS = "enabled",
+var ENABLED_CLASS = "enabled",
 DISABLED_CLASS = "disabled",
 ZERO_INSTALLED_CLASS = "zero-installed";
 
@@ -9,7 +7,6 @@ writeStyleTemplate.className = "write-style-link";
 
 var installed = document.getElementById("installed");
 
-var STYLE_URL_ID_REGEX = /(styles\/)(\d+)/;
 var menutype;
 var website;
 
@@ -64,8 +61,7 @@ function sendDisableAll(value){
 			value = !prefs.get("disableAll");
 		}
 		prefs.set("disableAll", value);
-		notifyAllTabs({method: "styleDisableAll", disableAll: value})
-			.then(resolve);
+		notifyAllTabs({method: "styleDisableAll", disableAll: value}).then(resolve);
 	});
 }
 
@@ -108,28 +104,11 @@ function renderPageForNoStyles(){
 	getInstalledStylesEl().classList.add('hide');
 }
 
-function preProcessImage(style){
-    if (!style.thumbnail ||
-        style.thumbnail.toLowerCase() == IMAGE_URL_NOT_AVAILABLE){
-        style.thumbnail = IMAGE_URL_DEFAULT;
-    }
-    return style;
-}
-
-function preProcessLocalStyle(style){
-    // mind that preProcessInstalledStyle will still be
-    // called but after this
-    style.styleid = "local" + style.id;
-    preProcessImage(style);
-    style.screenshot = style.thumbnail;
-}
-
 function renderPageWithStyles(styles){
 	getInstalledStylesTabContainer().classList.remove(ZERO_INSTALLED_CLASS);
 	getZeroStylesEl().classList.add('hide');
 	getInstalledStylesEl().classList.remove('hide');
 	styles.forEach(function(style){
-		preProcessLocalStyle(style);
 		addStyleToInstalled(style);
 	});
 }
@@ -166,21 +145,6 @@ function preProcessStyle(style){
     return style;
 }
 
-function getOrParseStyleId(style){
-    if (style.styleid) {
-        return style.styleid;
-    }
-
-    var parsed;
-	try{
-		parsed = parseStyleId(style);
-		return parsed;
-	} catch(e){
-		console.error(e);
-		return Math.floor(-10000 * Math.random());
-	}
-}
-
 function preProcessInstalledStyle(style){
     style.installs = style.weekly_installs;
     preProcessStyle(style);
@@ -188,12 +152,10 @@ function preProcessInstalledStyle(style){
     style.activateButtonLabel = browser.i18n.getMessage("enableStyleLabel");
     style.deactivateButtonLabel = browser.i18n.getMessage("disableStyleLabel");
     style.deleteButtonLabel = browser.i18n.getMessage("deleteStyleLabel");
-    style.sendFeedbackLabel = browser.i18n.getMessage("sendFeedbackLabel");
     style.additionalClass = style.enabled ? "enabled" : "disabled";
     style.active_str = browser.i18n.getMessage("styleActiveLabel");
     style.inactive_str = browser.i18n.getMessage("styleInactiveLabel");
     style.style_edit_url = "edit.html?id=" + style.id;
-    style.styleId = getOrParseStyleId(style);
 }
 
 function addStyleToInstalled(style){

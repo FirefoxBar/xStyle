@@ -326,9 +326,6 @@
 		"message": "移除樣式段",
 		"description": "Label for the button to remove a section"
 	},
-	"sendFeedbackLabel": {
-		"message": "傳送意見回饋"
-	},
 	"styleActiveLabel": {
 		"message": "作用中"
 	},
