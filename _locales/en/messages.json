@@ -220,10 +220,6 @@
 		"message": "Discard contents of current style and overwrite it with the imported style",
 		"description": "Label for the button to import and overwrite current style"
 	},
-	"installButtonLabel": {
-		"message": "Install Style",
-		"description": "Label inside the install button"
-	},
 	"installUpdate": {
 		"message": "Install update",
 		"description": "Label for the button to install an update for a single style"

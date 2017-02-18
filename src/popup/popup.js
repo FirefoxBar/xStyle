@@ -113,41 +113,7 @@ function renderPageWithStyles(styles){
 	});
 }
 
-function preProcessInstalls(installsSrc){
-	installsSrc = installsSrc || 1;
-    var installs, devider = 1;
-    if (installsSrc >= 1000000){
-        devider = 1000000;
-    } else if (installsSrc >= 1000){
-        devider = 1000;
-    }
-    if (devider > 1){
-        installs = installsSrc / devider;
-        installs = installs.toFixed(1);
-        installs = installs.replace(".0", ""); // remove the decimal part if it is 0
-        switch (devider){
-            case 1000:
-                installs += "k";
-                break;
-            case 1000000:
-                installs += "m";
-                break;
-        }
-    } else {
-        installs = installsSrc;
-    }
-    return installs;
-}
-
-function preProcessStyle(style){
-    style.installsStr = preProcessInstalls(style.installs);
-    style.installButtonLabel = browser.i18n.getMessage("installButtonLabel");
-    return style;
-}
-
 function preProcessInstalledStyle(style){
-    style.installs = style.weekly_installs;
-    preProcessStyle(style);
     style.editButtonLabel = browser.i18n.getMessage("editStyleLabel");;
     style.activateButtonLabel = browser.i18n.getMessage("enableStyleLabel");
     style.deactivateButtonLabel = browser.i18n.getMessage("disableStyleLabel");

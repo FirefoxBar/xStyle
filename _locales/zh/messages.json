@@ -220,10 +220,6 @@
 		"message": "放弃当前样式的内容，使用已导入样式覆盖它",
 		"description": "Label for the button to import and overwrite current style"
 	},
-	"installButtonLabel": {
-		"message": "安装样式",
-		"description": "Label inside the install button"
-	},
 	"installUpdate": {
 		"message": "安装更新",
 		"description": "Label for the button to install an update for a single style"

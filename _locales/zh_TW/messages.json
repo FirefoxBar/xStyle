@@ -220,10 +220,6 @@
 		"message": "棄用目前樣式內容並匯入樣式覆寫",
 		"description": "Label for the button to import and overwrite current style"
 	},
-	"installButtonLabel": {
-		"message": "安裝樣式",
-		"description": "Label inside the install button"
-	},
 	"installUpdate": {
 		"message": "安裝更新",
 		"description": "Label for the button to install an update for a single style"
