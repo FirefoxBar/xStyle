@@ -51,7 +51,9 @@
 			"js": ["src/inject/install.js"]
 		}
 	],
-	"options_page": "manage.html",
+	"options_ui": {
+		"page": "manage.html"
+	},
 	"browser_action": {
 		"default_icon": {
 			"128": "images/128.png"
