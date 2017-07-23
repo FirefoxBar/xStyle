@@ -8,7 +8,6 @@ if (/Firefox\/(\d+)\.(\d+)/.test(navigator.userAgent)) {
 
 function saveAsFile(text, fileName, dialog) {
 	fileName = fileName || XSTYLE_DEFAULT_SAVE_NAME;
-	dialog = typeof dialog === "boolean" ? dialog : true;
 
 	return new Promise(function(resolve){
 		var blob = new Blob([text]);
