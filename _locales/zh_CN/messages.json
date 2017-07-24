@@ -136,7 +136,7 @@
 		"description": "Label for the checkbox that turns all enabled styles off."
 	},
 	"disableStyleLabel": {
-		"message": "禁用",
+		"message": "已启用",
 		"description": "Label for the button to disable a style"
 	},
 	"editGotoLine": {
@@ -161,7 +161,7 @@
 		}
 	},
 	"enableStyleLabel": {
-		"message": "启用",
+		"message": "已禁用",
 		"description": "Label for the button to enable a style"
 	},
 	"exportLabel": {

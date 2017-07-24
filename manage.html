@@ -122,9 +122,8 @@
 	</style>
 
 	<style>
-	.mdl-card__title-text .mdl-button {
+	.mdl-card__menu .mdl-button {
 		color: #555;
-		margin-left: 10px;
 	}
 	.disabled .disable {
 		display: none;
@@ -150,23 +149,22 @@
 	<template data-id="style">
 		<section class="mdl-card mdl-shadow--2dp">
 			<div class="mdl-card__title mdl-card--expand">
-				<h2 class="mdl-card__title-text"><span class="style-name"></span><button class="mdl-button mdl-js-button mdl-button--icon update"><i class="material-icons">get_app</i></button></h2>
+				<h2 class="mdl-card__title-text style-name"></h2>
 			</div>
 			<div class="mdl-card__supporting-text applies-to"></div>
 			<div class="mdl-card__actions mdl-card--border">
 				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect homepage hidden" target="_blank" i18n-text="homepage"></a>
 				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect style-edit-link" href="edit.html?id=" i18n-text="editStyleLabel"></a>
-				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect enable" i18n-text="enableStyleLabel"></a>
-				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect disable" i18n-text="disableStyleLabel"></a>
 				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect delete" i18n-text="deleteStyleLabel"></a>
 				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect export" i18n-text="exportStyleLabel"></a>
 				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect check-update"><span i18n-text="checkForUpdate"></span><div class="loading mdl-spinner mdl-js-spinner is-active"></div></a>
 			</div>
+			<div class="mdl-card__menu">
+				<button class="mdl-button mdl-js-button mdl-button--icon enable" i18n-title="enableStyleLabel"><i class="material-icons">block</i></button>
+				<button class="mdl-button mdl-js-button mdl-button--icon disable" i18n-title="disableStyleLabel"><i class="material-icons">done</i></button>
+				<button class="mdl-button mdl-js-button mdl-button--icon update"><i class="material-icons">get_app</i></button>
+			</div>
 		</section>
-	</template>
-
-	<template data-id="styleHomepage">
-		<a target="_blank" class="mdl-button mdl-js-button mdl-button--icon"><i class="material-icons">explore</i></a>
 	</template>
 
 	<script src="src/localization.js"></script>
