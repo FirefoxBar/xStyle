@@ -3,7 +3,7 @@ var installed;
 
 var appliesToExtraTemplate = document.createElement("span");
 appliesToExtraTemplate.className = "applies-to-extra";
-appliesToExtraTemplate.innerHTML = " " + t('appliesDisplayTruncatedSuffix');
+appliesToExtraTemplate.innerHTML = "";
 
 browser.runtime.sendMessage({method: "getStyles"}).then(showStyles);
 
@@ -81,7 +81,7 @@ function createStyleElement(style) {
 		appliesToString = appliesToToShow.slice(0, 10).join(", ");
 		showAppliesToExtra = true;
 	}
-	e.querySelector(".applies-to").appendChild(document.createTextNode(t('appliesDisplay', [appliesToString])));
+	e.querySelector(".applies-to").appendChild(document.createTextNode(appliesToString));
 	if (showAppliesToExtra) {
 		e.querySelector(".applies-to").appendChild(appliesToExtraTemplate.cloneNode(true));
 	}
@@ -214,7 +214,7 @@ function handleUpdate(style) {
 	installed.replaceChild(element, installed.querySelector("[style-id='" + style.id + "']"));
 	if (style.id == lastUpdatedStyleId) {
 		lastUpdatedStyleId = null;
-		//element.querySelector(".update-note").innerHTML = t('updateCompleted');
+		showToast(t('updateCompleted'));
 	};
 }
 
@@ -246,11 +246,9 @@ function applyUpdateAll() {
 function checkUpdateAll() {
 	var btnCheck = document.getElementById("check-all-updates");
 	var btnApply = document.getElementById("apply-all-updates");
-	var noUpdates = document.getElementById("update-all-no-updates");
 
 	btnCheck.disabled = true;
 	btnApply.classList.add("hidden");
-	noUpdates.classList.add("hidden");
 
 	var elements = document.querySelectorAll("[style-update-url]");
 	var toCheckCount = elements.length;
@@ -265,17 +263,14 @@ function checkUpdateAll() {
 				if (updatableCount) {
 					btnApply.classList.remove("hidden");
 				} else {
-					noUpdates.classList.remove("hidden");
-					setTimeout(function() {
-						noUpdates.classList.add("hidden");
-					}, 10000);
+					showToast(t('updateAllCheckSucceededNoUpdate'));
 				}
 			}
-		});
+		}, true);
 	});
 }
 
-function checkUpdate(element, callback) {
+function checkUpdate(element, callback, isNoToast) {
 	element.querySelector(".check-update .loading").style.display = "inline-block";
 	element.className = element.className.replace("checking-update", "").replace("no-update", "").replace("can-update", "") + " checking-update";
 	var id = element.getAttribute("style-id");
@@ -288,9 +283,9 @@ function checkUpdate(element, callback) {
 			var style = styles[0];
 			var needsUpdate = false;
 			if (!forceUpdate && codeIsEqual(style.sections, serverJson.sections)) {
-				handleNeedsUpdate("no", id, serverJson);
+				handleNeedsUpdate("no", id, serverJson, isNoToast);
 			} else {
-				handleNeedsUpdate("yes", id, serverJson);
+				handleNeedsUpdate("yes", id, serverJson, isNoToast);
 				needsUpdate = true;
 			}
 			if (callback) {
@@ -301,9 +296,9 @@ function checkUpdate(element, callback) {
 
 	function handleFailure(status) {
 		if (status == 0) {
-			handleNeedsUpdate(t('updateCheckFailServerUnreachable'), id, null);
+			handleNeedsUpdate(t('updateCheckFailServerUnreachable'), id, null, isNoToast);
 		} else {
-			handleNeedsUpdate(t('updateCheckFailBadResponseCode', [status]), id, null);
+			handleNeedsUpdate(t('updateCheckFailBadResponseCode', [status]), id, null, isNoToast);
 		}
 		if (callback) {
 			callback(false);
@@ -318,7 +313,7 @@ function checkUpdate(element, callback) {
 				// If the md5 shows a change we will update regardless of whether the code looks different
 				checkUpdateFullCode(url, true, handleSuccess, handleFailure);
 			} else {
-				handleNeedsUpdate("no", id, null);
+				handleNeedsUpdate("no", id, null, isNoToast);
 				if (callback) {
 					callback(false);
 				}
@@ -365,20 +360,20 @@ function download(url, successCallback, failureCallback) {
 	}
 }
 
-function handleNeedsUpdate(needsUpdate, id, serverJson) {
+function handleNeedsUpdate(needsUpdate, id, serverJson, isNoToast) {
 	var e = document.querySelector("[style-id='" + id + "']");
 	e.className = e.className.replace("checking-update", "");
 	e.querySelector(".check-update .loading").style.display = "none";
 	switch (needsUpdate) {
 		case "yes":
 			e.updatedCode = serverJson;
-			//e.querySelector(".update-note").innerHTML = '';
-			break;
+			return;
 		case "no":
-			//e.querySelector(".update-note").innerHTML = t('updateCheckSucceededNoUpdate');
+			needsUpdate = t('updateCheckSucceededNoUpdate');
 			break;
-		default:
-			//e.querySelector(".update-note").innerHTML = needsUpdate;
+	}
+	if (!isNoToast) {
+		showToast(needsUpdate);
 	}
 }
 
@@ -394,6 +389,10 @@ function doUpdate(event) {
 	// updating the UI will be handled by the general update listener
 	lastUpdatedStyleId = updatedCode.id;
 	browser.runtime.sendMessage(updatedCode);
+}
+
+function showToast(message) {
+    document.getElementById('toast').MaterialSnackbar.showSnackbar({"message": message});
 }
 
 function codeIsEqual(a, b) {

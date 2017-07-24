@@ -17,15 +17,6 @@
 		"message": "添加",
 		"description": "Label for the button to add an 'applies' entry"
 	},
-	"appliesDisplay": {
-		"message": "应用对象：$applies$",
-		"description": "Text on the manage screen to describe what the style applies to",
-		"placeholders": {
-			"applies": {
-				"content": "$1"
-			}
-		}
-	},
 	"appliesDisplayTruncatedSuffix": {
 		"message": "等等",
 		"description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
@@ -279,7 +270,7 @@
 		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
 	},
 	"retrieveBckp": {
-		"message": "检索备份"
+		"message": "从备份文件导入"
 	},
 	"search": {
 		"message": "搜索",
