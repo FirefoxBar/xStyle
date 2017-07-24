@@ -43,12 +43,6 @@ function createStyleElement(style) {
 
 	var styleName = e.querySelector(".style-name");
 	styleName.appendChild(document.createTextNode(style.name));
-	if (style.url) {
-		var homepage = template.styleHomepage.cloneNode(true)
-		homepage.setAttribute("href", style.url);
-		styleName.appendChild(document.createTextNode(" " ));
-		styleName.appendChild(homepage);
-	}
 	var domains = [];
 	var urls = [];
 	var urlPrefixes = [];
@@ -90,6 +84,10 @@ function createStyleElement(style) {
 	e.querySelector(".applies-to").appendChild(document.createTextNode(t('appliesDisplay', [appliesToString])));
 	if (showAppliesToExtra) {
 		e.querySelector(".applies-to").appendChild(appliesToExtraTemplate.cloneNode(true));
+	}
+	if (style.url) {
+		e.querySelector(".homepage").href = style.url;
+		e.querySelector(".homepage").classList.remove('hidden');
 	}
 	var editLink = e.querySelector(".style-edit-link");
 	editLink.setAttribute("href", editLink.getAttribute("href") + style.id);

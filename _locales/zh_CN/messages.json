@@ -196,6 +196,9 @@
 		"message": "按下热键",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
+	"homepage": {
+		"message": "主页"
+	},
 	"importAppendLabel": {
 		"message": "追加到样式",
 		"description": "Label for the button to import a style and append to the existing sections"
