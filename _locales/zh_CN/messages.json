@@ -228,6 +228,10 @@
 		"message": "<a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> 在已启用的这些规则中找到问题：",
 		"description": "Help popup message for the CSSLint issues block on the style edit page"
 	},
+	"manageHeading": {
+		"message": "已安装样式",
+		"description": "Heading for the manage page"
+	},
 	"manageTitle": {
 		"message": "xStyle",
 		"description": "Title for the manage page"

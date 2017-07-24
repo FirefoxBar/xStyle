@@ -131,6 +131,10 @@ function createStyleElement(style) {
 	e.querySelector(".check-update").addEventListener("click", doCheckUpdate, false);
 	e.querySelector(".update").addEventListener("click", doUpdate, false);
 	e.querySelector(".delete").addEventListener("click", doDelete, false);
+	//material
+	if (typeof(componentHandler) !== 'undefined') {
+		componentHandler.upgradeElement(e.querySelector(".check-update .loading"), 'MaterialSpinner');
+	}
 	return e;
 }
 
