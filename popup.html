@@ -1,22 +1,26 @@
-<html><head>
+<!DOCTYPE html>
+<html>
+<head>
 	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<link rel="stylesheet" href="third-party/material-design-icons/material-icons.min.css"/>
+	<link rel="stylesheet" href="third-party/mdl/material.min.css"/>
     <script id="template-style-installed-item" type="x-tmpl-mustache">
-		<div id="installed-style-{{id}}" class="installed entry {{additionalClass}}" >
-			<div class="main-controls">
-				<div class="title">
-					<span class="activation_status active"></span>
-					<span class="activation_status inactive"></span>
-					<span class="style-name">{{name}}</span>
-				</div>
-				<div class="action">
-					<span class="style-author">by {{author}}</span>
-					<a class="edit" href="{{style_edit_url}}" target="_blank">{{editButtonLabel}}</a>
-					<a class="activate" href="{{style_url}}" target="_blank">{{activateButtonLabel}}</a>
-					<a class="deactivate" href="{{style_url}}" target="_blank">{{deactivateButtonLabel}}</a>
-					<a class="delete" href="{{style_url}}" target="_blank">{{deleteButtonLabel}}</a>
-				</div>
-			</div>
-		</div>
+	<li id="installed-style-{{id}}" class="mdl-list__item mdl-list__item--two-line entry">
+		<span class="mdl-list__item-primary-content">
+			<span class="mdl-list__item-avatar">{{style_first_word}}</span>
+			<span>{{name}}</span>
+			<span class="mdl-list__item-sub-title">
+				<span class="style-author">by {{author}}</span>
+				<a class="mdl-button mdl-js-button mdl-button--icon edit" href="{{style_edit_url}}" target="_blank"><i class="material-icons">create</i></a>
+				<a class="mdl-button mdl-js-button mdl-button--icon delete" href="{{style_url}}" target="_blank"><i class="material-icons">delete</i></a>
+			</span>
+		</span>
+		<span class="mdl-list__item-secondary-action">
+			<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="list-switch-{{id}}">
+				<input type="checkbox" id="list-switch-{{id}}" class="mdl-switch__input activate" />
+			</label>
+		</span>
+	</li>
     </script>
     <link rel="stylesheet" href="animate.css"/>
 	<link rel="stylesheet" href="styles.css"/>
@@ -39,19 +43,10 @@
     </div>
     <section id="tab-item-installed" class="tab-item tab-installed">
         <div id="disable-all-container">
-            <div id="disable-all-block">
-                <span class="disable-all-lable">All styles</span>
-                <div class="swipe-button">
-                    <label class="swipe-button-label">
-                        <input type="checkbox" id="disable-all-checkbox"/>
-                        <div class="swipe-wrap">
-                            <span class="on" i18n-text="ON"></span>
-                            <span class="swiper"></span>
-                            <span class="off" i18n-text="OFF"></span>
-                        </div>
-                    </label>
-                </div>
-            </div>
+			<div class="disable-all-lable">All styles</div>
+			<label class="mdl-switch mdl-js-ripple-effect" for="disable-all-checkbox">
+				<input type="checkbox" id="disable-all-checkbox" class="mdl-switch__input"/>
+			</label>
         </div>
         <div id="unavailable" class="hide">
 			<div class="message" i18n-text="xStyleUnavailableForURL"></div>
@@ -60,13 +55,14 @@
 			<div class="message" i18n-text="popupHaveNoStyle"></div>
             <div id="create_style" i18n-text="createOwnStyle"></div>
         </div>
-        <div id="installed" class="hide"></div>
+        <ul id="installed" class="hide mdl-list"></ul>
     </section>
 </div>
 <div class="bottom_controls">
     <a id="write-new-style-link" class="add_style open-manage-link" href="/edit.html" target="_blank" tabindex="-1" i18n-text="openCreate"></a>
 	<a class="manage_styles open-manage-link" href="/manage.html" target="_blank" tabindex="-1" i18n-text="openManage"></a>
 </div>
+<script src="third-party/mdl/material.min.js"></script>
 <script src="src/popup/object.assign.polyfill.js"></script>
 <script src="src/popup/Requester.js"></script>
 <script src="src/popup/MemCachedRequester.js"></script>

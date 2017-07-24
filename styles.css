@@ -1,5 +1,5 @@
 body {
-	width: 270px;
+	width: 300px;
 	font-family: 'Microsoft Yahei', 'San Francisco', -apple-system, BlinkMacSystemFont, '.SFNSText-Regular', Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	margin:0px;
 	overflow-x: hidden;
@@ -8,14 +8,11 @@ body {
 .hide{
 	display:none;
 }
-.checker {
-	display: inline;
-}
-.actions {
-	font-size: x-small;
-}
 a, a:visited {
 	color: black;
+}
+.section-spacer {
+	flex-grow: 1;
 }
 
 .left-gutter {
@@ -26,14 +23,6 @@ a, a:visited {
 .left-gutter input {
 	margin-top: 0;
 	margin-left: 0;
-}
-.entry {
-	background:#ffffff;
-	box-shadow: 0 0 5px rgba(0, 0, 0, 0.08);
-	border-radius: 3px;
-}
-.entry:not(:first-child){
-	margin-top: 10px;
 }
 
 body > DIV {
@@ -47,32 +36,28 @@ body.blocked > DIV {
 	display: none;
 }
 #installed {
-	margin-top: 0.5em;
-	padding: 5px 10px;
 	background-color: #fcfcfc;
+	margin-top: 1px;
+	padding-top: 0;
 	height: 400px;
 	overflow-y: scroll;
 	overflow-x: hidden;
 }
-#installed{
-	height: 400px;
+#installed .mdl-list__item {
+	padding: 8px;
+}
+#installed .mdl-list__item-avatar {
+	line-height: 40px;
+	font-size: 22px;
+	text-align: center;
 }
 .all-off #installed, #installed.all-off{
 	opacity: 0.7;
+	pointer-events: none;
 }
 
 #zerostyles, #unavailable {
 	height: 366px;
-}
-body > .actions {
-	margin-top: 0.5em;
-}
-
-.actions > div:not(:last-child):not(#disable-all-wrapper), .actions > .main-controls > div:not(:last-child) {
-	margin-bottom: 0.75em;
-}
-.actions input, .actions label {
-	vertical-align: middle;
 }
 #sitename{
 	height:44px;
@@ -84,11 +69,6 @@ body > .actions {
 	color: #2c3e50;
 	line-height:46px;
 	border-bottom: 1px solid #d7d7d7;
-}
-
-/* Never shown, but can be enabled with a style */
-.enable, .disable {
-	display: none;
 }
 
 /* 'New style' links */
@@ -136,123 +116,6 @@ body > .actions {
 }
 .clear{clear:both;}
 
-.main-controls {
-	padding: 8px;
-}
-.main-controls .title,
-.main-controls .title > span,
-.main-controls .action,
-.main-controls .action a,
-.main-controls .action span {
-	display: flex;
-}
-
-.main-controls .title {
-	border-bottom: 1px solid #EEE;
-	padding-bottom: 4px;
-}
-
-.main-controls .style-name,
-.main-controls .style-author{
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-.main-controls .style-name {
-	cursor: default;
-	font-weight: 400;
-	color:#2c3e50;
-	font-size: 23px;
-	padding-left: 5px;
-	height: 26px;
-	line-height: 26px;
-}
-
-.main-controls .activation_status{
-	width: 4px;
-	height: 22px;
-	margin-top: 2px;
-	margin-bottom: 2px;
-	border-radius: 3px;
-	line-height: 22px;
-	color: #ffffff;
-	text-align: center;
-	text-transform: uppercase;
-}
-.main-controls .activation_status.active{
-	background-color: #2ecc71;
-}
-.main-controls .activation_status.inactive{
-	background-color: #95a5a6;
-}
-
-.main-controls .style-author{
-	font-size: 14px;
-	color: #95a5a6;
-}
-
-.main-controls .action {
-	margin-top: 6px;
-}
-
-.main-controls .action .section-spacer {
-	flex-grow: 1;
-}
-
-.main-controls .action a {
-	height: 21px;
-	line-height: 21px;
-	border-radius: 3px;
-	text-transform: capitalize;
-	text-decoration: none;
-	padding: 2px 8px;
-	font-size: 14px;
-	margin-left: 4px;
-	border: solid 1px rgb(204, 204, 204);
-}
-.main-controls .action a:hover {
-	background-color: rgb(230, 230, 230);
-	border: solid 1px rgb(173, 173, 173);
-}
-
-/*.all-on .activation_status.inactive,*/
-/*#installer:not(.all-off).enabled .activation_status.inactive{*/
-.enabled .activation_status.inactive{
-	display: none;
-}
-/*.all-off .activation_status.active,*/
-.disabled .activation_status.active{
-	display: none;
-}
-/*.all-off .activate,*/
-.installed.enabled .activate{
-	display: none;
-}
-/*.all-off .deactivate,*/
-.installed.disabled .deactivate{
-	display: none;
-}
-
-.actions .main-controls{display:none;}
-.bottom_controls{
-	box-shadow: 0px 0 10px 0px #000000;
-	margin-top:5px;
-}
-.top_controls .menu {
-	display:block;
-	width: 50%;
-	height: 22px;
-	background-color: #ecf0f1;
-	float:left;
-	text-align:center;
-	line-height: 22px;
-	font-size: 12px;
-	box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.13);
-}
-.top_controls .menu.active {
-	background-color: #ffffff;
-}
 .bottom_controls .manage_styles, .bottom_controls .add_style {
 	display:block;
 	width: 50%;
@@ -288,9 +151,6 @@ body > .actions {
 	text-align: center;
 	color: #3498db;
 	text-decoration: none;
-}
-#unavailable{
-	height: 407px;
 }
 #nostyles, #unavailable-message{
 	height: 57px;
@@ -361,14 +221,21 @@ body > .actions {
 	visibility: hidden;
 }
 
-#tab-item-installed.zero-installed #disable-all-container{
+#tab-item-installed.zero-installed #disable-all-container,
+#tab-item-installed.unavailable #disable-all-container {
 	visibility: hidden;
 }
 #disable-all-container{
-	height: 34px;
 	width: 100%;
 	background-color: #ecf0f1;
 	box-shadow: 0 1px 0 0 #cfd6d9;
+	padding: 14px 22px;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	overflow: visible;
 }
 
 #disable-all-container .disable-all-lable{
@@ -377,87 +244,11 @@ body > .actions {
 	font-style: normal;
 	font-stretch: normal;
 	color: #2c3e50;
-	float: left;
 }
 
-#disable-all-block {
-	padding-top: 9px;
-	line-height: 19px;
-	padding-left: 22px;
-	padding-right: 22px;
+#disable-all-container .mdl-switch {
+	width: auto;
 }
-
-#disable-all-container .swipe-button{
-	float: right;
-}
-
-/** SWIPE **/
-.swipe-button{
-	display: inline-block;
-	overflow: hidden;
-	width: 51px;
-	/*background-color: #2ecc71;*/
-	border-radius: 50px;
-	height: 19px;
-	line-height: 18.5px;
-	z-index: 1;
-	position: relative;
-}
-
-.swipe-button .swipe-wrap{
-	white-space: nowrap;
-	vertical-align: middle;
-	user-select: none;
-	cursor: pointer;
-	width: 200%;
-}
-
-.swipe-button input{
-	display: none;
-}
-
-.swipe-button span{
-	font-size: 13px;
-	font-weight: bold;
-	font-style: normal;
-	font-stretch: normal;
-	color: #ffffff;
-	text-transform: uppercase;
-	display: inline-block;
-	vertical-align: middle;
-}
-
-.swipe-button .on, .swipe-button .off{
-	width: 26px;
-	text-align: center;
-}
-
-.swipe-button .swiper{
-	height: 17px;
-	width: 17px;
-	background-color: #ffffff;
-	border-radius: 50%;
-}
-
-.animation-on .swipe-button .swipe-wrap{
-	transition: transform 100ms ease-out 0ms,
-				background-color 0ms linear 50ms;
-}
-
-.swipe-button .swipe-wrap{
-	padding-left: 4px;
-}
-
-.swipe-button input[type="checkbox"]:checked + .swipe-wrap{
-	transform: translate3d(0, 0, 0);
-	background-color: #2ecc71;
-}
-
-.swipe-button input[type="checkbox"]:not(:checked) + .swipe-wrap{
-	transform: translate3d(-32px, 0, 0);
-	background-color: #95a5a6;
-}
-/** SWIPE **/
 
 /**< zero styles **/
 #zerostyles, #unavailable{
@@ -488,21 +279,6 @@ body > .actions {
 	line-height: 1.29;
 	color: #95a5a6;
 	text-align:left;
-}
-#chose_style{
-	top:36px;
-	width:145px;
-}
-#chose_style:before{
-	content:"";
-	width:36px;
-	height:27px;
-	background:url(images/up-arrow-33.svg) no-repeat;
-	background-size:contain;
-	display:block;
-	position:absolute;
-	left: -34px;
-	top: -13px;
 }
 #create_style{
 	bottom:37px;

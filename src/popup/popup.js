@@ -1,6 +1,7 @@
 var ENABLED_CLASS = "enabled",
 DISABLED_CLASS = "disabled",
 ZERO_INSTALLED_CLASS = "zero-installed";
+UNAVAILABLE_CLASS = "unavailable";
 
 var writeStyleTemplate = document.createElement("a");
 writeStyleTemplate.className = "write-style-link";
@@ -51,10 +52,6 @@ function getDisableAllCheckbox(){
 	return document.getElementById("disable-all-checkbox");
 }
 
-function getDisableAllContainer(){
-	return document.getElementById("disable-all-container");
-}
-
 function sendDisableAll(value){
 	return new Promise(function(resolve){
 		if (value === undefined || value === null) {
@@ -84,9 +81,10 @@ getActiveTabPromise().then(function(currentTab){
 
 function renderPageForUnavailable() {
 	renderForAllCases();
+	getInstalledStylesTabContainer().classList.add(UNAVAILABLE_CLASS);
+	getUnavailableEl().classList.remove('hide');
 	getZeroStylesEl().classList.add('hide');
 	getInstalledStylesEl().classList.add('hide');
-	getUnavailableEl().classList.remove('hide');
 }
 
 function renderInstalledTab(styles){
@@ -114,13 +112,7 @@ function renderPageWithStyles(styles){
 }
 
 function preProcessInstalledStyle(style){
-    style.editButtonLabel = browser.i18n.getMessage("editStyleLabel");;
-    style.activateButtonLabel = browser.i18n.getMessage("enableStyleLabel");
-    style.deactivateButtonLabel = browser.i18n.getMessage("disableStyleLabel");
-    style.deleteButtonLabel = browser.i18n.getMessage("deleteStyleLabel");
-    style.additionalClass = style.enabled ? "enabled" : "disabled";
-    style.active_str = browser.i18n.getMessage("styleActiveLabel");
-    style.inactive_str = browser.i18n.getMessage("styleInactiveLabel");
+    style.style_first_word = style.name.substr(0, 1);
     style.style_edit_url = "edit.html?id=" + style.id;
 }
 
@@ -130,7 +122,15 @@ function addStyleToInstalled(style){
 	if (style.author === undefined) {
 		el.querySelector('.style-author').style.display = 'none';
 	}
-	bindHandlers(el, style);
+	el.querySelector(".activate").checked = style.enabled;
+	el.querySelector(".edit").addEventListener('click', openLinkInTabOrWindow, false);
+	el.querySelector(".activate").addEventListener('change', onActivateChange(style));
+	el.querySelector(".delete").addEventListener('click', onDeleteStyleClick(style));
+	//material
+	if (typeof(componentHandler) !== 'undefined') {
+		componentHandler.upgradeElement(el.querySelector(".mdl-js-switch"), 'MaterialSwitch');
+		componentHandler.upgradeElement(el.querySelector(".mdl-js-switch"), 'MaterialRipple');
+	}
 	getInstalledStylesEl().appendChild(el);
 	return el;
 }
@@ -152,41 +152,28 @@ function renderAllSwitch(){
 		getBodyEl().classList.remove("all-on");
 		getBodyEl().classList.add("all-off");
 	}
+	//material
+	if (typeof(componentHandler) !== 'undefined') {
+		componentHandler.upgradeElement(getDisableAllCheckbox().parentElement, 'MaterialSwitch');
+		componentHandler.upgradeElement(getDisableAllCheckbox().parentElement, 'MaterialRipple');
+	}
 }
 
 function renderForAllCases(){
 	renderAllSwitch();
 	getDisableAllCheckbox().addEventListener('change', onDisableAllCheckboxChange);
-	setTimeout(function(){
-		getDisableAllContainer().classList.add("animation-on");
-	}, 200);
 }
 
 function onDisableAllCheckboxChange(){
 	sendDisableAll(!this.checked).then(renderAllSwitch);
 }
 
-function bindHandlers(el, style){
-	el.querySelector(".edit").addEventListener('click', openLinkInTabOrWindow, false);
-	el.querySelector(".activate").addEventListener('click', onActivateClick(style));
-	el.querySelector(".deactivate").addEventListener('click', onDeactivateClick(style));
-	el.querySelector(".delete").addEventListener('click', onDeleteStyleClick(style));
-}
-
-function onActivateClick(style){
+function onActivateChange(style){
 	return function(e){
 		e.preventDefault();
 		e.stopImmediatePropagation();
-		enableStyle(style.id, true).then(onActivationStatusChanged(style.id, true));
+		enableStyle(style.id, e.target.checked).then(onActivationStatusChanged(style.id, e.target.checked));
 	};
-}
-
-function onDeactivateClick(style){
-	return function(e){
-		e.preventDefault();
-		e.stopImmediatePropagation();
-		enableStyle(style.id, false).then(onActivationStatusChanged(style.id, false));
-	}
 }
 
 function onDeleteStyleClick(style){
@@ -248,22 +235,15 @@ function getSiteName(tabUrl){
 	return a.hostname;
 }
 
-function openLinkInTabOrWindow(event) {
-	event.preventDefault();
-	if (prefs.get("openEditInWindow", false)) {
-		var options = {url: event.target.href}
-		var wp = prefs.get("windowPosition", {});
-		for (var k in wp) options[k] = wp[k];
-		browser.windows.create(options);
-	} else {
-		openLink(event);
-	}
+function openLinkInTabOrWindow(e) {
+	e.preventDefault();
+	openLink(e);
 	close();
 }
 
-function openLink(event) {
-	event.preventDefault();	
-	browser.runtime.sendMessage({method: "openURL", url: event.target.href});
+function openLink(e) {
+	e.preventDefault();	
+	browser.runtime.sendMessage({method: "openURL", url: e.target.href});
 	close();
 }
 
