@@ -70,7 +70,9 @@ function updateIcon(tab, styles) {
 			if (!browser.runtime.lastError && prefs.get("show-badge")) {
 				var t = styles.length ? styles.length.toString() : "";
 				browser.browserAction.setBadgeText({text: t, tabId: tab.id});
-				browser.browserAction.setBadgeBackgroundColor({color: "#333"});
+				browser.browserAction.setBadgeBackgroundColor({color: "#555"});
+			} else {
+				browser.browserAction.setBadgeText({text: "", tabId: tab.id});
 			}
 		});
 	}

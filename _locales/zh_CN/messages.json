@@ -81,10 +81,6 @@
 		"message": "检查更新",
 		"description": "Label for the button to check a single style for an update"
 	},
-	"checkingForUpdate": {
-		"message": "正在检查更新...",
-		"description": "Text to display when checking a style for an update"
-	},
 	"cm_indentWithTabs": {
 		"message": "启用带智能缩进的标签页",
 		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
@@ -231,22 +227,6 @@
 	"issuesHelp": {
 		"message": "<a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> 在已启用的这些规则中找到问题：",
 		"description": "Help popup message for the CSSLint issues block on the style edit page"
-	},
-	"manageFilters": {
-		"message": "过滤器",
-		"description": "Label for filters container"
-	},
-	"manageHeading": {
-		"message": "已安装样式",
-		"description": "Heading for the manage page"
-	},
-	"manageOnlyEdited": {
-		"message": "仅修改过的样式",
-		"description": "Checkbox to show only locally edited styles"
-	},
-	"manageOnlyEnabled": {
-		"message": "仅已启用的样式",
-		"description": "Checkbox to show only enabled styles"
 	},
 	"manageTitle": {
 		"message": "xStyle",

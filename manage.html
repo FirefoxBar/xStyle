@@ -1,203 +1,223 @@
+<!DOCTYPE html>
 <html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-		<title i18n-text="manageTitle"></title>
-		<style>
-			body {
-				margin: 0;
-				font: 12px arial,sans-serif;
-			}
-			a, a:visited {
-				color: #555;
-				-webkit-transition: color 0.5s;
-			}
-			a:hover {
-				color: #999;
-			}
-			#header {
-				height: 100%;
-				width: 250px;
-				position: fixed;
-				top: 0;
-				padding: 15px;
-				border-right: 1px dashed #AAA;
-				-webkit-box-shadow: 0 0 50px -18px black;
-			}
-			#header h1 {
-				margin-top: 0;
-			}
-			#installed {
-				position: relative;
-				margin-left: 280px;
-			}
-			[style-id] {
-				margin: 10px;
-				padding: 0 15px;
-			}
-			[style-id] {
-				border-top: 2px solid gray;
-			}
-			#installed::after {
-				content: "";
-				position: absolute;
-				top: 0;
-				width: 100%; height: 2px;
-				background-color: #fff;
-			}
-			img[src*="world"] {
-				width: 16px;
-				height: 16px;
-				vertical-align: middle;
-				image-rendering: -webkit-optimize-contrast;
-			}
-			.applies-to {
-				word-break: break-word;
-			}
-			.applies-to, .actions {
-				padding-left: 15px;
-			}
-			.applies-to-extra {
-				font-weight: bold;
-			}
-			.disabled h2::after {
-				content: " (Disabled)";
-			}
-			.disabled {
-				opacity: 0.5;
-			}
-			.disabled .disable {
-				display: none;
-			}
-			.enabled .enable {
-				display: none;
-			}
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title i18n-text="manageTitle"></title>
+	<link rel="stylesheet" href="third-party/material-design-icons/material-icons.min.css"/>
+	<link rel="stylesheet" href="third-party/mdl/material.min.css"/>
+	<style>
+	.mdl-card {
+		min-height: 0;
+		width: 100%;
+	}
+	.mdl-card__supporting-text {
+		width: 100%;
+		box-sizing: border-box;
+	}
+	.mdl-menu a {
+		text-decoration: none;
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+	.mdl-menu a .iconfont,
+	.mdl-menu a .material-icons {
+		margin-right: 10px;
+		vertical-align: middle;
+	}
+	.mdl-menu a .iconfont {
+		font-size: 20px;
+	}
+	.mdl-layout__header,
+	.menu {
+		position: fixed;
+		top: 0;
+		left: 0;
+	}
+	.mdl-layout__header .mdl-layout__header-row {
+		padding-right: 0;
+	}
+	.mdl-layout__header-row .mdl-navigation__link .mdl-button {
+		padding: 5px;
+		margin-left: 10px;
+	}
+	.mdl-layout__content {
+		padding-top: 64px;
+		background-color: #EEE;
+	}
+	.section-spacer {
+		-webkit-flex-grow: 1;
+		-ms-flex-positive: 1;
+		flex-grow: 1;
+	}
+	.mdl-layout__header .mdl-layout-title {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		max-width: calc(100% - 50px);
+	}
+	.menu {
+		border-right: none;
+	}
+	.menu .mdl-layout-title {
+		background-image: url('images/menu-head.jpg');
+		background-size: 100% 100%;
+		background-repeat: no-repeat no-repeat;
+		background-position: 0 0;
+		height: 140px;
+		color: #FFF;
+		padding-top: 20px;
+		padding-bottom: 20px;
+	}
+	.menu .mdl-layout-title p {
+		margin: 0;
+		font-size: 17px;
+	}
+	.menu .mdl-layout-title img {
+		width: 72px;
+		height: 72px;
+		display: block;
+		margin-bottom: 10px;
+		margin-left: -10px;
+	}
+	.page-content {
+		padding: 5px;
+	}
+	.page-content #installed .mdl-card {
+		width: calc(50% - 10px);
+		margin: 5px;
+	}
+	.option {
+		margin: 15px 5px;
+		width: calc(100% - 10px);
+	}
+	
+	@media screen and (max-width: 1024px) {
+		.mdl-layout__header {
+			display: block;
+		}
+		.mdl-layout__header .mdl-layout__header-row {
+			padding-left: 56px;
+			padding-right: 20px;
+		}
+		.mdl-layout__header-row .mdl-navigation__link {
+			padding-left: 0;
+			padding-right: 0;
+		}
+		.hide-on-mobile {
+			display: none !important;
+		}
+	}
+	@media screen and (min-width: 1025px) {
+		.mdl-layout--fixed-drawer > .mdl-layout__header .mdl-layout__header-row {
+			padding-left: 260px;
+		}
+		.mdl-mini-footer {
+			padding-left: 262px;
+		}
+		.hide-on-desktop {
+			display: none !important;
+		}
+	}
+	</style>
 
-			/* Default, no update buttons */
-			.update, .check-update {
-				display: none;
-			}
-			/* Check update button for things that can*/
-			*[style-update-url] .check-update {
-				display: inline;
-			}
-			/* Update check in progress */
-			.checking-update .check-update {
-				display: none;
-			}
-			/* Updates available */
-			.can-update .update {
-				display: inline;
-			}
-			.can-update .check-update {
-				display: none;
-			}
-			/* Updates not available */
-			.no-update .check-update {
-				display: none;
-			}
-			/* Updates done */
-			.update-done .check-update {
-				display: none;
-			}
-			.hidden {display: none}
+	<style>
+	.mdl-card__title-text .mdl-button {
+		color: #555;
+		margin-left: 10px;
+	}
+	.disabled .disable {
+		display: none;
+	}
+	.enabled .enable {
+		display: none;
+	}
+	.check-update .loading {
+		display: none;
+		vertical-align: middle;
+		width: 25px;
+		height: 25px;
+		margin-left: 5px;
+	}
+	.update {
+		display: none;
+	}
+	.menu .hidden {
+		display: none;
+	}
+	</style>
 
-			@media(max-width:675px) {
-				#header {
-					height: auto;
-					position: inherit;
-					width: auto;
-					border-right: none;
-				}
-
-				#installed {
-					margin-left: 0;
-				}
-
-				[style-id] {
-					margin: 0;
-				}
-			}
-
-			fieldset {
-				border-width:  1px;
-				border-radius: 6px;
-				margin: 1em 0;
-			}
-			.enabled-only > .disabled, .edited-only > [style-update-url] {
-				display: none;
-			}
-
-			#search {
-				width: calc(100% - 4px);
-				margin: 0.25rem 4px 0;
-				border-radius: 0.25rem;
-				padding-left: 0.25rem;
-				border-width: 1px;
-			}
-
-		</style>
-
-		<template data-id="style">
-			<div>
-				<h2 class="style-name"></h2>
-				<p class="applies-to"></p>
-				<p class="actions">
-					<a class="style-edit-link" href="edit.html?id="><button i18n-text="editStyleLabel"></button></a>
-					<button class="enable" i18n-text="enableStyleLabel"></button>
-					<button class="disable" i18n-text="disableStyleLabel"></button>
-					<button class="delete" i18n-text="deleteStyleLabel"></button>
-					<button class="export" i18n-text="exportStyleLabel"></button>
-					<button class="check-update" i18n-text="checkForUpdate"></button>
-					<button class="update" i18n-text="installUpdate"></button>
-					<span class="update-note"></span>
-				</p>
+	<template data-id="style">
+		<section class="mdl-card mdl-shadow--2dp">
+			<div class="mdl-card__title mdl-card--expand">
+				<h2 class="mdl-card__title-text"><span class="style-name"></span><button class="mdl-button mdl-js-button mdl-button--icon update"><i class="material-icons">get_app</i></button></h2>
 			</div>
-		</template>
+			<div class="mdl-card__supporting-text applies-to"></div>
+			<div class="mdl-card__actions mdl-card--border">
+				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect style-edit-link" href="edit.html?id=" i18n-text="editStyleLabel"></a>
+				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect enable" i18n-text="enableStyleLabel"></a>
+				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect disable" i18n-text="disableStyleLabel"></a>
+				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect delete" i18n-text="deleteStyleLabel"></a>
+				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect export" i18n-text="exportStyleLabel"></a>
+				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect check-update"><span i18n-text="checkForUpdate"></span><div class="loading mdl-spinner mdl-js-spinner is-active"></div></a>
+			</div>
+		</section>
+	</template>
 
-		<template data-id="styleHomepage">
-			<a target="_blank">
-				<img src="images/world_go.png" alt="*">
-			</a>
-		</template>
+	<template data-id="styleHomepage">
+		<a target="_blank" class="mdl-button mdl-js-button mdl-button--icon"><i class="material-icons">explore</i></a>
+	</template>
 
-		<script src="src/localization.js"></script>
-		<script src="src/health.js"></script>
-		<script src="src/storage.js"></script>
-		<script src="src/refilter.js"></script>
-		<script src="src/messaging.js"></script>
-		<script src="src/inject/apply.js"></script>
-		<script src="src/manage/manage.js"></script>
-	</head>
-	<body id="xstyle-manage">
-		<div id="header">
-			<h1 id="manage-heading" i18n-text="manageHeading"></h1>
-			<fieldset>
-				<legend id="filters" i18n-text="manageFilters"></legend>
-				<div><input id="manage.onlyEnabled" type="checkbox"><label id="manage.onlyEnabled-label" for="manage.onlyEnabled" i18n-text="manageOnlyEnabled"></label></div>
-				<div><input id="manage.onlyEdited" type="checkbox"><label id="manage.onlyEdited-label" for="manage.onlyEdited" i18n-text="manageOnlyEdited"></label></div>
-				<div><input id="search" type="search" i18n-placeholder="searchStyles"></div>
-			</fieldset>
-			<p><button id="check-all-updates" i18n-text="checkAllUpdates"></button></p>
-			<p>
-				<button id="apply-all-updates" class="hidden" i18n-text="applyAllUpdates"></button>
-				<span id="update-all-no-updates" class="hidden" i18n-text="updateAllCheckSucceededNoUpdate"></span>
-			</p>
-			<p><a href="edit.html"><button id="add-style-label" i18n-text="addStyleLabel"></button></a></p>
-			<p>
-				<button id="file-all-styles" i18n-text="bckpInstStyles"></button>
-			</p>
-			<p>
-				<button id="unfile-all-styles" i18n-text="retrieveBckp"></button>
-			</p>
-			<div id="options">
-				<h2 id="options-heading" i18n-text="optionsHeading"></h2>
-				<div><input id="show-badge" type="checkbox"><label id="show-badge-label" for="show-badge" i18n-text="prefShowBadge"></label></div>
+	<script src="src/localization.js"></script>
+	<script src="src/health.js"></script>
+	<script src="src/storage.js"></script>
+	<script src="src/refilter.js"></script>
+	<script src="src/messaging.js"></script>
+	<script src="src/inject/apply.js"></script>
+	<script src="src/manage/manage.js"></script>
+</head>
+<body id="xstyle-manage">
+<div class="mdl-layout mdl-layout--fixed-drawer">
+	<div class="mdl-layout__obfuscator"></div>
+	<header class="mdl-layout__header">
+		<div class="mdl-layout__header-row">
+			<div id="menu-button" aria-expanded="false" role="button" tabindex="0" class="mdl-layout__drawer-button"><i class="material-icons">menu</i></div>
+			<span class="mdl-layout-title" i18n-text="manageHeading"></span>
+			<div class="mdl-layout-spacer"></div>
+		</div>
+	</header>
+	<div class="menu mdl-layout__drawer">
+		<span class="mdl-layout-title"><p><img src="images/128.png"></p><p>xStyle</p></span>
+		<nav class="mdl-navigation">
+			<a class="mdl-navigation__link" href="edit.html" i18n-text="addStyleLabel"></a>
+			<a class="mdl-navigation__link" id="file-all-styles" i18n-text="bckpInstStyles"></a>
+			<a class="mdl-navigation__link" id="unfile-all-styles" i18n-text="retrieveBckp"></a>
+			<a class="mdl-navigation__link" id="check-all-updates" i18n-text="checkAllUpdates"></a>
+			<a class="mdl-navigation__link hidden" id="apply-all-updates" i18n-text="applyAllUpdates"></a>
+			<a class="mdl-navigation__link hidden" id="update-all-no-updates" i18n-text="updateAllCheckSucceededNoUpdate"></a>
+		</nav>
+	</div>
+	<main class="mdl-layout__content">
+		<div class="page-content">
+			<div id="installed"></div>
+			<div class="mdl-card mdl-shadow--2dp option">
+				<div class="mdl-card__title mdl-card--expand">
+					<h2 class="mdl-card__title-text" i18n-text="optionsHeading"></h2>
+				</div>
+				<div class="mdl-card__supporting-text applies-to">
+					<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" id="show-badge-label" for="show-badge">
+						<input type="checkbox" id="show-badge" class="mdl-checkbox__input">
+						<span class="mdl-checkbox__label" i18n-text="prefShowBadge"></span>
+					</label>
+				</div>
 			</div>
 		</div>
-		<div id="installed"></div>
-		<script src="src/md5.min.js"></script>
-		<script src="src/fileSaveLoad.js"></script>
-		<script src="src/manage/moment.min.js"></script>
-		<script src="src/manage/fileSaveLoad.js"></script>
-	</body>
+	</main>
+</div>
+<script src="third-party/mdl/material.min.js"></script>
+<script src="src/md5.min.js"></script>
+<script src="src/fileSaveLoad.js"></script>
+<script src="src/manage/moment.min.js"></script>
+<script src="src/manage/fileSaveLoad.js"></script>
+</body>
 </html>
