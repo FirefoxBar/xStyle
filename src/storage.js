@@ -502,7 +502,7 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 		me.set(key, defaults[key], {noBroadcast: true});
 	});
 
-	getSync().get("settings", function(result) {
+	getSync().get("settings").then(function(result) {
 		var synced = result.settings;
 		for (var key in defaults) {
 			if (synced && (key in synced)) {
