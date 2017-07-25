@@ -70,7 +70,7 @@
 		"description": "Label for the button to check a single style for an update"
 	},
 	"cm_indentWithTabs": {
-		"message": "启用带智能缩进的制表符",
+		"message": "使用制表符智能缩进",
 		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
 	},
 	"cm_keyMap": {
@@ -136,9 +136,6 @@
 		"message": "已启用",
 		"description": "Label for the button to disable a style"
 	},
-	"editorSetting": {
-		"message": "编辑器设置"
-	},
 	"editGotoLine": {
 		"message": "跳转至行（或行:列）",
 		"description": "Go to line or line:column on Ctrl-G in style code editor"
@@ -159,6 +156,9 @@
 				"content": "$1"
 			}
 		}
+	},
+	"editorSetting": {
+		"message": "编辑器设置"
 	},
 	"enableStyleLabel": {
 		"message": "已禁用",
@@ -338,17 +338,17 @@
 			}
 		}
 	},
-	"styleName": {
-		"message": "名称",
-		"description": "Enter a name"
+	"styleMozillaFormatExport": {
+		"message": "导出为 Mozilla 格式",
+		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
 	"styleMozillaFormatImport": {
 		"message": "从 Mozilla 格式导入",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
-	"styleMozillaFormatExport": {
-		"message": "导出为 Mozilla 格式",
-		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
+	"styleName": {
+		"message": "名称",
+		"description": "Enter a name"
 	},
 	"styleUpdate": {
 		"message": "您确定要更新 '$stylename$'?",

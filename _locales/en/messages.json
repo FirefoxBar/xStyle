@@ -1,10 +1,4 @@
 {
-	"OFF": {
-		"message": "OFF"
-	},
-	"ON": {
-		"message": "ON"
-	},
 	"addStyleLabel": {
 		"message": "Write new style",
 		"description": "Label for the button to go to the add style page"
@@ -13,18 +7,12 @@
 		"message": "Add Style",
 		"description": "Title of the page for adding styles"
 	},
+	"allStyles": {
+		"message": "All styles"
+	},
 	"appliesAdd": {
 		"message": "Add",
 		"description": "Label for the button to add an 'applies' entry"
-	},
-	"appliesDisplay": {
-		"message": "Applies to: $applies$",
-		"description": "Text on the manage screen to describe what the style applies to",
-		"placeholders": {
-			"applies": {
-				"content": "$1"
-			}
-		}
 	},
 	"appliesDisplayTruncatedSuffix": {
 		"message": "and more",
@@ -80,10 +68,6 @@
 	"checkForUpdate": {
 		"message": "Check for update",
 		"description": "Label for the button to check a single style for an update"
-	},
-	"checkingForUpdate": {
-		"message": "Checking...",
-		"description": "Text to display when checking a style for an update"
 	},
 	"cm_indentWithTabs": {
 		"message": "Use tabs with smart indentation",
@@ -149,7 +133,7 @@
 		"description": "Label for the checkbox that turns all enabled styles off."
 	},
 	"disableStyleLabel": {
-		"message": "Deactivate",
+		"message": "Activated",
 		"description": "Label for the button to disable a style"
 	},
 	"editGotoLine": {
@@ -173,8 +157,11 @@
 			}
 		}
 	},
+	"editorSetting": {
+		"message": "Editor settings"
+	},
 	"enableStyleLabel": {
-		"message": "Activate",
+		"message": "Deactivated",
 		"description": "Label for the button to enable a style"
 	},
 	"exportLabel": {
@@ -199,6 +186,9 @@
 	"helpKeyMapHotkey": {
 		"message": "Press a hotkey",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+	},
+	"homepage": {
+		"message": "Homepage"
 	},
 	"importAppendLabel": {
 		"message": "Append to style",
@@ -232,21 +222,9 @@
 		"message": "The issues found by <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> with these rules enabled:",
 		"description": "Help popup message for the CSSLint issues block on the style edit page"
 	},
-	"manageFilters": {
-		"message": "Filters",
-		"description": "Label for filters container"
-	},
 	"manageHeading": {
 		"message": "Installed Styles",
 		"description": "Heading for the manage page"
-	},
-	"manageOnlyEdited": {
-		"message": "Only created locally",
-		"description": "Checkbox to show only locally edited styles"
-	},
-	"manageOnlyEnabled": {
-		"message": "Only enabled styles",
-		"description": "Checkbox to show only enabled styles"
 	},
 	"manageTitle": {
 		"message": "xStyle",
@@ -294,6 +272,9 @@
 	"retrieveBckp": {
 		"message": "Retrieve Backup"
 	},
+	"saveComplete": {
+		"message": "Saved"
+	},
 	"search": {
 		"message": "Search",
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
@@ -313,10 +294,6 @@
 	"sectionCode": {
 		"message": "Code",
 		"description": "Label for the code for a section"
-	},
-	"sectionHelp": {
-		"message": "Sections let you define different pieces of code to apply to different sets of URLs in the same style. For example, a single style could change the homepage of a site one way, while changing the rest of a site another way.",
-		"description": "Help text for sections"
 	},
 	"sectionRemove": {
 		"message": "Remove section",
@@ -361,29 +338,17 @@
 			}
 		}
 	},
-	"styleMissingName": {
-		"message": "Enter a name.",
-		"description": "Error displayed when user saves without providing a name"
-	},
-	"styleMozillaFormatHeading": {
-		"message": "Mozilla Format",
+	"styleMozillaFormatExport": {
+		"message": "Export as Mozilla format",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
-	"styleSaveLabel": {
-		"message": "Save",
-		"description": "Label for save button for style editing"
+	"styleMozillaFormatImport": {
+		"message": "Import from Mozilla format",
+		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
-	"styleSectionsTitle": {
-		"message": "Sections",
-		"description": "Title for the style sections section"
-	},
-	"styleToMozillaFormatHelp": {
-		"message": "The Mozilla format of the code can be used with Stylish for Firefox and can be submitted to userstyles.org.",
-		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
-	},
-	"styleToMozillaFormatTitle": {
-		"message": "Style in Mozilla format",
-		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
+	"styleName": {
+		"message": "Name",
+		"description": "Enter a name"
 	},
 	"styleUpdate": {
 		"message": "Are you sure you want to update '$stylename$'?",

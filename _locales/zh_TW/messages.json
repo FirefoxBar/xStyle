@@ -1,10 +1,4 @@
 {
-	"OFF": {
-		"message": "關閉"
-	},
-	"ON": {
-		"message": "開啟"
-	},
 	"addStyleLabel": {
 		"message": "編寫新樣式",
 		"description": "Label for the button to go to the add style page"
@@ -13,18 +7,12 @@
 		"message": "新增樣式",
 		"description": "Title of the page for adding styles"
 	},
+	"allStyles": {
+		"message": "所有樣式"
+	},
 	"appliesAdd": {
 		"message": "新增",
 		"description": "Label for the button to add an 'applies' entry"
-	},
-	"appliesDisplay": {
-		"message": "作用於： $applies$",
-		"description": "Text on the manage screen to describe what the style applies to",
-		"placeholders": {
-			"applies": {
-				"content": "$1"
-			}
-		}
 	},
 	"appliesDisplayTruncatedSuffix": {
 		"message": "以及更多",
@@ -80,10 +68,6 @@
 	"checkForUpdate": {
 		"message": "檢查更新",
 		"description": "Label for the button to check a single style for an update"
-	},
-	"checkingForUpdate": {
-		"message": "檢查中…",
-		"description": "Text to display when checking a style for an update"
 	},
 	"cm_indentWithTabs": {
 		"message": "用 Tab(\\t) 智慧縮排",
@@ -149,7 +133,7 @@
 		"description": "Label for the checkbox that turns all enabled styles off."
 	},
 	"disableStyleLabel": {
-		"message": "停用",
+		"message": "已停用",
 		"description": "Label for the button to disable a style"
 	},
 	"editGotoLine": {
@@ -173,8 +157,11 @@
 			}
 		}
 	},
+	"editorSetting": {
+		"message": "编辑器设置"
+	},
 	"enableStyleLabel": {
-		"message": "啟用",
+		"message": "已啟用",
 		"description": "Label for the button to enable a style"
 	},
 	"exportLabel": {
@@ -199,6 +186,9 @@
 	"helpKeyMapHotkey": {
 		"message": "按下熱鍵",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+	},
+	"homepage": {
+		"message": "主頁"
 	},
 	"importAppendLabel": {
 		"message": "附加到樣式",
@@ -232,21 +222,9 @@
 		"message": " <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a>工具認為此樣式代碼存在問題：",
 		"description": "Help popup message for the CSSLint issues block on the style edit page"
 	},
-	"manageFilters": {
-		"message": "篩選器",
-		"description": "Label for filters container"
-	},
 	"manageHeading": {
 		"message": "已安裝的樣式",
 		"description": "Heading for the manage page"
-	},
-	"manageOnlyEdited": {
-		"message": "只顯示使用者編寫的樣式",
-		"description": "Checkbox to show only locally edited styles"
-	},
-	"manageOnlyEnabled": {
-		"message": "只顯示已啟用的樣式",
-		"description": "Checkbox to show only enabled styles"
 	},
 	"manageTitle": {
 		"message": "xStyle",
@@ -292,7 +270,10 @@
 		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
 	},
 	"retrieveBckp": {
-		"message": "擷取備份"
+		"message": "從備份文件匯入"
+	},
+	"saveComplete": {
+		"message": "已儲存"
 	},
 	"search": {
 		"message": "搜尋",
@@ -313,10 +294,6 @@
 	"sectionCode": {
 		"message": "代碼",
 		"description": "Label for the code for a section"
-	},
-	"sectionHelp": {
-		"message": "樣式段讓你能在同一個樣式中定義作用於不同網址的不同代碼段。例如，僅僅一個樣式就能以一個樣式段代碼改變一個網站的主頁，同時以另一個樣式段改變這個網站的其他頁面。",
-		"description": "Help text for sections"
 	},
 	"sectionRemove": {
 		"message": "移除樣式段",
@@ -361,29 +338,17 @@
 			}
 		}
 	},
-	"styleMissingName": {
-		"message": "請輸入名稱。",
-		"description": "Error displayed when user saves without providing a name"
-	},
-	"styleMozillaFormatHeading": {
-		"message": "Mozilla格式",
+	"styleMozillaFormatExport": {
+		"message": "匯出為 Mozilla 格式",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
-	"styleSaveLabel": {
-		"message": "儲存",
-		"description": "Label for save button for style editing"
+	"styleMozillaFormatImport": {
+		"message": "從 Mozilla 格式匯入",
+		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
-	"styleSectionsTitle": {
-		"message": "樣式段",
-		"description": "Title for the style sections section"
-	},
-	"styleToMozillaFormatHelp": {
-		"message": "Mozilla格式的樣式代碼能在火狐版Stylish使用，也可以提交至 userstyles.org 。",
-		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
-	},
-	"styleToMozillaFormatTitle": {
-		"message": "Mozilla格式的樣式",
-		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
+	"styleName": {
+		"message": "名稱",
+		"description": "Enter a name"
 	},
 	"styleUpdate": {
 		"message": "您是否確認要更新 '$stylename$' ？",
