@@ -97,7 +97,6 @@ browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 
 // Not available in Firefox - https://bugzilla.mozilla.org/show_bug.cgi?id=1240350
-// Now available. Added by ShuangYa.
 if ("commands" in browser) {
 	browser.commands.onCommand.addListener(function(command) {
 		switch (command) {
@@ -199,8 +198,3 @@ function openURL(options) {
 		browser.tabs[isNewTab ? "update" : "create"](options);
 	});
 }
-
-var codeMirrorThemes;
-getCodeMirrorThemes(function(themes) {
-	 codeMirrorThemes = themes;
-});

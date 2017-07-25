@@ -123,7 +123,7 @@ function addStyleToInstalled(style){
 		el.querySelector('.style-author').style.display = 'none';
 	}
 	el.querySelector(".activate").checked = style.enabled;
-	el.querySelector(".edit").addEventListener('click', openLinkInTabOrWindow, false);
+	el.querySelector(".edit").addEventListener('click', openLink, false);
 	el.querySelector(".activate").addEventListener('change', onActivateChange(style));
 	el.querySelector(".delete").addEventListener('click', onDeleteStyleClick(style));
 	//material
@@ -233,12 +233,6 @@ function getSiteName(tabUrl){
 	var a = document.createElement('a');
 	a.href = tabUrl;
 	return a.hostname;
-}
-
-function openLinkInTabOrWindow(e) {
-	e.preventDefault();
-	openLink(e);
-	close();
 }
 
 function openLink(e) {

@@ -570,27 +570,6 @@ function collectKeys(overlays) {
     return retVal;
 }
 
-function getCodeMirrorThemes(callback) {
-	// Firefox do not  support
-	/*
-	browser.runtime.getPackageDirectoryEntry(function(rootDir) {
-		rootDir.getDirectory("codemirror/theme", {create: false}, function(themeDir) {
-			themeDir.createReader().readEntries(function(entries) {
-				var themes = [browser.i18n.getMessage("defaultTheme")];
-				entries
-					.filter(function(entry) { return entry.isFile })
-					.sort(function(a, b) { return a.name < b.name ? -1 : 1 })
-					.forEach(function(entry) {
-						themes.push(entry.name.replace(/\.css$/, ""));
-					});
-				if (callback) {
-					callback(themes);
-				}
-			});
-		});
-	});*/
-}
-
 function sessionStorageHash(name) {
 	var hash = {
 		value: {},
