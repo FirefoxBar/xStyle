@@ -48,7 +48,7 @@ body.blocked > DIV {
 }
 #installed .mdl-list__item-avatar {
 	line-height: 40px;
-	font-size: 22px;
+	font-size: 24px;
 	text-align: center;
 }
 .all-off #installed, #installed.all-off{
@@ -61,7 +61,8 @@ body.blocked > DIV {
 }
 #sitename{
 	height:44px;
-	padding-left:16px;
+	padding-left: 16px;
+	padding-right: 30px;
 	font-size: 16px;
 	font-weight: bold;
 	font-style: normal;
@@ -69,6 +70,11 @@ body.blocked > DIV {
 	color: #2c3e50;
 	line-height:46px;
 	border-bottom: 1px solid #d7d7d7;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	width: 100%;
+	box-sizing: border-box;
 }
 
 /* 'New style' links */
@@ -300,7 +306,7 @@ body.blocked > DIV {
 	height: 20px;
 	width: 20px;
 	position: absolute;
-	top: 15px;
+	top: 12px;
 	right: 10px
 }
 /** zero styles >**/

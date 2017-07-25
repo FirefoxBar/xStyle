@@ -1,10 +1,4 @@
 {
-	"OFF": {
-		"message": "关"
-	},
-	"ON": {
-		"message": "开"
-	},
 	"addStyleLabel": {
 		"message": "编写新样式",
 		"description": "Label for the button to go to the add style page"
@@ -12,6 +6,9 @@
 	"addStyleTitle": {
 		"message": "添加样式",
 		"description": "Title of the page for adding styles"
+	},
+	"allStyles": {
+		"message": "所有样式"
 	},
 	"appliesAdd": {
 		"message": "添加",
@@ -177,9 +174,6 @@
 	},
 	"extName": {
 		"message": "xStyle"
-	},
-	"goBackToManageConfirm": {
-		"message": "您确定要返回管理界面吗？此操作将不会保存您所做的更改"
 	},
 	"helpAlt": {
 		"message": "帮助",
