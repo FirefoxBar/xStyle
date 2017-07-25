@@ -33,17 +33,15 @@ function updateIcon(tab, styles) {
 	if (styles) {
 		// check for not-yet-existing tabs e.g. omnibox instant search
 		browser.tabs.get(tab.id).then(function() {
-			if (!browser.runtime.lastError) {
-				// for 'styles' asHash:true fake the length by counting numeric ids manually
-				if (styles.length === undefined) {
-					styles.length = 0;
-					for (var id in styles) {
-						styles.length += id.match(/^\d+$/) ? 1 : 0;
-					}
+			// for 'styles' asHash:true fake the length by counting numeric ids manually
+			if (styles.length === undefined) {
+				styles.length = 0;
+				for (var id in styles) {
+					styles.length += id.match(/^\d+$/) ? 1 : 0;
 				}
-				stylesReceived(styles);
 			}
-		});
+			stylesReceived(styles);
+		}, function(err){});
 		return;
 	}
 	getTabRealURL(tab, function(url) {
@@ -64,16 +62,18 @@ function updateIcon(tab, styles) {
 				128: "images/128" + postfix + ".png"
 			},
 			tabId: tab.id
-		}, function() {
+		}).then(function() {
 			// if the tab was just closed an error may occur,
 			// e.g. 'windowPosition' pref updated in edit.js::window.onbeforeunload
-			if (!browser.runtime.lastError && prefs.get("show-badge")) {
+			if (prefs.get("show-badge")) {
 				var t = styles.length ? styles.length.toString() : "";
 				browser.browserAction.setBadgeText({text: t, tabId: tab.id});
 				browser.browserAction.setBadgeBackgroundColor({color: "#555"});
 			} else {
 				browser.browserAction.setBadgeText({text: "", tabId: tab.id});
 			}
+		}, function(err) {
+			browser.browserAction.setBadgeText({text: "", tabId: tab.id});
 		});
 	}
 }
