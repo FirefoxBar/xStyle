@@ -28,7 +28,7 @@
 	],
 	"content_security_policy": "script-src 'self'; object-src 'self'",
 	"background": {
-		"scripts": ["src/refilter.js", "src/messaging.js", "src/storage-websql.js", "src/storage.js", "src/background.js"]
+		"scripts": ["src/browser-polyfill.js", "src/messaging.js", "src/storage.js", "src/background.js"]
 	},
 	"commands": {
 		"openManage": {
@@ -42,13 +42,13 @@
 			"matches": ["<all_urls>"],
 			"run_at": "document_start",
 			"all_frames": true,
-			"js": ["src/inject/apply.js"]
+			"js": ["src/browser-polyfill.js", "src/inject/apply.js"]
 		},
 		{
 			"matches": ["http://userstyles.org/*", "https://userstyles.org/*", "http://*.firefoxcn.net/*", "https://*.firefoxcn.net/*", "https://*.github.io/*", "https://*.oschina.io/*"],
 			"run_at": "document_end",
 			"all_frames": false,
-			"js": ["src/inject/install.js"]
+			"js": ["src/browser-polyfill.js", "src/inject/install.js"]
 		}
 	],
 	"options_ui": {

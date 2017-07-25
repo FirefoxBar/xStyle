@@ -23,8 +23,9 @@ function appId() {
 
 runTryCatch(function() {
 	browser.tabs.sendMessage(0, {}, {frameId: 0}).then(function() {
-		var clearError = browser.runtime.lastError;
 		frameIdMessageable = true;
+	}, function (err) {
+		var clearError = err;
 	});
 });
 
@@ -93,6 +94,7 @@ browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			}
 			break;
 	}
+	sendResponse(); // avoid error
 });
 
 
