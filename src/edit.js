@@ -234,7 +234,11 @@ function initCodeMirror() {
 
 	// preload the theme so that CodeMirror can calculate its metrics in DOMContentLoaded->setupLivePrefs()
 	var theme = prefs.get("editor.theme");
-	document.getElementById("cm-theme").href = theme == "default" ? "" : "codemirror/theme/" + theme + ".css";
+	var themeUlr = (theme == "default" ? "" : "third-party/codemirror/theme/" + theme + ".css");
+	var newLink = document.createElement('link');
+	newLink.setAttribute("rel", "stylesheet");
+	newLink.setAttribute("data-theme", theme);
+	newLink.setAttribute("href", themeUlr);
 
 	// initialize global editor controls
 	document.addEventListener("DOMContentLoaded", function() {
@@ -242,17 +246,7 @@ function initCodeMirror() {
 			return options.map(function(opt) { return "<option>" + opt + "</option>"; }).join("");
 		}
 		var themeControl = document.getElementById("editor.theme");
-		var bg = browser.extension.getBackgroundPage();
-		if (bg && bg.codeMirrorThemes) {
-			themeControl.innerHTML = optionsHtmlFromArray(bg.codeMirrorThemes);
-		} else {
-			// Chrome is starting up and shows our edit.html, but the background page isn't loaded yet
-			themeControl.innerHTML = optionsHtmlFromArray([theme == "default" ? t("defaultTheme") : theme]);
-			getCodeMirrorThemes(function(themes) {
-				themeControl.innerHTML = optionsHtmlFromArray(themes);
-				themeControl.selectedIndex = Math.max(0, themes.indexOf(theme));
-			});
-		}
+		themeControl.innerHTML = optionsHtmlFromArray(['default', '3024-day', '3024-night', 'ambiance-mobile', 'ambiance', 'base16-dark', 'base16-light', 'blackboard', 'cobalt', 'colorforth', 'eclipse', 'elegant', 'erlang-dark', 'lesser-dark', 'liquibyte', 'mbo', 'mdn-like', 'midnight', 'monokai', 'neat', 'neo', 'night', 'paraiso-dark', 'paraiso-light', 'pastel-on-dark', 'rubyblue', 'solarized', 'the-matrix', 'tomorrow-night-bright', 'tomorrow-night-eighties', 'twilight', 'vibrant-ink', 'xq-dark', 'xq-light', 'zenburn']);
 		document.getElementById("editor.keyMap").innerHTML = optionsHtmlFromArray(Object.keys(CM.keyMap).sort());
 		document.getElementById("options").addEventListener("change", acmeEventListener, false);
 		if (typeof(componentHandler) !== 'undefined') {
@@ -284,31 +278,27 @@ function acmeEventListener(event) {
 			CodeMirror.setOption("indentUnit", value);
 			break;
 		case "theme":
-			var themeLink = document.getElementById("cm-theme");
 			// use non-localized "default" internally
 			if (!value || value == "default" || value == t("defaultTheme")) {
 				value = "default";
-				if (prefs.get(el.id) != value) {
-					prefs.set(el.id, value);
-				}
-				themeLink.href = "";
-				el.selectedIndex = 0;
+			}
+			var loadedTheme = document.querySelector('link[data-theme="' + value + '"]');
+			if (loadedTheme) { //loaded
 				break;
 			}
-			var url = browser.extension.getURL("codemirror/theme/" + value + ".css");
-			if (themeLink.href == url) { // preloaded in initCodeMirror()
-				break;
-			}
+			var url = browser.extension.getURL("third-party/codemirror/theme/" + value + ".css");
 			// avoid flicker: wait for the second stylesheet to load, then apply the theme
-			document.head.insertAdjacentHTML("beforeend",
-				'<link id="cm-theme2" rel="stylesheet" href="' + url + '">');
-			(function() {
-				setTimeout(function() {
-					CodeMirror.setOption(option, value);
-					themeLink.remove();
-					document.getElementById("cm-theme2").id = "cm-theme";
-				}, 100);
-			})();
+			//'<link >
+			var newLink = document.createElement('link');
+			newLink.setAttribute("rel", "stylesheet");
+			newLink.setAttribute("data-theme", value);
+			newLink.setAttribute("href", url);
+			document.head.appendChild(newLink);
+			var _t = setTimeout(function() {
+				CodeMirror.setOption(option, value);
+				clearTimeout(_t);
+				_t = null;
+			}, 100);
 			return;
 	}
 	CodeMirror.setOption(option, value);
@@ -1118,8 +1108,9 @@ function initWithStyle(style) {
 	document.getElementById("enabled").checked = style.enabled;
 	//material
 	if (typeof(componentHandler) !== 'undefined') {
+		document.getElementById("enabled").parentElement.classList.add('mdl-js-ripple-effect');
 		componentHandler.upgradeElement(document.getElementById("enabled").parentElement, 'MaterialCheckbox');
-		componentHandler.upgradeElement(document.getElementById("enabled").parentElement, 'MaterialRipple');
+		componentHandler.upgradeElement(document.getElementById("enabled").parentElement.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
 	}
 	// if this was done in response to an update, we need to clear existing sections
 	getSections().forEach(function(div) { div.remove(); });

@@ -73,7 +73,7 @@
 		"description": "Label for the button to check a single style for an update"
 	},
 	"cm_indentWithTabs": {
-		"message": "启用带智能缩进的标签页",
+		"message": "启用带智能缩进的制表符",
 		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
 	},
 	"cm_keyMap": {
@@ -89,7 +89,7 @@
 		"description": "Label for the checkbox controlling smart indentation option for the style editor."
 	},
 	"cm_tabSize": {
-		"message": "标签尺寸",
+		"message": "制表符尺寸",
 		"description": "Label for the text box controlling tab size option for the style editor."
 	},
 	"cm_theme": {
