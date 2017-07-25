@@ -417,14 +417,12 @@ getActiveTab(function(tab) {
 });
 
 function goBackToManage(event) {
-	if (confirm(t('goBackToManageConfirm'))) {
-		if (useHistoryBack) {
-			event.stopPropagation();
-			event.preventDefault();
-			history.back();
-		} else {
-			window.location.href = event.target.getAttribute('data-href');
-		}		
+	if (useHistoryBack) {
+		event.stopPropagation();
+		event.preventDefault();
+		history.back();
+	} else {
+		window.location.href = event.target.getAttribute('data-href');
 	}
 }
 
@@ -1084,6 +1082,13 @@ function init() {
 		tE("heading", "addStyleTitle");
 		tE("contentHeading", "addStyleTitle");
 		initHooks();
+		//material
+		if (typeof(componentHandler) !== 'undefined') {
+			componentHandler.upgradeElement(document.getElementById("name").parentElement, 'MaterialTextfield');
+			document.getElementById("enabled").parentElement.classList.add('mdl-js-ripple-effect');
+			componentHandler.upgradeElement(document.getElementById("enabled").parentElement, 'MaterialCheckbox');
+			componentHandler.upgradeElement(document.getElementById("enabled").parentElement.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
+		}
 		return;
 	}
 	// This is an edit
@@ -1108,6 +1113,7 @@ function initWithStyle(style) {
 	document.getElementById("enabled").checked = style.enabled;
 	//material
 	if (typeof(componentHandler) !== 'undefined') {
+		componentHandler.upgradeElement(document.getElementById("name").parentElement, 'MaterialTextfield');
 		document.getElementById("enabled").parentElement.classList.add('mdl-js-ripple-effect');
 		componentHandler.upgradeElement(document.getElementById("enabled").parentElement, 'MaterialCheckbox');
 		componentHandler.upgradeElement(document.getElementById("enabled").parentElement.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
