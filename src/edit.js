@@ -59,6 +59,10 @@ var hotkeyRerouter = {
 	}
 };
 
+function showToast(message) {
+    document.getElementById('toast').MaterialSnackbar.showSnackbar({"message": message});
+}
+
 function onChange(event) {
 	var node = event.target;
 	if ("savedValue" in node) {
@@ -251,6 +255,11 @@ function initCodeMirror() {
 		}
 		document.getElementById("editor.keyMap").innerHTML = optionsHtmlFromArray(Object.keys(CM.keyMap).sort());
 		document.getElementById("options").addEventListener("change", acmeEventListener, false);
+		if (typeof(componentHandler) !== 'undefined') {
+			Array.prototype.forEach.call(document.querySelectorAll('#options input[type="checkbox"'), function(el) {
+				componentHandler.upgradeElement(el.parentElement, 'MaterialCheckbox');
+			});
+		}
 		setupLivePrefs(
 			document.querySelectorAll("#options *[data-option][id^='editor.']")
 				.map(function(option) { return option.id })
@@ -418,10 +427,14 @@ getActiveTab(function(tab) {
 });
 
 function goBackToManage(event) {
-	if (useHistoryBack) {
-		event.stopPropagation();
-		event.preventDefault();
-		history.back();
+	if (confirm(t('goBackToManageConfirm'))) {
+		if (useHistoryBack) {
+			event.stopPropagation();
+			event.preventDefault();
+			history.back();
+		} else {
+			window.location.href = event.target.getAttribute('data-href');
+		}		
 	}
 }
 
@@ -885,7 +898,7 @@ function updateLintReport(cm, delay) {
 			var state = cm.state.lint;
 			var oldMarkers = state.markedLast || {};
 			var newMarkers = {};
-			var html = state.marked.length == 0 ? "" : "<tbody>" +
+			var html = state.marked.length == 0 ? "" : '<ul class="mdl-list">' +
 				state.marked.map(function(mark) {
 					var info = mark.__annotation;
 					var isActiveLine = info.from.line == cm.getCursor().line;
@@ -898,14 +911,13 @@ function updateLintReport(cm, delay) {
 						delete oldMarkers[pos];
 					}
 					newMarkers[pos] = message;
-					return "<tr class='" + info.severity + "'>" +
-						"<td role='severity' class='CodeMirror-lint-marker-" + info.severity + "'>" +
-							info.severity + "</td>" +
-						"<td role='line'>" + (info.from.line+1) + "</td>" +
-						"<td role='sep'>:</td>" +
-						"<td role='col'>" + (info.from.ch+1) + "</td>" +
-						"<td role='message'>" + message + "</td></tr>";
-				}).join("") + "</tbody>";
+					var rs =  template.lintItem.outerHTML;
+					rs = rs.replace(/{{severity}}/g, info.severity);
+					rs = rs.replace(/{{line}}/g, info.from.line+1);
+					rs = rs.replace(/{{col}}/g, info.from.ch+1);
+					rs = rs.replace(/{{message}}/g, message);
+					return rs;
+				}).join("") + "</ul>";
 			state.markedLast = newMarkers;
 			fixedOldIssues |= state.reportDisplayed && Object.keys(oldMarkers).length > 0;
 			if (state.html != html) {
@@ -938,11 +950,11 @@ function renderLintReport(someBlockChanged) {
 	var issueCount = 0;
 	editors.forEach(function(cm, index) {
 		if (cm.state.lint.html) {
-			var newBlock = newContent.appendChild(document.createElement("table"));
-			var html = "<caption>" + label + " " + (index+1) + "</caption>" + cm.state.lint.html;
+			var newBlock = newContent.appendChild(document.createElement("div"));
+			var html = "<p class='label-title'>" + label + " " + (index+1) + "</p>" + cm.state.lint.html;
 			newBlock.innerHTML = html;
 			newBlock.cm = cm;
-			issueCount += newBlock.rows.length;
+			issueCount += newBlock.children.length - 1;
 
 			var block = content.children[newContent.children.length - 1];
 			var blockChanged = !block || cm != block.cm || html != block.innerHTML;
@@ -970,16 +982,16 @@ function resizeLintReport(event, content) {
 }
 
 function gotoLintIssue(event) {
-	var issue = event.target.closest("tr");
+	var issue = event.target.closest("li");
 	if (!issue) {
 		return;
 	}
-	var block = issue.closest("table");
+	var block = issue.closest("div");
 	makeSectionVisible(block.cm);
 	block.cm.focus();
 	block.cm.setSelection({
-		line: parseInt(issue.querySelector("td[role='line']").textContent) - 1,
-		ch: parseInt(issue.querySelector("td[role='col']").textContent) - 1
+		line: parseInt(issue.querySelector(".line").textContent) - 1,
+		ch: parseInt(issue.querySelector(".col").textContent) - 1
 	});
 }
 
@@ -1080,10 +1092,12 @@ function init() {
 		// default to enabled
 		document.getElementById("enabled").checked = true
 		tE("heading", "addStyleTitle");
+		tE("contentHeading", "addStyleTitle");
 		initHooks();
 		return;
 	}
 	// This is an edit
+	tE("contentHeading", "editStyleHeading", null, false);
 	tE("heading", "editStyleHeading", null, false);
 	requestStyle();
 	function requestStyle() {
@@ -1102,7 +1116,11 @@ function init() {
 function initWithStyle(style) {
 	document.getElementById("name").value = style.name;
 	document.getElementById("enabled").checked = style.enabled;
-	document.getElementById("url").href = style.url;
+	//material
+	if (typeof(componentHandler) !== 'undefined') {
+		componentHandler.upgradeElement(document.getElementById("enabled").parentElement, 'MaterialCheckbox');
+		componentHandler.upgradeElement(document.getElementById("enabled").parentElement, 'MaterialRipple');
+	}
 	// if this was done in response to an update, we need to clear existing sections
 	getSections().forEach(function(div) { div.remove(); });
 	var queue = style.sections.length ? style.sections : [{code: ""}];
@@ -1132,11 +1150,9 @@ function initHooks() {
 		node.addEventListener("input", onChange);
 	});
 	document.getElementById("to-mozilla").addEventListener("click", showMozillaFormat, false);
-	document.getElementById("to-mozilla-help").addEventListener("click", showToMozillaHelp, false);
 	document.getElementById("from-mozilla").addEventListener("click", fromMozillaFormat);
 	document.getElementById("beautify").addEventListener("click", beautify);
 	document.getElementById("save-button").addEventListener("click", save, false);
-	document.getElementById("sections-help").addEventListener("click", showSectionHelp, false);
 	document.getElementById("keyMap-help").addEventListener("click", showKeyMapHelp, false);
 	document.getElementById("cancel-button").addEventListener("click", goBackToManage);
 	document.getElementById("lint-help").addEventListener("click", showLintHelp);
@@ -1146,7 +1162,7 @@ function initHooks() {
   
 	// touch devices don't have onHover events so the element we'll be toggled via clicking (touching)
 	if ("ontouchstart" in document.body) {
-		document.querySelector("#lint h2").addEventListener("click", toggleLintReport);
+		document.querySelector("#lint .title").addEventListener("click", toggleLintReport);
 	}
 
 	setupGlobalSearch();
@@ -1201,7 +1217,7 @@ function maximizeCodeHeight(sectionDiv, isLast) {
 function updateTitle() {
 	var DIRTY_TITLE = "* $";
 
-	var name = document.getElementById("name").savedValue;
+	var name = document.getElementById("name").value;
 	var clean = isCleanGlobal();
 	var title = styleId === null ? t("addStyleTitle") : t('editStyleTitle', [name]);
 	document.title = clean ? title : DIRTY_TITLE.replace("$", title);
@@ -1303,6 +1319,7 @@ function saveComplete(style) {
 		history.replaceState({}, document.title, "edit.html?id=" + style.id);
 		tE("heading", "editStyleHeading", null, false);
 	}
+	showToast(t('saveComplete'));
 	updateTitle();
 }
 
@@ -1466,16 +1483,8 @@ function fromMozillaFormat() {
 	}
 }
 
-function showSectionHelp() {
-	showHelp(t("styleSectionsTitle"), t("sectionHelp"));
-}
-
 function showAppliesToHelp() {
 	showHelp(t("appliesLabel"), t("appliesHelp"));
-}
-
-function showToMozillaHelp() {
-	showHelp(t("styleMozillaFormatHeading"), t("styleToMozillaFormatHelp"));
 }
 
 function showKeyMapHelp() {

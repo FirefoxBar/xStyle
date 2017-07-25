@@ -1,624 +1,611 @@
+<!DOCTYPE html>
 <html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-		<script src="third-party/codemirror/lib/codemirror.js"></script>
-		<link rel="stylesheet" href="third-party/codemirror/lib/codemirror.css">
-		<script src="third-party/codemirror/mode/css/css.js"></script>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<link rel="stylesheet" href="third-party/material-design-icons/material-icons.min.css"/>
+	<link rel="stylesheet" href="third-party/mdl/material.min.css"/>
+	
+	<script src="third-party/codemirror/lib/codemirror.js"></script>
+	<link rel="stylesheet" href="third-party/codemirror/lib/codemirror.css">
+	<script src="third-party/codemirror/mode/css/css.js"></script>
 
-		<link rel="stylesheet" href="third-party/codemirror/addon/dialog/dialog.css">
-		<link rel="stylesheet" href="third-party/codemirror/addon/search/matchesonscrollbar.css">
-		<script src="third-party/codemirror/addon/scroll/annotatescrollbar.js"></script>
-		<script src="third-party/codemirror/addon/search/matchesonscrollbar.js"></script>
-		<script src="third-party/codemirror/addon/dialog/dialog.js"></script>
-		<script src="third-party/codemirror/addon/search/searchcursor.js"></script>
-		<script src="third-party/codemirror/addon/search/search.js"></script>
-		<script src="third-party/codemirror/addon/comment/comment.js"></script>
-		<script src="third-party/codemirror/addon/selection/active-line.js"></script>
+	<link rel="stylesheet" href="third-party/codemirror/addon/dialog/dialog.css">
+	<link rel="stylesheet" href="third-party/codemirror/addon/search/matchesonscrollbar.css">
+	<script src="third-party/codemirror/addon/scroll/annotatescrollbar.js"></script>
+	<script src="third-party/codemirror/addon/search/matchesonscrollbar.js"></script>
+	<script src="third-party/codemirror/addon/dialog/dialog.js"></script>
+	<script src="third-party/codemirror/addon/search/searchcursor.js"></script>
+	<script src="third-party/codemirror/addon/search/search.js"></script>
+	<script src="third-party/codemirror/addon/comment/comment.js"></script>
+	<script src="third-party/codemirror/addon/selection/active-line.js"></script>
 
-		<link rel="stylesheet" href="third-party/codemirror/addon/fold/foldgutter.css" />
-		<script src="third-party/codemirror/addon/fold/foldcode.js"></script>
-		<script src="third-party/codemirror/addon/fold/foldgutter.js"></script>
-		<script src="third-party/codemirror/addon/fold/brace-fold.js"></script>
-		<script src="third-party/codemirror/addon/fold/comment-fold.js"></script>
+	<link rel="stylesheet" href="third-party/codemirror/addon/fold/foldgutter.css" />
+	<script src="third-party/codemirror/addon/fold/foldcode.js"></script>
+	<script src="third-party/codemirror/addon/fold/foldgutter.js"></script>
+	<script src="third-party/codemirror/addon/fold/brace-fold.js"></script>
+	<script src="third-party/codemirror/addon/fold/comment-fold.js"></script>
 
-		<script src="third-party/codemirror/addon/edit/matchbrackets.js"></script>
+	<script src="third-party/codemirror/addon/edit/matchbrackets.js"></script>
 
-		<link rel="stylesheet" href="third-party/codemirror/addon/lint/lint.css" />
-		<script src="third-party/csslint/csslint.js"></script>
-		<script src="third-party/codemirror/addon/lint/lint.js"></script>
-		<script src="third-party/codemirror/addon/lint/css-lint.js"></script>
+	<link rel="stylesheet" href="third-party/codemirror/addon/lint/lint.css" />
+	<script src="third-party/csslint/csslint.js"></script>
+	<script src="third-party/codemirror/addon/lint/lint.js"></script>
+	<script src="third-party/codemirror/addon/lint/css-lint.js"></script>
 
-		<link rel="stylesheet" href="third-party/codemirror/addon/hint/show-hint.css" />
-		<script src="third-party/codemirror/addon/hint/show-hint.js"></script>
-		<script src="third-party/codemirror/addon/hint/css-hint.js"></script>
+	<link rel="stylesheet" href="third-party/codemirror/addon/hint/show-hint.css" />
+	<script src="third-party/codemirror/addon/hint/show-hint.js"></script>
+	<script src="third-party/codemirror/addon/hint/css-hint.js"></script>
 
-		<script src="third-party/codemirror/keymap/sublime.js"></script>
-		<script src="third-party/codemirror/keymap/emacs.js"></script>
-		<script src="third-party/codemirror/keymap/vim.js"></script>
+	<script src="third-party/codemirror/keymap/sublime.js"></script>
+	<script src="third-party/codemirror/keymap/emacs.js"></script>
+	<script src="third-party/codemirror/keymap/vim.js"></script>
 
-		<style type="text/css">
+	<style type="text/css">
+	.mdl-card {
+		min-height: 0;
+		width: 100%;
+	}
+	.mdl-card__supporting-text {
+		width: 100%;
+		box-sizing: border-box;
+	}
+	.mdl-menu a {
+		text-decoration: none;
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+	.mdl-menu a .iconfont,
+	.mdl-menu a .material-icons {
+		margin-right: 10px;
+		vertical-align: middle;
+	}
+	.mdl-menu a .iconfont {
+		font-size: 20px;
+	}
+	.mdl-layout__header,
+	.menu {
+		position: fixed;
+		top: 0;
+		left: 0;
+	}
+	.mdl-layout__header .mdl-layout__header-row {
+		padding-right: 0;
+	}
+	.mdl-layout__header-row .mdl-navigation__link .mdl-button {
+		padding: 5px;
+		margin-left: 10px;
+	}
+	.mdl-layout__content {
+		padding-top: 64px;
+		background-color: #EEE;
+	}
+	.section-spacer {
+		-webkit-flex-grow: 1;
+		-ms-flex-positive: 1;
+		flex-grow: 1;
+	}
+	.mdl-layout__header .mdl-layout-title {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		max-width: calc(100% - 50px);
+	}
+	.menu {
+		border-right: none;
+	}
+	.menu .mdl-layout-title {
+		background-image: url('images/menu-head.jpg');
+		background-size: 100% 100%;
+		background-repeat: no-repeat no-repeat;
+		background-position: 0 0;
+		height: 140px;
+		color: #FFF;
+		padding-top: 20px;
+		padding-bottom: 20px;
+	}
+	.menu .mdl-layout-title p {
+		margin: 0;
+		font-size: 17px;
+	}
+	.menu .mdl-layout-title img {
+		width: 72px;
+		height: 72px;
+		display: block;
+		margin-bottom: 10px;
+		margin-left: -10px;
+	}
+	.page-content {
+		padding: 5px;
+	}
+	.page-content .mdl-card {
+		margin: 15px 5px;
+		width: calc(100% - 10px);
+	}
+	.page-content .half {
+		display: flex;
+		flex-direction: row;
+		align-items: stretch;
+		flex-wrap: wrap;
+	}
+	.page-content .half .mdl-card {
+		width: calc(50% - 10px);
+		margin: 5px;
+	}
+	.page-content .half .mdl-card__title {
+		height: 64px;
+	}
+	.page-content .half .mdl-card__supporting-text > * {
+		vertical-align: middle;
+	}
+	.page-content .half .option {
+		margin-bottom: 5px;
+	}
+	.applies-to {
+		margin-top: 10px;
+	}
+	.applies-to > label {
+		padding-top: 5px;
+	}
+	.applies-to-list li {
+		margin-bottom: 5px;
+	}
+	#save-button {
+		position: fixed;
+		right: 20px;
+		bottom: 20px;
+		z-index: 999;
+	}
+	.help-button {
+		font-size: 22px;
+		vertical-align: middle;
+		cursor: pointer;
+	}
+	
+	/* code */
+	.code {
+		height: 10rem;
+		width: 40rem;
+	}
+	.CodeMirror {
+		border: solid #CCC 1px;
+		height: 450px;
+	}
+	.CodeMirror-lint-mark-warning {
+		background: none;
+	}
+	.CodeMirror-vscrollbar {
+		margin-bottom: 8px; /* make space for resize-grip */
+	}
+	.CodeMirror-dialog {
+		animation: highlight 3s ease-out;
+	}
+	.CodeMirror-focused {
+		outline: -webkit-focus-ring-color auto 5px;
+		outline-offset: -2px;
+	}
+	.CodeMirror-search-field {
+		width: 10em;
+	}
+	.CodeMirror-jump-field {
+		width: 5em;
+	}
+	.CodeMirror-search-hint {
+		color: #888;
+	}
+	@-webkit-keyframes highlight {
+		from {
+			background-color: #ff9;
+		}
+		to {
+			background-color: none;
+		}
+	}
+	.resize-grip {
+		position: absolute;
+		display: block;
+		width: 8px;
+		height: 8px;
+		content: " ";
+		right: 0;
+		bottom: 0;
+		z-index: 99;
+		cursor: n-resize;
+		background: linear-gradient(-45deg, transparent 2px, rgba(0,0,0,0.5) 2px, transparent 3px, transparent 4.5px, rgba(0,0,0,0.5) 5px, transparent 5.5px);
+	}
+	/* applies-to */
+	.applies-to {
+		display: flex;
+	}
+	.applies-to label {
+		flex: auto;
+		margin-top: 0.2rem;
+	}
+	.applies-to ul {
+		flex: auto;
+		flex-grow: 99;
+		margin: 0;
+		padding: 0;
+	}
+	.applies-to li {
+		display: flex;
+		list-style-type: none;
+		align-items: center;
+		margin-bottom: 0.35rem;
+	}
+	.applies-to li > *:not(button) {
+		flex: auto;
+		min-height: 1.4rem;
+		margin-left: 0.35rem;
+	}
+	.applies-to li .add-applies-to {
+		visibility: hidden;
+		text-align: left;
+	}
+	.applies-to li:last-child .add-applies-to {
+		visibility: visible
+	}
+	.applies-to li .add-applies-to:first-child {
+		margin-left: 1rem;
+	}
+	.applies-to li .applies-value {
+		flex-grow: 99;
+		padding-left: 0.2rem;
+	}
+	.applies-to img {
+		vertical-align: bottom;
+	}
+	/************ help popup ************/
+	#help-popup {
+		top: 3rem;
+		right: 3rem;
+		max-width: 50vw;
+		position: fixed;
+		display: none;
+		background-color: white;
+		box-shadow: 3px 3px 30px rgba(0, 0, 0, 0.5);
+		padding: 0.5rem;
+		z-index: 99;
+	}
+	#help-popup.big {
+		max-width: 100%;
+		left: 3rem;
+	}
+	#help-popup.big .CodeMirror {
+		min-height: 2rem;
+		height: 70vh;
+	}
+	#help-popup .title {
+		font-weight: bold;
+		background-color: rgba(0,0,0,0.05);
+		margin: -0.5rem -0.5rem 0.5rem;
+		padding: 0.5rem;
+	}
+	#help-popup .contents {
+		max-height: calc(100vh - 8rem);
+		overflow-y: auto;
+	}
+	#help-popup .close-icon {
+		cursor: pointer;
+		width: 8px;
+		height: 8px;
+		border: 8px solid transparent;
+		position: absolute;
+		right: 4px;
+		top: 4px;
+		background: linear-gradient(-45deg, transparent 5px, black 5px, black 6px, transparent 6.5px) no-repeat, linear-gradient(45deg, transparent 5px, black 5px, black 6px, transparent 6.5px) no-repeat;
+	}
 
-			body {
-				margin: 0;
-				font: 9pt arial,sans-serif;
-			}
-			/************ header ************/
-			#header {
-				height: 100%;
-				width: 15rem;
-				position: fixed;
-				top: 0;
-				padding: 0.95rem;
-				border-right: 1px dashed #AAA;
-				-webkit-box-shadow: 0 0 3rem -1.2rem black;
-			}
-			#header h1 {
-				margin-top: 0;
-			}
-			#sections {
-				padding-left: 18rem;
-			}
-			#sections h2 {
-				margin-top: 0.5rem;
-			}
-			.aligned {
-				display: table-row;
-			}
-			.aligned > *:not(img) {
-				display: table-cell;
-				margin-top: 0.1rem;
-				min-height: 1.4rem;
-			}
-			img[src="help.png"] {
-				cursor: pointer;
-				vertical-align: middle;
-				margin-left: 0.2rem;
-			}
-			input[type="checkbox"] {
-				margin-left: 0.1rem;
-			}
-			/* basic info */
-			#basic-info {
-				margin-bottom: 1rem;
-			}
-			#name {
-				width: 100%;
-			}
-			#basic-info-name {
-				display: flex;
-				align-items: center;
-			}
-			#url {
-				margin-left: 0.25rem;
-			}
-			#url:not([href^="http"]) {
-				display: none;
-			}
-			img[src*="world"] {
-				width: 16px;
-				height: 16px;
-				vertical-align: middle;
-				image-rendering: -webkit-optimize-contrast;
-			}
-			#enabled {
-				margin-left: 0;
-				vertical-align: middle;
-			}
-			#enabled-label {
-				vertical-align: middle;
-			}
-			/* actions */
-			#actions > * {
-				margin-right: 0.5rem;
-				margin-bottom: 0.5rem;
-			}
-			/* options */
-			#options [type="number"] {
-				max-width: 2.5rem;
-				text-align: right;
-			}
-			#options .option > * {
-				padding-right: 0.25rem;
-			}
-			/************ content ***********/
-			#sections > div {
-				margin: 0.7rem;
-				padding: 1rem;
-			}
-			#sections > div:not(:first-of-type) {
-				border-top: 2px solid black;
-			}
-			#sections > div:only-of-type .remove-section {
-				display: none;
-			}
-			#sections > div > button:not(:first-of-type) {
-				margin-left: 0.2rem;
-			}
-			.dirty > label::before {
-				content: "*";
-				font-weight: bold;
-			}
-			#sections {
-				counter-reset: codebox;
-			}
-			#sections > div > label::after {
-				counter-increment: codebox;
-				content: counter(codebox);
-				margin-left: 0.25rem;
-			}
-			/* code */
-			.code {
-				height: 10rem;
-				width: 40rem;
-			}
-			.CodeMirror {
-				border: solid #CCC 1px;
-			}
-			.CodeMirror-lint-mark-warning {
-				background: none;
-			}
-			.CodeMirror-vscrollbar {
-				margin-bottom: 8px; /* make space for resize-grip */
-			}
-			.CodeMirror-dialog {
-				-webkit-animation: highlight 3s ease-out;
-			}
-			.CodeMirror-focused {
-				outline: -webkit-focus-ring-color auto 5px;
-				outline-offset: -2px;
-			}
-			.CodeMirror-search-field {
-				width: 10em;
-			}
-			.CodeMirror-jump-field {
-				width: 5em;
-			}
-			.CodeMirror-search-hint {
-				color: #888;
-			}
-			@-webkit-keyframes highlight {
-				from {
-					background-color: #ff9;
-				}
-				to {
-					background-color: none;
-				}
-			}
-			.resize-grip {
-				position: absolute;
-				display: block;
-				width: 8px;
-				height: 8px;
-				content: " ";
-				right: 0;
-				bottom: 0;
-				z-index: 99;
-				cursor: n-resize;
-				background: linear-gradient(-45deg, transparent 2px, rgba(0,0,0,0.5) 2px, transparent 3px, transparent 4.5px, rgba(0,0,0,0.5) 5px, transparent 5.5px);
-			}
-			/* applies-to */
-			.applies-to {
-				display: flex;
-			}
-			.applies-to label {
-				flex: auto;
-				margin-top: 0.2rem;
-			}
-			.applies-to ul {
-				flex: auto;
-				flex-grow: 99;
-				margin: 0;
-				padding: 0;
-			}
-			.applies-to li {
-				display: flex;
-				list-style-type: none;
-				align-items: center;
-				margin-bottom: 0.35rem;
-			}
-			.applies-to li > *:not(button) {
-				flex: auto;
-				min-height: 1.4rem;
-				margin-left: 0.35rem;
-			}
-			.applies-to li .add-applies-to {
-				visibility: hidden;
-				text-align: left;
-			}
-			.applies-to li:last-child .add-applies-to {
-				visibility: visible
-			}
-			.applies-to li .add-applies-to:first-child {
-				margin-left: 1rem;
-			}
-			.applies-to li .applies-value {
-				flex-grow: 99;
-				padding-left: 0.2rem;
-			}
-			.applies-to img {
-				vertical-align: bottom;
-			}
-			/************ help popup ************/
-			#help-popup {
-				top: 3rem;
-				right: 3rem;
-				max-width: 50vw;
-				position: fixed;
-				display: none;
-				background-color: white;
-				box-shadow: 3px 3px 30px rgba(0, 0, 0, 0.5);
-				padding: 0.5rem;
-				z-index: 99;
-			}
-			#help-popup.big {
-				max-width: 100%;
-				left: 3rem;
-			}
-			#help-popup.big .CodeMirror {
-				min-height: 2rem;
-				height: 70vh;
-			}
-			#help-popup .title {
-				font-weight: bold;
-				background-color: rgba(0,0,0,0.05);
-				margin: -0.5rem -0.5rem 0.5rem;
-				padding: 0.5rem;
-			}
-			#help-popup .contents {
-				max-height: calc(100vh - 8rem);
-				overflow-y: auto;
-			}
-			#help-popup .close-icon {
-				cursor: pointer;
-				width: 8px;
-				height: 8px;
-				border: 8px solid transparent;
-				position: absolute;
-				right: 4px;
-				top: 4px;
-				background: linear-gradient(-45deg, transparent 5px, black 5px, black 6px, transparent 6.5px) no-repeat, linear-gradient(45deg, transparent 5px, black 5px, black 6px, transparent 6.5px) no-repeat;
-			}
+	.keymap-list {
+		font-size: 85%;
+		line-height: 1.0;
+		border-spacing: 0;
+		word-break: break-all;
+	}
+	.keymap-list input {
+		width: 100%;
+	}
+	.keymap-list tr:nth-child(odd) {
+		background-color: rgba(0, 0, 0, 0.07);
+	}
+	.keymap-list td:first-child {
+		white-space: nowrap;
+		font-family: monospace;
+		padding-right: 0.5rem;
+	}
 
-			.keymap-list {
-				font-size: 85%;
-				line-height: 1.0;
-				border-spacing: 0;
-				word-break: break-all;
-			}
-			.keymap-list input {
-				width: 100%;
-			}
-			.keymap-list tr:nth-child(odd) {
-				background-color: rgba(0, 0, 0, 0.07);
-			}
-			.keymap-list td:first-child {
-				white-space: nowrap;
-				font-family: monospace;
-				padding-right: 0.5rem;
-			}
+	#help-popup button[name^="import"] {
+		line-height: 1.5rem;
+		padding: 0 0.5rem;
+		margin: 0.5rem 0 0 0.5rem;
+		pointer-events: none;
+		opacity: 0.5;
+		float: right;
+	}
+	#help-popup.ready button[name^="import"] {
+		pointer-events: all;
+		opacity: 1.0;
+	}
 
-			#help-popup button[name^="import"] {
-				line-height: 1.5rem;
-				padding: 0 0.5rem;
-				margin: 0.5rem 0 0 0.5rem;
-				pointer-events: none;
-				opacity: 0.5;
-				float: right;
-			}
-			#help-popup.ready button[name^="import"] {
-				pointer-events: all;
-				opacity: 1.0;
-			}
+	/************ lint ************/
+	#lint {
+		display: none;
+		border-top: 1px solid #DDD;
+		padding-top: 16px;
+		color: #888;
+	}
+	#lint .title {
+		padding-left: 16px;
+		font-size: 16px;
+	}
+	#lint .label-title {
+		padding-left: 16px;
+		font-size: 15px;
+		margin-bottom: 0;
+	}
+	#lint .mdl-list {
+		margin-top: 0;
+		margin-bottom: 0;
+		padding-top: 0;
+		padding-bottom: 0;
+		font-size: 14px;
+	}
+	#lint li {
+		padding-top: 8px;
+		padding-bottom: 8px;
+		height: 56px;
+	}
+	#lint li:hover {
+		background-color: rgba(0, 0, 0, 0.1);
+	}
+	#lint .mdl-list__item-primary-content {
+		width: 100%;
+	}
+	#lint .mdl-list__item-sub-title {
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		width: 100%;
+	}
+	#lint td[role="severity"] {
+		font-size: 0;
+		width: 16px;
+		padding-right: 0.25rem;
+	}
 
-			/************ lint ************/
-			#lint {
-				display: none;
-			}
-			#lint > div {
-				overflow-y: auto;
-			}
-			#lint table {
-				font-size: 100%;
-				border-spacing: 0;
-				margin-bottom: 1rem;
-				line-height: 1.0;
-			}
-			#lint table:last-child {
-				margin-bottom: 0;
-			}
-			#lint caption {
-				text-align: left;
-				font-weight: bold;
-			}
-			#lint tbody {
-				font-size: 85%;
-				cursor: pointer;
-			}
-			#lint tr:hover {
-				background-color: rgba(0, 0, 0, 0.1);
-			}
-			#lint td[role="severity"] {
-				font-size: 0;
-				width: 16px;
-				padding-right: 0.25rem;
-			}
-			#lint td[role="line"], #lint td[role="sep"] {
-				text-align: right;
-				padding-right: 0;
-			}
-			#lint td[role="col"] {
-				text-align: left;
-				padding-right: 0.25rem;
-			}
-			#lint td[role="message"] {
-				text-align: left;
-			}
+	/************ CSS beautifier ************/
+	.beautify-options {
+		white-space: nowrap;
+		font-family: monospace;
+	}
+	.beautify-options div {
+		float: left;
+	}
+	.beautify-options div[newline="true"] + div {
+		clear: left;
+	}
+	.beautify-options div[newline="true"] + div span[indent] {
+		padding-left: 2rem;
+	}
+	.beautify-options:after {
+		clear: both;
+		display: block;
+		content: " ";
+		height: 1rem;
+	}
+	.beautify-options span {
+		font-weight: bold;
+	}
+	.beautify-options select {
+		border: none;
+		background-color: rgba(0, 0, 0, 0.05);
+	}
 
-			/************ CSS beautifier ************/
-			.beautify-options {
-				white-space: nowrap;
-				font-family: monospace;
-			}
-			.beautify-options div {
-				float: left;
-			}
-			.beautify-options div[newline="true"] + div {
-				clear: left;
-			}
-			.beautify-options div[newline="true"] + div span[indent] {
-				padding-left: 2rem;
-			}
-			.beautify-options:after {
-				clear: both;
-				display: block;
-				content: " ";
-				height: 1rem;
-			}
-			.beautify-options span {
-				font-weight: bold;
-			}
-			.beautify-options select {
-				border: none;
-				background-color: rgba(0, 0, 0, 0.05);
-			}
+	@media screen and (max-width: 1024px) {
+		.mdl-layout__header {
+			display: block;
+		}
+		.mdl-layout__header .mdl-layout__header-row {
+			padding-left: 56px;
+			padding-right: 20px;
+		}
+		.mdl-layout__header-row .mdl-navigation__link {
+			padding-left: 0;
+			padding-right: 0;
+		}
+		.hide-on-mobile {
+			display: none !important;
+		}
+	}
+	@media screen and (min-width: 1025px) {
+		.mdl-layout--fixed-drawer > .mdl-layout__header .mdl-layout__header-row {
+			padding-left: 260px;
+		}
+		.mdl-mini-footer {
+			padding-left: 262px;
+		}
+		.hide-on-desktop {
+			display: none !important;
+		}
+	}
+	</style>
+	<link id="cm-theme" rel="stylesheet">
 
-			/************ reponsive layouts ************/
-			@media(max-width:737px) {
-				#header {
-					width: auto;
-					height: auto;
-					position: inherit;
-					border-right: none;
-					border-bottom: 1px dashed #AAA;
-				}
-				#header section:not(:last-child) {
-					margin-bottom: 0.4rem;
-				}
-				#header input[type="checkbox"] {
-					vertical-align: middle;
-				}
-				h2 {
-					display: none;
-				}
-				#basic-info {
-					display: flex;
-					align-items: baseline;
-				}
-				#basic-info > * {
-					flex: auto;
-				}
-				#basic-info > *:first-child {
-					flex-grow: 99;
-					display: flex;
-				}
-				#basic-info > *:not(:last-child) {
-					margin-right: 0.8rem;
-				}
-				#basic-info #name {
-					width: auto;
-					flex-grow: 99;
-				}
-				#actions {
-					margin-top: 1rem;
-				}
-				#actions > * {
-					display: inline-block;
-				}
-				#options {
-					-webkit-column-count: 2;
-				}
-				#options .aligned > *:not(img) {
-					margin: 1px 0 0 0; /* workaround the flowing-padding column bug in webkit */
-					padding-right: 0.4rem;
-					vertical-align: baseline;
-					min-height: 1.4rem;
-				}
-				.option {
-					-webkit-column-break-inside: avoid;
-				}
-				.option label {
-					line-height: 1.25rem;
-					margin: 0;
-				}
-				#options [type="number"] {
-					text-align: left; /* workaround the column flow bug in webkit */
-					padding-left: 0.2rem;
-				}
-				#options #tabSize-label {
-					position: relative;
-					top: 0.2rem;
-				}
-				#lint h2 {
-					display: block;
-					cursor: default;
-					margin-bottom: 0;
-				}
-				#lint > div {
-					max-height: 0;
-				}
-				#lint.collapsed > div {
-					display: none;
-				}
-				#lint:hover > div {
-					margin-top: 1em;
-					max-height: 30vh;
-				}
-				#sections {
-					padding-left: 0;
-				}
-				#sections > div {
-					padding: 0;
-				}
-				#sections > *:not(h2) {
-					padding-left: 0.4rem;
-				}
-				.applies-type {
-					width: 30%;
-				}
-			}
-			@media(max-width:500px) {
-				#options {
-					-webkit-column-count: 1;
-				}
-				#options #tabSize-label {
-					position: static;
-				}
-			}
-		</style>
-		<link id="cm-theme" rel="stylesheet">
-
-		<template data-id="appliesTo">
-			<li>
-				<select name="applies-type" class="applies-type style-contributor">
-					<option value="url" i18n-text="appliesUrlOption"></option>
-					<option value="url-prefix" i18n-text="appliesUrlPrefixOption"></option>
-					<option value="domain" i18n-text="appliesDomainOption"></option>
-					<option value="regexp" i18n-text="appliesRegexpOption"></option>
-				</select>
-				<input name="applies-value" class="applies-value style-contributor">
-				<button class="remove-applies-to" i18n-text="appliesRemove"></button>
-				<button class="add-applies-to" i18n-text="appliesAdd"></button>
-			</li>
-		</template>
-		<template data-id="appliesToEverything">
-			<li class="applies-to-everything" i18n-html="appliesToEverything">
-				<button class="add-applies-to" i18n-text="appliesSpecify"></button>
-			</li>
-		</template>
-		<template data-id="section">
-			<div>
-				<label i18n-text="sectionCode"></label>
+	<template data-id="appliesTo">
+		<li>
+			<select name="applies-type" class="applies-type style-contributor">
+				<option value="url" i18n-text="appliesUrlOption"></option>
+				<option value="url-prefix" i18n-text="appliesUrlPrefixOption"></option>
+				<option value="domain" i18n-text="appliesDomainOption"></option>
+				<option value="regexp" i18n-text="appliesRegexpOption"></option>
+			</select>
+			<input name="applies-value" class="applies-value style-contributor">
+			<button class="mdl-button mdl-js-button mdl-js-ripple-effect remove-applies-to" i18n-text="appliesRemove"></button>
+			<button class="mdl-button mdl-js-button mdl-js-ripple-effect add-applies-to" i18n-text="appliesAdd"></button>
+		</li>
+	</template>
+	<template data-id="appliesToEverything">
+		<li class="applies-to-everything" i18n-html="appliesToEverything">
+			<button class="add-applies-to" i18n-text="appliesSpecify"></button>
+		</li>
+	</template>
+	<template data-id="section">
+		<div class="mdl-card mdl-shadow--2dp">
+			<div class="mdl-card__supporting-text">
 				<textarea class="code"></textarea>
-				<br>
 				<div class="applies-to">
 					<label i18n-text="appliesLabel">
-						<img class="applies-to-help" src="images/help.png" i18n-alt="helpAlt">
+						<i id="lint-help" class="material-icons help-button applies-to-help" i18n-title="helpAlt">help_outline</i>
 					</label>
 					<ul class="applies-to-list"></ul>
 				</div>
-				<button class="remove-section" i18n-text="sectionRemove"></button>
-				<button class="add-section" i18n-text="sectionAdd"></button>
-				<button class="beautify-section" i18n-text="styleBeautify"></button>
 			</div>
-		</template>
-		<template data-id="find">
-			<span i18n-text="search">: <input type="text" class="CodeMirror-search-field">
-				<span class="CodeMirror-search-hint">(<span i18n-text="searchRegexp"></span>)</span>
+			<div class="mdl-card__actions mdl-card--border">
+				<button class="remove-section mdl-button mdl-js-button mdl-js-ripple-effect" i18n-text="sectionRemove"></button>
+				<button class="add-section mdl-button mdl-js-button mdl-js-ripple-effect" i18n-text="sectionAdd"></button>
+				<button class="beautify-section mdl-button mdl-js-button mdl-js-ripple-effect" i18n-text="styleBeautify"></button>
+			</div>
+		</div>
+	</template>
+	<template data-id="find">
+		<span i18n-text="search">: <input type="text" class="CodeMirror-search-field">
+			<span class="CodeMirror-search-hint">(<span i18n-text="searchRegexp"></span>)</span>
+		</span>
+	</template>
+	<template data-id="replace">
+		<span i18n-text="replace">: <input type="text" class="CodeMirror-search-field">
+			<span class="CodeMirror-search-hint">(<span i18n-text="searchRegexp"></span>)</span>
+		</span>
+	</template>
+	<template data-id="replaceAll">
+		<span i18n-text="replaceAll">: <input type="text" class="CodeMirror-search-field">
+			<span class="CodeMirror-search-hint">(<span i18n-text="searchRegexp"></span>)</span>
+		</span>
+	</template>
+	<template data-id="replaceWith">
+		<span i18n-text="replaceWith">: <input type="text" class="CodeMirror-search-field">
+		</span>
+	</template>
+	<template data-id="replaceConfirm">
+		<span i18n-text="replace">?
+			<button i18n-text="confirmYes"></button>
+			<button i18n-text="confirmNo"></button>
+			<button i18n-text="confirmStop"></button>
+		</span>
+	</template>
+	<template data-id="jumpToLine">
+		<span i18n-text="editGotoLine">: <input class="CodeMirror-jump-field" type="text"></span>
+	</template>
+	<template data-id="lintItem">
+		<li class="mdl-list__item mdl-list__item--two-line">
+    		<span class="mdl-list__item-primary-content">
+				<span><i class="severity CodeMirror-lint-marker-{{severity}}"></i> At line <span class="line">{{line}}</span> col <span class="col">{{col}}</span></span>
+				<span class="mdl-list__item-sub-title" title="{{message}}">{{message}}</span>
 			</span>
-		</template>
-		<template data-id="replace">
-			<span i18n-text="replace">: <input type="text" class="CodeMirror-search-field">
-				<span class="CodeMirror-search-hint">(<span i18n-text="searchRegexp"></span>)</span>
-			</span>
-		</template>
-		<template data-id="replaceAll">
-			<span i18n-text="replaceAll">: <input type="text" class="CodeMirror-search-field">
-				<span class="CodeMirror-search-hint">(<span i18n-text="searchRegexp"></span>)</span>
-			</span>
-		</template>
-		<template data-id="replaceWith">
-			<span i18n-text="replaceWith">: <input type="text" class="CodeMirror-search-field">
-			</span>
-		</template>
-		<template data-id="replaceConfirm">
-			<span i18n-text="replace">?
-				<button i18n-text="confirmYes"></button>
-				<button i18n-text="confirmNo"></button>
-				<button i18n-text="confirmStop"></button>
-			</span>
-		</template>
-		<template data-id="jumpToLine">
-			<span i18n-text="editGotoLine">: <input class="CodeMirror-jump-field" type="text"></span>
-		</template>
+ 		</li>
+	</template>
 
-		<script src="src/storage.js"></script>
-		<script src="src/refilter.js"></script>
-		<script src="src/messaging.js"></script>
-		<script src="src/localization.js"></script>
-		<script src="src/inject/apply.js"></script>
-		<script src="src/edit.js"></script>
-	</head>
-	<body id="xstyle-edit">
-		<div id="header">
-			<h1 id="heading">&nbsp;</h1> <!-- nbsp allocates the actual height which prevents page shift -->
-			<section id="basic-info">
-				<div id="basic-info-name">
-					<input id="name" class="style-contributor" i18n-placeholder="styleMissingName">
-					<a id="url" target="_blank"><img src="images/world_go.png"></a>
-				</div>
-				<div id="basic-info-enabled">
-					<input type="checkbox" id="enabled" class="style-contributor">
-					<label for="enabled" id="enabled-label" i18n-text="styleEnabledLabel"></label>
-				</div>
-			</section>
-			<section id="actions">
-				<div>
-					<button id="save-button" title="Ctrl-S" i18n-text="styleSaveLabel"></button>
-					<button id="beautify" i18n-text="styleBeautify"></button>
-					<a href="manage.html"><button id="cancel-button" i18n-text="styleCancelEditLabel"></button></a>
-				</div>
-				<div>
-					<h2 id="mozilla-format-heading" i18n-text="styleMozillaFormatHeading"><img id="to-mozilla-help" src="images/help.png"></h2>
-					<button id="from-mozilla" i18n-text="importLabel"></button>
-					<button id="to-mozilla" i18n-text="exportLabel"></button>
-				</div>
-			</section>
-			<section id="options">
-				<h2 id="options-heading" i18n-text="optionsHeading"></h2>
-				<div class="option">
-					<input data-option="lineWrapping" id="editor.lineWrapping" type="checkbox">
-					<label id="lineWrapping-label" for="editor.lineWrapping" i18n-text="cm_lineWrapping"></label>
-				</div>
-				<div class="option">
-					<input data-option="smartIndent" id="editor.smartIndent" type="checkbox">
-					<label id="smartIndent-label" for="editor.smartIndent" i18n-text="cm_smartIndent"></label>
-				</div>
-				<div class="option">
-					<input data-option="indentWithTabs" id="editor.indentWithTabs" type="checkbox">
-					<label id="indentWithTabs-label" for="editor.indentWithTabs" i18n-text="cm_indentWithTabs"></label>
-				</div>
-				<div class="option aligned">
-					<label id="tabSize-label" for="editor.tabSize" i18n-text="cm_tabSize"></label>
-					<input data-option="tabSize" id="editor.tabSize" type="number" min="0">
-				</div>
-				<div class="option aligned">
-					<label id="keyMap-label" for="editor.keyMap" i18n-text="cm_keyMap"></label>
-					<select data-option="keyMap" id="editor.keyMap"></select>
-					<img id="keyMap-help" src="images/help.png" i18n-alt="helpAlt">
-				</div>
-				<div class="option aligned">
-					<label id="theme-label" for="editor.theme" i18n-text="cm_theme"></label>
-					<select data-option="theme" id="editor.theme"></select>
-				</div>
-			</section>
-			<section id="lint"><h2 i18n-text="issues">: <span id="issue-count"></span><img id="lint-help" src="images/help.png" i18n-alt="helpAlt"></h2><div></div></section>
+	<script src="src/storage.js"></script>
+	<script src="src/messaging.js"></script>
+	<script src="src/localization.js"></script>
+	<script src="src/inject/apply.js"></script>
+	<script src="src/edit.js"></script>
+</head>
+<body id="xstyle-edit">
+<div class="mdl-layout mdl-layout--fixed-drawer">
+	<div class="mdl-layout__obfuscator"></div>
+	<header class="mdl-layout__header">
+		<div class="mdl-layout__header-row">
+			<div id="menu-button" aria-expanded="false" role="button" tabindex="0" class="mdl-layout__drawer-button"><i class="material-icons">menu</i></div>
+			<span id="heading" class="mdl-layout-title"></span>
+			<div class="mdl-layout-spacer"></div>
 		</div>
-		<section id="sections">
-			<h2><span id="sections-heading" i18n-text="styleSectionsTitle"></span><img id="sections-help" src="images/help.png" i18n-alt="helpAlt"></h2>
+	</header>
+	<div class="menu mdl-layout__drawer">
+		<span class="mdl-layout-title"><p><img src="images/128.png"></p><p>xStyle</p></span>
+		<nav class="mdl-navigation">
+			<a class="mdl-navigation__link" id="cancel-button" i18n-text="styleCancelEditLabel" data-href="manage.html"></a>
+			<a class="mdl-navigation__link" id="beautify" i18n-text="styleBeautify"></a>
+			<a class="mdl-navigation__link" id="from-mozilla" i18n-text="styleMozillaFormatImport"></a>
+			<a class="mdl-navigation__link" id="to-mozilla" i18n-text="styleMozillaFormatExport"></a>
+		</nav>
+		<section id="lint">
+			<p class="title" i18n-text="issues">: <span id="issue-count"></span><i id="lint-help" class="material-icons help-button" i18n-title="helpAlt">help_outline</i></p>
+			<div></div>
 		</section>
-		<div id="help-popup">
-			<div class="title"></div><div class="close-icon"></div>
-			<div class="contents"></div>
+	</div>
+	<main class="mdl-layout__content">
+		<div class="page-content">
+			<div class="half">
+				<div class="mdl-card mdl-shadow--2dp">
+					<div class="mdl-card__title mdl-card--expand">
+						<h2 class="mdl-card__title-text" id="contentHeading"></h2>
+					</div>
+					<div class="mdl-card__supporting-text">
+						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-cell--8-col">
+							<input class="mdl-textfield__input style-contributor" type="text" id="name">
+							<label class="mdl-textfield__label" for="name" i18n-text="styleName"></label>
+						</div>
+						<label class="mdl-checkbox mdl-cell--4-col" id="enabled-label" for="enabled">
+							<input type="checkbox" id="enabled" class="mdl-checkbox__input style-contributor">
+							<span class="mdl-checkbox__label" i18n-text="styleEnabledLabel"></span>
+						</label>
+					</div>
+				</div>
+				<!-- editor settings -->
+				<div id="editorSetting" class="mdl-card mdl-shadow--2dp half">
+					<div class="mdl-card__title mdl-card--expand">
+						<h2 class="mdl-card__title-text" i18n-text="editorSetting"></h2>
+					</div>
+					<div id="options" class="mdl-card__supporting-text mdl-grid">
+						<div class="mdl-cell mdl-cell--4-col">
+							<label class="mdl-checkbox mdl-js-ripple-effect" id="lineWrapping-label" for="editor.lineWrapping">
+								<input type="checkbox" data-option="lineWrapping" id="editor.lineWrapping" class="mdl-checkbox__input">
+								<span class="mdl-checkbox__label" i18n-text="cm_lineWrapping"></span>
+							</label>
+							<label class="mdl-checkbox mdl-js-ripple-effect" id="smartIndent-label" for="editor.smartIndent">
+								<input type="checkbox" data-option="smartIndent" id="editor.smartIndent" class="mdl-checkbox__input">
+								<span class="mdl-checkbox__label" i18n-text="cm_smartIndent"></span>
+							</label>
+							<label class="mdl-checkbox mdl-js-ripple-effect" id="indentWithTabs-label" for="editor.indentWithTabs">
+								<input type="checkbox" data-option="indentWithTabs" id="editor.indentWithTabs" class="mdl-checkbox__input">
+								<span class="mdl-checkbox__label" i18n-text="cm_indentWithTabs"></span>
+							</label>
+						</div>
+						<div class="mdl-cell mdl-cell--4-col">
+							<div class="option aligned">
+								<label id="keyMap-label" for="editor.keyMap" i18n-text="cm_keyMap"></label>
+								<select data-option="keyMap" id="editor.keyMap"></select>
+								<i id="keyMap-help" class="help-button material-icons" i18n-title="helpAlt">help_outline</i>
+							</div>
+							<div class="option aligned">
+								<label id="theme-label" for="editor.theme" i18n-text="cm_theme"></label>
+								<select data-option="theme" id="editor.theme"></select>
+							</div>
+						</div>
+						<div class="mdl-cell mdl-cell--4-col">
+							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+								<input class="mdl-textfield__input" data-option="tabSize" id="editor.tabSize" type="number" min="0">
+								<label class="mdl-textfield__label" id="tabSize-label" for="editor.tabSize" i18n-text="cm_tabSize"></label>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<section id="sections"></section>
 		</div>
-	</body>
+	</main>
+</div>
+<div id="toast" class="mdl-js-snackbar mdl-snackbar">
+	<div class="mdl-snackbar__text"></div>
+	<button class="mdl-snackbar__action" type="button"></button>
+</div>
+<!-- save button -->
+<button id="save-button" title="Ctrl-S" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored"><i class="material-icons">save</i></button>
+<div id="help-popup">
+	<div class="title"></div><div class="close-icon"></div>
+	<div class="contents"></div>
+</div>
+<script src="third-party/mdl/material.min.js"></script>
+</body>
 </html>
