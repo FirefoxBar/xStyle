@@ -25,8 +25,8 @@ if (id_url) {
 			var installedStyle = response[0];
 			// maybe an update is needed
 			// use the md5 if available
-			if ((window.xstyle_md5 || md5_url) && installedStyle.md5Url && installedStyle.originalMd5) {
-				getResource(window.xstyle_md5 || md5_url, function(md5) {
+			if ((window.wrappedJSObject.xstyle_md5 || md5_url) && installedStyle.md5Url && installedStyle.originalMd5) {
+				getResource(window.wrappedJSObject.xstyle_md5 || md5_url, function(md5) {
 					if (md5 == installedStyle.originalMd5) {
 						sendEvent("styleAlreadyInstalled", {updateUrl: installedStyle.updateUrl});
 					} else {
@@ -34,7 +34,7 @@ if (id_url) {
 					}
 				});
 			} else {
-				getResource(window.xstyle_code || code_url, function(code) {
+				getResource(window.wrappedJSObject.xstyle_code || code_url, function(code) {
 					// this would indicate a failure (a style with settings?).
 					if (code == null) {
 						sendEvent("styleCanBeUpdated", {updateUrl: installedStyle.updateUrl});
@@ -90,19 +90,19 @@ function sendEvent(type, data) {
 }
 
 function styleInstall () {
-	var styleName = window.xstyle_name || getMeta('xstyle-name');
+	var styleName = window.wrappedJSObject.xstyle_name || getMeta('xstyle-name');
 	if (!styleName && window.location.href.indexOf('userstyles.org/styles') >= 0) {
 		styleName = document.title.match(/(.*?)\|/)[1].trim();
 	}
 	if (confirm(browser.i18n.getMessage('styleInstall', [styleName]))) {
-		getResource(window.xstyle_code || code_url, function(code) {
+		getResource(window.wrappedJSObject.xstyle_code || code_url, function(code) {
 			styleInstallByCode(JSON.parse(code));
 		});
 	}
 }
 function styleInstallByCode(json) {
 	//Check whether the style has been installed
-	browser.runtime.sendMessage({method: "getStyles", url: json.url || window.xstyle_id || id_url || location.href}).then(function(response) {
+	browser.runtime.sendMessage({method: "getStyles", url: json.url || window.wrappedJSObject.xstyle_id || id_url || location.href}).then(function(response) {
 		json.method = "saveStyle";
 		if (response.length != 0) {
 			json.id = response[0].id;
