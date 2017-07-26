@@ -29,9 +29,6 @@ runTryCatch(function() {
 	});
 });
 
-function r(ar, ind, opt, p) { var p = p || ''; return opt ?new RegExp(
-	['^',ar[3],'$'].join(p)): new RegExp([ar[ind], ar[2]].join(p )) }
-
 // This happens right away, sometimes so fast that the content script isn't even ready. That's
 // why the content script also asks for this stuff.
 browser.webNavigation.onCommitted.addListener(webNavigationListener.bind(this, "styleApply"));
@@ -61,6 +58,9 @@ function webNavigationListener(method, data) {
 }
 
 browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+	if (request.method === 'notifyBackground') {
+		request.method = request.reason;
+	}
 	switch (request.method) {
 		case "getStyles":
 			var styles = getStyles(request, sendResponse);

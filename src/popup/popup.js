@@ -58,7 +58,9 @@ function sendDisableAll(value){
 			value = !prefs.get("disableAll");
 		}
 		prefs.set("disableAll", value);
-		notifyAllTabs({method: "styleDisableAll", disableAll: value}).then(resolve);
+		notifyBackground({method: "styleDisableAll", disableAll: value}).then(function() {
+			notifyAllTabs({method: "styleDisableAll", disableAll: value}).then(resolve);
+		});
 	});
 }
 
