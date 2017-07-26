@@ -234,11 +234,13 @@ function initCodeMirror() {
 
 	// preload the theme so that CodeMirror can calculate its metrics in DOMContentLoaded->setupLivePrefs()
 	var theme = prefs.get("editor.theme");
-	var themeUlr = (theme == "default" ? "" : "third-party/codemirror/theme/" + theme + ".css");
-	var newLink = document.createElement('link');
-	newLink.setAttribute("rel", "stylesheet");
-	newLink.setAttribute("data-theme", theme);
-	newLink.setAttribute("href", themeUlr);
+	if (theme !== 'default') {
+		var themeUrl = (theme == "default" ? "" : "third-party/codemirror/theme/" + theme + ".css");
+		var newLink = document.createElement('link');
+		newLink.setAttribute("rel", "stylesheet");
+		newLink.setAttribute("data-theme", theme);
+		newLink.setAttribute("href", themeUrl);
+	}
 
 	// initialize global editor controls
 	document.addEventListener("DOMContentLoaded", function() {
@@ -281,6 +283,7 @@ function acmeEventListener(event) {
 			// use non-localized "default" internally
 			if (!value || value == "default" || value == t("defaultTheme")) {
 				value = "default";
+				break;
 			}
 			var loadedTheme = document.querySelector('link[data-theme="' + value + '"]');
 			if (loadedTheme) { //loaded
