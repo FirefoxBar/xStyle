@@ -8,4 +8,8 @@ Lastest: [1.2.3](https://github.com/FirefoxBar/xStyle/releases/tag/1.2.3)
 
 ## License
 
-For copyright status of the "codemirror" directory, see codemirror/LICENSE. Everything else is GPLv3.
+For copyright status of the "third-party/codemirror" directory, see [third-party/codemirror/LICENSE](third-party/codemirror/LICENSE).
+
+Copyright status of the "src/browser-polyfill.js" is [MPL 2.0](http://mozilla.org/MPL/2.0/).
+
+Everything else is GPLv3.
