@@ -126,7 +126,10 @@ function createStyleElement(style) {
 	e.querySelector(".enable").addEventListener("click", function(event) { enable(event, true); }, false);
 	e.querySelector(".disable").addEventListener("click", function(event) { enable(event, false); }, false);
 	e.querySelector(".export").addEventListener("click", doExport, false);
-	e.querySelector(".check-update").addEventListener("click", doCheckUpdate, false);
+	if (style.updateUrl) {
+		e.querySelector(".check-update").addEventListener("click", doCheckUpdate, false);
+		e.querySelector(".check-update").classList.remove('hidden');
+	}
 	e.querySelector(".update").addEventListener("click", doUpdate, false);
 	e.querySelector(".delete").addEventListener("click", doDelete, false);
 	//material
@@ -447,6 +450,45 @@ function jsonEquals(a, b, property) {
 	}
 }
 
+// import and export
+var XSTYLE_DUMPFILE_EXTENSION = ".json";
+
+function onSaveToFileClick(){
+	getStyles({}, function(styles){
+		var text = JSON.stringify(styles);
+		saveAsFile(text, generateFileName());
+	});
+}
+
+function onLoadFromFileClick(){
+	loadFromFile(XSTYLE_DUMPFILE_EXTENSION).then(function(rawText){
+		var json = JSON.parse(rawText);
+
+		var i = 0, nextStyle;
+
+		function proceed(){
+			nextStyle = json[i++];
+			if (nextStyle) {
+				saveStyle(nextStyle, proceed);
+			}else{
+				i--;
+				done();
+			}
+		}
+
+		function done(){
+			location.reload();
+		}
+
+		proceed();
+	});
+}
+
+function generateFileName(){
+	return "xstyle-" + moment().format("MM-DD-YYYY") + XSTYLE_DUMPFILE_EXTENSION;
+}
+
+
 document.addEventListener("DOMContentLoaded", function() {
 	installed = document.getElementById("installed");
 	if (document.xstyleStyles) {
@@ -456,6 +498,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	document.getElementById("check-all-updates").addEventListener("click", checkUpdateAll);
 	document.getElementById("apply-all-updates").addEventListener("click", applyUpdateAll);
+	document.getElementById("file-all-styles").addEventListener('click', onSaveToFileClick);
+	document.getElementById("unfile-all-styles").addEventListener('click', onLoadFromFileClick);
 
 	setupLivePrefs([
 		"show-badge"

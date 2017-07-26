@@ -14,25 +14,14 @@
 		width: 100%;
 		box-sizing: border-box;
 	}
-	.mdl-menu a {
-		text-decoration: none;
-		display: block;
-		width: 100%;
-		height: 100%;
-	}
-	.mdl-menu a .iconfont,
-	.mdl-menu a .material-icons {
-		margin-right: 10px;
-		vertical-align: middle;
-	}
-	.mdl-menu a .iconfont {
-		font-size: 20px;
-	}
 	.mdl-layout__header,
 	.menu {
 		position: fixed;
 		top: 0;
 		left: 0;
+	}
+	.menu a {
+		cursor: pointer;
 	}
 	.mdl-layout__header .mdl-layout__header-row {
 		padding-right: 0;
@@ -158,7 +147,7 @@
 				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect style-edit-link" href="edit.html?id=" i18n-text="editStyleLabel"></a>
 				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect delete" i18n-text="deleteStyleLabel"></a>
 				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect export" i18n-text="exportStyleLabel"></a>
-				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect check-update"><span i18n-text="checkForUpdate"></span><div class="loading mdl-spinner mdl-js-spinner is-active"></div></a>
+				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect check-update hidden"><span i18n-text="checkForUpdate"></span><div class="loading mdl-spinner mdl-js-spinner is-active"></div></a>
 			</div>
 			<div class="mdl-card__menu">
 				<button class="mdl-button mdl-js-button mdl-button--icon enable" i18n-title="enableStyleLabel"><i class="material-icons">block</i></button>
@@ -174,6 +163,7 @@
 	<script src="src/storage.js"></script>
 	<script src="src/messaging.js"></script>
 	<script src="src/inject/apply.js"></script>
+	<script src="src/fileSaveLoad.js"></script>
 	<script src="src/manage/manage.js"></script>
 </head>
 <body id="xstyle-manage">
@@ -220,8 +210,6 @@
 </div>
 <script src="third-party/mdl/material.min.js"></script>
 <script src="src/md5.min.js"></script>
-<script src="src/fileSaveLoad.js"></script>
 <script src="src/manage/moment.min.js"></script>
-<script src="src/manage/fileSaveLoad.js"></script>
 </body>
 </html>
