@@ -1,29 +1,29 @@
 function notifyAllTabs(request) {
 	return new Promise(function(resolve){
-        browser.windows.getAll({populate: true}).then(function(windows) {
-            windows.forEach(function(win) {
-                win.tabs.forEach(function(tab) {
-                    browser.tabs.sendMessage(tab.id, request);
-                    updateIcon(tab);
-                });
-            });
-            resolve();
-        });
+		browser.windows.getAll({populate: true}).then(function(windows) {
+			windows.forEach(function(win) {
+				win.tabs.forEach(function(tab) {
+					browser.tabs.sendMessage(tab.id, request);
+					updateIcon(tab);
+				});
+			});
+			resolve();
+		});
 		// notify background page
 		browser.runtime.sendMessage(request);
-        // notify all open popups
-        var reqPopup = shallowMerge({}, request, {method: "updatePopup", reason: request.method});
-        browser.runtime.sendMessage(reqPopup);
-    });
+		// notify all open popups
+		var reqPopup = shallowMerge({}, request, {method: "updatePopup", reason: request.method});
+		browser.runtime.sendMessage(reqPopup);
+	});
 }
 
 function processRawStylesResponse(resp){
-    if (resp.styles) {
-        resp.styles = JSON.parse(resp.styles);
-    } else {
-        resp.styles = {};
-    }
-    return resp;
+	if (resp.styles) {
+		resp.styles = JSON.parse(resp.styles);
+	} else {
+		resp.styles = {};
+	}
+	return resp;
 }
 
 function updateIcon(tab, styles) {
@@ -81,9 +81,9 @@ function updateIcon(tab, styles) {
 }
 
 function getDomainName(href){
-    var l = document.createElement("a");
-    l.href = href;
-    return l.hostname;
+	var l = document.createElement("a");
+	l.href = href;
+	return l.hostname;
 }
 
 function getActiveTab(callback) {
@@ -99,12 +99,12 @@ function getActiveTabRealURL(callback) {
 }
 
 function isRealUrlAddress(url) {
-    return (
-        url.indexOf("http") === 0 &&
-            ["://localhost", "chrome/newtab", "chrome://"].every(function(v) {
-                return url.indexOf(v) === -1;
-            })
-    ) ? url : null;
+	return (
+		url.indexOf("http") === 0 &&
+			["://localhost", "chrome/newtab", "chrome://"].every(function(v) {
+				return url.indexOf(v) === -1;
+			})
+	) ? url : null;
 }
 
 function getTabRealURL(tab, callback) {

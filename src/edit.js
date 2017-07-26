@@ -1,10 +1,10 @@
 "use strict";
 
 var styleId = null;
-var dirty = {};       // only the actually dirty items here
-var editors = [];     // array of all CodeMirror instances
+var dirty = {}; // only the actually dirty items here
+var editors = []; // array of all CodeMirror instances
 var saveSizeOnClose;
-var useHistoryBack;   // use browser history back when "back to manage" is clicked
+var useHistoryBack; // use browser history back when "back to manage" is clicked
 
 // direct & reverse mapping of @-moz-document keywords and internal property names
 var propertyToCss = {urls: "url", urlPrefixes: "url-prefix", domains: "domain", regexps: "regexp"};
@@ -60,7 +60,7 @@ var hotkeyRerouter = {
 };
 
 function showToast(message) {
-    document.getElementById('toast').MaterialSnackbar.showSnackbar({"message": message});
+	document.getElementById('toast').MaterialSnackbar.showSnackbar({"message": message});
 }
 
 function onChange(event) {
@@ -104,12 +104,12 @@ function setCleanItem(node, isClean) {
 function isCleanGlobal() {
 	var clean = Object.keys(dirty).length == 0;
 	setDirtyClass(document.body, !clean);
-    var saveBtn = document.getElementById("save-button")
-    if (clean){
-        //saveBtn.removeAttribute('disabled');
-    }else{
-        //saveBtn.setAttribute('disabled', true);
-    }
+	var saveBtn = document.getElementById("save-button")
+	if (clean){
+		//saveBtn.removeAttribute('disabled');
+	}else{
+		//saveBtn.setAttribute('disabled', true);
+	}
 	return clean;
 }
 
@@ -521,7 +521,7 @@ function addSection(event, section) {
 
 function removeAppliesTo(event) {
 	var appliesTo = event.target.parentNode,
-	    appliesToList = appliesTo.parentNode;
+		appliesToList = appliesTo.parentNode;
 	removeAreaAndSetDirty(appliesTo);
 	if (!appliesToList.hasChildNodes()) {
 		addAppliesTo(appliesToList);

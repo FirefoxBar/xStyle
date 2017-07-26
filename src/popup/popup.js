@@ -112,8 +112,8 @@ function renderPageWithStyles(styles){
 }
 
 function addStyleToInstalled(style){
-    style.style_first_word = style.name.substr(0, 1);
-    style.style_edit_url = "edit.html?id=" + style.id;
+	style.style_first_word = style.name.substr(0, 1);
+	style.style_edit_url = "edit.html?id=" + style.id;
 	var el = installedStyleToElement(style);
 	if (style.author === undefined) {
 		el.querySelector('.style-author').style.display = 'none';

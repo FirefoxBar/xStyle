@@ -395,7 +395,7 @@ function doUpdate(event) {
 }
 
 function showToast(message) {
-    document.getElementById('toast').MaterialSnackbar.showSnackbar({"message": message});
+	document.getElementById('toast').MaterialSnackbar.showSnackbar({"message": message});
 }
 
 function codeIsEqual(a, b) {

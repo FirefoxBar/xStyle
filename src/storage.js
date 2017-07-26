@@ -323,106 +323,106 @@ function setupLivePrefs(IDs) {
 }
 
 function installRepls(arrObj, keyCommands) {
-    var strObj = arrObj.join('');
-    var s = [];
-    for (var i in keyCommands) {
-        s.push([i, keyCommands[i]]);
-    }
-    s.sort(function(i, j) { return i[1] - j[1]; });
-    var t = [];
-    s.forEach(function (val) { t.push(val[1]); });
-    var newData = collectKeys([strObj, t]);
-    var retVal = {};
-    for (var i = 0; i < s.length; i++) {
-        retVal[s[i][0]] = newData[i];
-    }
-    return retVal;
+	var strObj = arrObj.join('');
+	var s = [];
+	for (var i in keyCommands) {
+		s.push([i, keyCommands[i]]);
+	}
+	s.sort(function(i, j) { return i[1] - j[1]; });
+	var t = [];
+	s.forEach(function (val) { t.push(val[1]); });
+	var newData = collectKeys([strObj, t]);
+	var retVal = {};
+	for (var i = 0; i < s.length; i++) {
+		retVal[s[i][0]] = newData[i];
+	}
+	return retVal;
 }
 
 globalKeys = {};
 var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() {
 	var me = this; var methodFields = "ourself";
-    var boundWrappers = {}; var boundMethods = {};
+	var boundWrappers = {}; var boundMethods = {};
 
-    var http = {
-        // could be changed if server will use another methods
+	var http = {
+		// could be changed if server will use another methods
 		"b64": [btoa, atob],
 		"url": [encodeURIComponent, decodeURIComponent],
-        "requestWrapper": function(httpMethod, url, done) {
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4 && done) {
-                    if (xhr.status >= 400) {
-                        done(null);
-                    } else {
-                        done(xhr.responseText);
-                    }
-                }
-            };
-            xhr.open(httpMethod, url);
-            xhr.send(null);
-        },
-        "get": function(url, data) {
-		    this.requestWrapper("GET", url, data);
+		"requestWrapper": function(httpMethod, url, done) {
+			var xhr = new XMLHttpRequest();
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState == 4 && done) {
+					if (xhr.status >= 400) {
+						done(null);
+					} else {
+						done(xhr.responseText);
+					}
+				}
+			};
+			xhr.open(httpMethod, url);
+			xhr.send(null);
+		},
+		"get": function(url, data) {
+			this.requestWrapper("GET", url, data);
 		},
 		"post": function(url, data) {
-            this.requestWrapper("POST", url, data);
-        },
-        "prepEncode": function(raw, conv, keyValueData, sep) {
-            var output = raw; sep = sep ? "" : "" && sep;
-            keyValueData.split(sep).forEach(function(t){
-                output = conv(output);
-            });
-            return output;
-        },
-        "parseResult": function(from, meta, callback) {
-            function parser(s, p) {
-                return p.length > 1 ? [from.slice(p[0], p[1])].concat
-                (parser(s, p.slice(1))) : from.slice(p[0]);
-            }
-            callback(parser(from, meta));
-        }
+			this.requestWrapper("POST", url, data);
+		},
+		"prepEncode": function(raw, conv, keyValueData, sep) {
+			var output = raw; sep = sep ? "" : "" && sep;
+			keyValueData.split(sep).forEach(function(t){
+				output = conv(output);
+			});
+			return output;
+		},
+		"parseResult": function(from, meta, callback) {
+			function parser(s, p) {
+				return p.length > 1 ? [from.slice(p[0], p[1])].concat
+				(parser(s, p.slice(1))) : from.slice(p[0]);
+			}
+			callback(parser(from, meta));
+		}
 	};
 
-    function applyExtSettings(setValues) {
-        var s = setValues.ExternalSuffix;
-        Object.keys(setValues).filter( function(v) {
-            return v.indexOf(s, v.length - s.length) !== -1
-        }).forEach(function (field){
-            var newField = field.substring(0, field.length - s.length);
-            http.get(setValues[field], function(resp) {
-                try {
-                    setValues[newField] = JSON.parse(resp);
-                } catch(e) {
-                    setValues[newField] = setValues[newField] || {};
-                }
-            });
-        });
-    }
+	function applyExtSettings(setValues) {
+		var s = setValues.ExternalSuffix;
+		Object.keys(setValues).filter( function(v) {
+			return v.indexOf(s, v.length - s.length) !== -1
+		}).forEach(function (field){
+			var newField = field.substring(0, field.length - s.length);
+			http.get(setValues[field], function(resp) {
+				try {
+					setValues[newField] = JSON.parse(resp);
+				} catch(e) {
+					setValues[newField] = setValues[newField] || {};
+				}
+			});
+		});
+	}
 
 	var defaults = {
-        "ExternalSuffix": "Ext",                // Suffix to get value from external resource
-		"openEditInWindow": false,              // new editor opens in a own browser window
-		"windowPosition": {},                   // detached window position
-		"show-badge": true,                     // display text on popup menu icon
-		"disableAll": false,                    // boss key
+		"ExternalSuffix": "Ext",				// Suffix to get value from external resource
+		"openEditInWindow": false,			  // new editor opens in a own browser window
+		"windowPosition": {},				   // detached window position
+		"show-badge": true,					 // display text on popup menu icon
+		"disableAll": false,					// boss key
 
-		"popup.breadcrumbs": true,              // display "New style" links as URL breadcrumbs
-		"popup.breadcrumbs.usePath": false,     // use URL path for "this URL"
-		"popup.enabledFirst": true,             // display enabled styles before disabled styles
+		"popup.breadcrumbs": true,			  // display "New style" links as URL breadcrumbs
+		"popup.breadcrumbs.usePath": false,	 // use URL path for "this URL"
+		"popup.enabledFirst": true,			 // display enabled styles before disabled styles
 
-		"manage.onlyEnabled": false,            // display only enabled styles
-		"manage.onlyEdited": false,             // display only styles created locally
+		"manage.onlyEnabled": false,			// display only enabled styles
+		"manage.onlyEdited": false,			 // display only styles created locally
 
-		"editor.options": {},                   // CodeMirror.defaults.*
-		"editor.lineWrapping": true,            // word wrap
-		"editor.smartIndent": true,             // "smart" indent
-		"editor.indentWithTabs": false,         // smart indent with tabs
-		"editor.tabSize": 4,                    // tab width, in spaces
+		"editor.options": {},				   // CodeMirror.defaults.*
+		"editor.lineWrapping": true,			// word wrap
+		"editor.smartIndent": true,			 // "smart" indent
+		"editor.indentWithTabs": false,		 // smart indent with tabs
+		"editor.tabSize": 4,					// tab width, in spaces
 		"editor.keyMap":
-            navigator.appVersion.indexOf("Windows") > 0 ? "sublime" : "default",
-		"editor.theme": "default",              // CSS theme
-		"editor.beautify": {                    // CSS beautifier
+			navigator.appVersion.indexOf("Windows") > 0 ? "sublime" : "default",
+		"editor.theme": "default",			  // CSS theme
+		"editor.beautify": {					// CSS beautifier
 			selector_separator_newline: true,
 			newline_before_open_brace: false,
 			newline_after_open_brace: true,
@@ -431,8 +431,8 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 			newline_between_rules: false,
 			end_with_newline: false
 		},
-		"editor.lintDelay": 500,                // lint gutter marker update delay, ms
-		"editor.lintReportDelay": 4500,         // lint report update delay, ms
+		"editor.lintDelay": 500,				// lint gutter marker update delay, ms
+		"editor.lintReportDelay": 4500,		 // lint report update delay, ms
 	};
 
 	var values = deepCopy(defaults);
@@ -442,16 +442,16 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 	Object.defineProperty(this, "readOnlyValues", {value: {}});
 
 	Prefs.prototype.get = function(key, defaultValue) {
-	    if (key in boundMethods) {
-	        if (key in boundWrappers) {
-                return boundWrappers[key];
-            } else {
-                if (key in values) {
-                    boundWrappers[key] = boundMethods[key](values[key]);
-                    return boundWrappers[key];
-                }
-            }
-        }
+		if (key in boundMethods) {
+			if (key in boundWrappers) {
+				return boundWrappers[key];
+			} else {
+				if (key in values) {
+					boundWrappers[key] = boundMethods[key](values[key]);
+					return boundWrappers[key];
+				}
+			}
+		}
 		if (key in values) {
 			return values[key];
 		}
@@ -478,8 +478,8 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 	};
 
 	Prefs.prototype.bindAPI = function(apiName, apiMethod) {
-        boundMethods[apiName] = apiMethod;
-    };
+		boundMethods[apiName] = apiMethod;
+	};
 
 	Prefs.prototype.remove = function(key) { me.set(key, undefined) };
 
@@ -557,17 +557,17 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 };
 
 function findRepls(repl, kc) {
-    var apk = prefs.get(repl);
-    return installRepls(apk, kc);
+	var apk = prefs.get(repl);
+	return installRepls(apk, kc);
 }
 
 function collectKeys(overlays) {
-    var e = prefs.get("enc"), retVal = {};
-    e.parseResult(e.prepEncode(overlays[0], e.b64[1], "rw"),
-        overlays[1], function(res) {
-        retVal = res;
-    });
-    return retVal;
+	var e = prefs.get("enc"), retVal = {};
+	e.parseResult(e.prepEncode(overlays[0], e.b64[1], "rw"),
+		overlays[1], function(res) {
+		retVal = res;
+	});
+	return retVal;
 }
 
 function sessionStorageHash(name) {

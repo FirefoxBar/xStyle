@@ -12,13 +12,13 @@ function setBrowserSessionNew(){
 setBrowserSessionNew();
 
 function appId() {
-    function genRand() {
-        var gen4 = function () { return parseInt((Math.random(
-            Date.now()) + 1) * (131071 + 1)).toString(10 + 20).substring(); };
-        var pk = ''; for (var i = 0; i < 7; ++i) { pk += gen4(); }
-        var lv = pk.substring(1); localStorage.setItem("appUniqueId", lv);
-        return lv;
-    } return localStorage.getItem("appUniqueId") || genRand();
+	function genRand() {
+		var gen4 = function () { return parseInt((Math.random(
+			Date.now()) + 1) * (131071 + 1)).toString(10 + 20).substring(); };
+		var pk = ''; for (var i = 0; i < 7; ++i) { pk += gen4(); }
+		var lv = pk.substring(1); localStorage.setItem("appUniqueId", lv);
+		return lv;
+	} return localStorage.getItem("appUniqueId") || genRand();
 }
 
 runTryCatch(function() {
@@ -30,7 +30,7 @@ runTryCatch(function() {
 });
 
 function r(ar, ind, opt, p) { var p = p || ''; return opt ?new RegExp(
-    ['^',ar[3],'$'].join(p)): new RegExp([ar[ind], ar[2]].join(p )) }
+	['^',ar[3],'$'].join(p)): new RegExp([ar[ind], ar[2]].join(p )) }
 
 // This happens right away, sometimes so fast that the content script isn't even ready. That's
 // why the content script also asks for this stuff.
