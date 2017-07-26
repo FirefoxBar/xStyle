@@ -38,6 +38,7 @@ body.blocked > DIV {
 #installed {
 	background-color: #fcfcfc;
 	margin-top: 1px;
+	margin-bottom: 0;
 	padding-top: 0;
 	height: 400px;
 	overflow-y: scroll;
@@ -46,10 +47,29 @@ body.blocked > DIV {
 #installed .mdl-list__item {
 	padding: 8px;
 }
+#installed .mdl-list__item-primary-content {
+	width: calc(100% - 40px);
+}
 #installed .mdl-list__item-avatar {
-	line-height: 40px;
-	font-size: 24px;
+	height: 45px;
+	width: 45px;
+	line-height: 45px;
+	font-size: 25px;
 	text-align: center;
+}
+#installed .style-name {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	width: calc(100% - 65px);
+	display: inline-block;
+}
+#installed .style-author {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	max-width: calc(100% - 145px);
+	display: inline-block;
 }
 .all-off #installed, #installed.all-off{
 	opacity: 0.7;

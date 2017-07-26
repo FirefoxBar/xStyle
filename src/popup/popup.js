@@ -111,13 +111,9 @@ function renderPageWithStyles(styles){
 	});
 }
 
-function preProcessInstalledStyle(style){
+function addStyleToInstalled(style){
     style.style_first_word = style.name.substr(0, 1);
     style.style_edit_url = "edit.html?id=" + style.id;
-}
-
-function addStyleToInstalled(style){
-	preProcessInstalledStyle(style);
 	var el = installedStyleToElement(style);
 	if (style.author === undefined) {
 		el.querySelector('.style-author').style.display = 'none';
@@ -236,6 +232,9 @@ function getSiteName(tabUrl){
 }
 
 function openLink(e) {
+	if (!e.target.href) {
+		return;
+	}
 	e.preventDefault();	
 	browser.runtime.sendMessage({method: "openURL", url: e.target.href});
 	close();
