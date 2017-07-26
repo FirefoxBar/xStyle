@@ -9,6 +9,8 @@ function notifyAllTabs(request) {
             });
             resolve();
         });
+		// notify background page
+		browser.runtime.sendMessage(request);
         // notify all open popups
         var reqPopup = shallowMerge({}, request, {method: "updatePopup", reason: request.method});
         browser.runtime.sendMessage(reqPopup);
