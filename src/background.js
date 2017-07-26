@@ -97,25 +97,13 @@ browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	sendResponse(); // avoid error
 });
 
-
-// Not available in Firefox - https://bugzilla.mozilla.org/show_bug.cgi?id=1240350
-if ("commands" in browser) {
-	browser.commands.onCommand.addListener(function(command) {
-		switch (command) {
-			case "openManage":
-				openURL({url: browser.extension.getURL("manage.html")});
-				break;
-			case "styleDisableAll":
-				disableAllStylesToggle();
-				browser.contextMenus.update("disableAll", {checked: prefs.get("disableAll")});
-				break;
-		}
-	});
-}
-
 // contextMenus API is present in ancient Chrome but it throws an exception
 // upon encountering the unsupported parameter value "browser_action", so we have to catch it.
 runTryCatch(function() {
+	browser.contextMenus.create({
+		id: "openManage", title: browser.i18n.getMessage("openManage"),
+		type: "normal", contexts: ["browser_action"]
+	}, function() { var clearError = browser.runtime.lastError });
 	browser.contextMenus.create({
 		id: "show-badge", title: browser.i18n.getMessage("menuShowBadge"),
 		type: "checkbox", contexts: ["browser_action"], checked: prefs.get("show-badge")
@@ -127,7 +115,9 @@ runTryCatch(function() {
 });
 
 browser.contextMenus.onClicked.addListener(function(info, tab) {
-	if (info.menuItemId == "disableAll") {
+	if (info.menuItemId === 'openManage') {
+		openURL({"url": browser.extension.getURL("manage.html")});
+	} else if (info.menuItemId === "disableAll") {
 		disableAllStylesToggle(info.checked);
 	} else {
 		prefs.set(info.menuItemId, info.checked);

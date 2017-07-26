@@ -53,9 +53,6 @@
 		}
 	],
 	"update_url": "https://ext.firefoxcn.net/xstyle/install/update.xml",
-	"options_ui": {
-		"page": "manage.html"
-	},
 	"browser_action": {
 		"default_icon": {
 			"128": "images/128.png"
