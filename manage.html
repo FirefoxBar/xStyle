@@ -75,10 +75,25 @@
 	.page-content {
 		padding: 5px;
 	}
+	.page-content #installed {
+		display: flex;
+		flex-direction: row;
+		align-items: stretch;
+		flex-wrap: wrap;
+	}
 	.page-content #installed .mdl-card {
-		display: inline-block;
 		width: calc(50% - 10px);
 		margin: 5px;
+	}
+	.page-content #installed .mdl-card .mdl-card--expand {
+		flex-grow: 0;
+		-webkit-flex-grow: 0;
+		-ms-flex-positive: 0;
+	}
+	.page-content #installed .mdl-card .mdl-card__supporting-text {
+		flex-grow: 1;
+		-webkit-flex-grow: 1;
+		-ms-flex-positive: 1;
 	}
 	.option {
 		margin: 15px 5px;
