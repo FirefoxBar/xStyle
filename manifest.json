@@ -52,6 +52,7 @@
 			"js": ["src/browser-polyfill.js", "src/inject/install.js"]
 		}
 	],
+	"update_url": "https://ext.firefoxcn.net/xstyle/install/updates.xml",
 	"options_ui": {
 		"page": "manage.html"
 	},
