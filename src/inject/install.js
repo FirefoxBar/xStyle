@@ -92,7 +92,7 @@ function sendEvent(type, data) {
 function styleInstall () {
 	var styleName = window.xstyle_name || getMeta('xstyle-name');
 	if (!styleName && window.location.href.indexOf('userstyles.org/styles') >= 0) {
-		styleName = document.title.match(/(.*?)-/)[1].trim();
+		styleName = document.title.match(/(.*?)\|/)[1].trim();
 	}
 	if (confirm(browser.i18n.getMessage('styleInstall', [styleName]))) {
 		getResource(window.xstyle_code || code_url, function(code) {
