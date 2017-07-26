@@ -1656,3 +1656,19 @@ function getComputedHeight(el) {
 	return el.getBoundingClientRect().height +
 		parseFloat(compStyle.marginTop) + parseFloat(compStyle.marginBottom);
 }
+
+
+document.addEventListener("DOMContentLoaded", function() {
+	//menu
+	var toggleMenu = function() {
+		if (document.querySelector('.mdl-layout__drawer').classList.contains('is-visible')) {
+			document.querySelector('.mdl-layout__obfuscator').classList.remove('is-visible');
+			document.querySelector('.mdl-layout__drawer').classList.remove('is-visible');
+		} else {
+			document.querySelector('.mdl-layout__obfuscator').classList.add('is-visible');
+			document.querySelector('.mdl-layout__drawer').classList.add('is-visible');
+		}
+	};
+	document.getElementById('menu-button').addEventListener('click', toggleMenu);
+	document.querySelector('.mdl-layout__obfuscator').addEventListener('click', toggleMenu);
+});
