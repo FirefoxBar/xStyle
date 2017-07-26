@@ -198,6 +198,9 @@
 		"message": "追加已导入样式到当前样式",
 		"description": "Tooltip for the button to import a style and append to the existing sections"
 	},
+	"importFromFirefoxStylish": {
+		"message": "从 Stylish for Firefox 导入"
+	},
 	"importLabel": {
 		"message": "导入",
 		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
