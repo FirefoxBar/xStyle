@@ -104,12 +104,6 @@ function setCleanItem(node, isClean) {
 function isCleanGlobal() {
 	var clean = Object.keys(dirty).length == 0;
 	setDirtyClass(document.body, !clean);
-	var saveBtn = document.getElementById("save-button")
-	if (clean){
-		//saveBtn.removeAttribute('disabled');
-	}else{
-		//saveBtn.setAttribute('disabled', true);
-	}
 	return clean;
 }
 
