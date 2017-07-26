@@ -12,12 +12,12 @@
 			<span class="style-name">{{name}}</span>
 			<span class="mdl-list__item-sub-title">
 				<span class="style-author">{{author}}</span>
-				<a class="mdl-button mdl-js-button mdl-button--icon edit" href="{{style_edit_url}}" target="_blank"><i class="material-icons">create</i></a>
-				<a class="mdl-button mdl-js-button mdl-button--icon delete" href="{{style_url}}" target="_blank"><i class="material-icons">delete</i></a>
+				<a class="mdl-button mdl-js-button mdl-button--icon edit" href="{{style_edit_url}}"><i class="material-icons">create</i></a>
+				<a class="mdl-button mdl-js-button mdl-button--icon delete" href="{{style_url}}"><i class="material-icons">delete</i></a>
 			</span>
 		</span>
 		<span class="mdl-list__item-secondary-action">
-			<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="list-switch-{{id}}">
+			<label class="mdl-switch mdl-js-switch" for="list-switch-{{id}}">
 				<input type="checkbox" id="list-switch-{{id}}" class="mdl-switch__input activate" />
 			</label>
 		</span>
@@ -43,7 +43,7 @@
     <section id="tab-item-installed" class="tab-item tab-installed">
         <div id="disable-all-container">
 			<div class="disable-all-lable" i18n-text="allStyles"></div>
-			<label class="mdl-switch mdl-js-ripple-effect" for="disable-all-checkbox">
+			<label class="mdl-switch" for="disable-all-checkbox">
 				<input type="checkbox" id="disable-all-checkbox" class="mdl-switch__input"/>
 			</label>
         </div>

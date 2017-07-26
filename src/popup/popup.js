@@ -113,19 +113,18 @@ function renderPageWithStyles(styles){
 
 function addStyleToInstalled(style){
 	style.style_first_word = style.name.substr(0, 1);
-	style.style_edit_url = "edit.html?id=" + style.id;
+	style.style_edit_url = "/edit.html?id=" + style.id;
 	var el = installedStyleToElement(style);
 	if (style.author === undefined) {
 		el.querySelector('.style-author').style.display = 'none';
 	}
 	el.querySelector(".activate").checked = style.enabled;
-	el.querySelector(".edit").addEventListener('click', openLink, false);
+	el.querySelector(".edit").addEventListener('click', openLink);
 	el.querySelector(".activate").addEventListener('change', onActivateChange(style));
 	el.querySelector(".delete").addEventListener('click', onDeleteStyleClick(style));
 	//material
 	if (typeof(componentHandler) !== 'undefined') {
 		componentHandler.upgradeElement(el.querySelector(".mdl-js-switch"), 'MaterialSwitch');
-		componentHandler.upgradeElement(el.querySelector(".mdl-js-switch"), 'MaterialRipple');
 	}
 	getInstalledStylesEl().appendChild(el);
 	return el;
@@ -150,8 +149,9 @@ function renderAllSwitch(){
 	}
 	//material
 	if (typeof(componentHandler) !== 'undefined') {
+		getDisableAllCheckbox().parentElement.classList.add('mdl-js-ripple-effect');
 		componentHandler.upgradeElement(getDisableAllCheckbox().parentElement, 'MaterialSwitch');
-		componentHandler.upgradeElement(getDisableAllCheckbox().parentElement, 'MaterialRipple');
+		componentHandler.upgradeElement(getDisableAllCheckbox().parentElement.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
 	}
 }
 
@@ -232,11 +232,11 @@ function getSiteName(tabUrl){
 }
 
 function openLink(e) {
-	if (!e.target.href) {
+	if (!this.href && !e.target.href) {
 		return;
 	}
-	e.preventDefault();	
-	browser.runtime.sendMessage({method: "openURL", url: e.target.href});
+	e.preventDefault();
+	browser.runtime.sendMessage({method: "openURL", url: this.href || e.target.href});
 	close();
 }
 
