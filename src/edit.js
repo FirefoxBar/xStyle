@@ -1321,7 +1321,7 @@ function saveComplete(style) {
 }
 
 function showMozillaFormat() {
-	var popup = showCodeMirrorPopup(t("styleToMozillaFormatTitle"), "", {readOnly: true});
+	var popup = showCodeMirrorPopup(t("styleMozillaFormatExport"), "", {readOnly: true});
 	popup.codebox.setValue(toMozillaFormat());
 	popup.codebox.execCommand("selectAll");
 }
