@@ -2,7 +2,8 @@
 	"applications": {
 		"gecko": {
 			"id": "xstyle@addon.firefoxcn.net",
-			"strict_min_version": "45.0",
+			"update_url": "https://ext.firefoxcn.net/xstyle/install/update.json",
+			"strict_min_version": "47.0",
 			"strict_max_version": "57.0"
 		}
 	},
