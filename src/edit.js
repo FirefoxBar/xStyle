@@ -10,11 +10,6 @@ var useHistoryBack; // use browser history back when "back to manage" is clicked
 var propertyToCss = {urls: "url", urlPrefixes: "url-prefix", domains: "domain", regexps: "regexp"};
 var CssToProperty = {"url": "urls", "url-prefix": "urlPrefixes", "domain": "domains", "regexp": "regexps"};
 
-// make querySelectorAll enumeration code readable
-["forEach", "some", "indexOf", "map"].forEach(function(method) {
-	NodeList.prototype[method]= Array.prototype[method];
-});
-
 // Chrome pre-34
 Element.prototype.matches = Element.prototype.matches || Element.prototype.webkitMatchesSelector;
 

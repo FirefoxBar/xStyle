@@ -1,21 +1,4 @@
 var frameIdMessageable, backStorage = localStorage;
-if (typeof(isMobile) === 'undefined') {
-	// is mobile or not
-	var isAndroid = navigator.userAgent.indexOf('Android') > 0,
-	isIOS = navigator.userAgent.indexOf('iOS') > 0,
-	isMobile = (isAndroid || isIOS);
-}
-
-function isBrowserSessionNew(){
-	return backStorage.getItem("sessioninc") == "0";
-}
-function setBrowserSessionNotNew(){
-	return backStorage.setItem("sessioninc", "1");
-}
-function setBrowserSessionNew(){
-	return backStorage.setItem("sessioninc", "0");
-}
-setBrowserSessionNew();
 
 function appId() {
 	function genRand() {

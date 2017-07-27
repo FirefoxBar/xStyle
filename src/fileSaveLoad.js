@@ -1,11 +1,3 @@
-var XSTYLE_DUMP_FILE_EXT = ".txt";
-var XSTYLE_DEFAULT_SAVE_NAME = "xstyle-mm-dd-yyy" + XSTYLE_DUMP_FILE_EXT;
-var FIREFOX_VERSION = 0;
-if (/Firefox\/(\d+)\.(\d+)/.test(navigator.userAgent)) {
-	FIREFOX_VERSION = navigator.userAgent.match(/Firefox\/(\d+)\.(\d+)/);
-	FIREFOX_VERSION = parseFloat(FIREFOX_VERSION[1] + '.' + FIREFOX_VERSION[2]);
-}
-
 function saveAsFile(text, fileName, dialog) {
 	fileName = fileName || XSTYLE_DEFAULT_SAVE_NAME;
 
@@ -14,7 +6,7 @@ function saveAsFile(text, fileName, dialog) {
 		var fileUrl = URL.createObjectURL(blob);
 		var option = {filename: fileName, url: fileUrl};
 		// Firefox supported saveAs since version 52
-		if (FIREFOX_VERSION >= 52) {
+		if (isChrome || FIREFOX_VERSION >= 52) {
 			option.saveAs = true;
 		}
 		browser.downloads.download(option).then(resolve);

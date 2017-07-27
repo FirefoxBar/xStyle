@@ -161,7 +161,7 @@ function doExport(event) {
 		var result = {"name": style.name, "updateUrl": null, "md5Url": null, "originalMd5": originalMd5, "url": "https://ext.firefoxcn.net/xstyle/md5namespace/" + originalMd5, "sections": style.sections};
 		saveAsFile(JSON.stringify(result), 'xstyle-' + originalMd5 + '.json');
 		// Copy md5 to clipboard
-		if (FIREFOX_VERSION >= 51) {
+		if (isChrome || FIREFOX_VERSION >= 51) {
 			var copyText = document.createElement("input");
 			copyText.style = "position:fixed;top:-10px;left:-10px;width:1px;height:1px;display:block";
 			document.getElementsByTagName('body')[0].appendChild(copyText);
@@ -241,7 +241,7 @@ function applyUpdateAll() {
 		btnApply.disabled = false;
 	}, 1000);
 
-	Array.prototype.forEach.call(document.querySelectorAll(".can-update .update"), function(button) {
+	document.querySelectorAll(".can-update .update").forEach(function(button) {
 		button.click();
 	});
 }
@@ -256,7 +256,7 @@ function checkUpdateAll() {
 	var elements = document.querySelectorAll("[style-update-url]");
 	var toCheckCount = elements.length;
 	var updatableCount = 0;
-	Array.prototype.forEach.call(elements, function(element) {
+	elements.forEach(function(element) {
 		checkUpdate(element, function(success) {
 			if (success) {
 				++updatableCount;
@@ -451,8 +451,6 @@ function jsonEquals(a, b, property) {
 }
 
 // import and export
-var XSTYLE_DUMPFILE_EXTENSION = ".json";
-
 function onSaveToFileClick(){
 	getStyles({}, function(styles){
 		var text = JSON.stringify(styles);
@@ -461,7 +459,7 @@ function onSaveToFileClick(){
 }
 
 function onLoadFromFileClick(){
-	loadFromFile(XSTYLE_DUMPFILE_EXTENSION).then(function(rawText){
+	loadFromFile(XSTYLE_DUMP_FILE_EXT).then(function(rawText){
 		var json = JSON.parse(rawText);
 
 		var i = 0, nextStyle;
@@ -485,7 +483,7 @@ function onLoadFromFileClick(){
 }
 
 function generateFileName(){
-	return "xstyle-" + moment().format("MM-DD-YYYY") + XSTYLE_DUMPFILE_EXTENSION;
+	return DateFormat(XSTYLE_DUMP_FILE_NAME);
 }
 
 

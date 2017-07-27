@@ -29,7 +29,7 @@
 	],
 	"content_security_policy": "script-src 'self'; object-src 'self'",
 	"background": {
-		"scripts": ["src/browser-polyfill.js", "src/messaging.js", "src/storage.js", "src/background.js"]
+		"scripts": ["src/browser-polyfill.js", "src/common.js", "src/messaging.js", "src/storage.js", "src/background.js"]
 	},
 	"content_scripts": [{
 			"matches": ["<all_urls>"],

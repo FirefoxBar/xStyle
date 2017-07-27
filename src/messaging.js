@@ -1,10 +1,3 @@
-if (typeof(isMobile) === 'undefined') {
-	// is mobile or not
-	var isAndroid = navigator.userAgent.indexOf('Android') > 0,
-	isIOS = navigator.userAgent.indexOf('iOS') > 0,
-	isMobile = (isAndroid || isIOS);
-}
-
 function notifyAllTabs(request) {
 	return new Promise(function(resolve){
 		if (isMobile) {
