@@ -9,7 +9,7 @@
 	},
 	"name": "__MSG_extName__",
 	"short_name": "xStyle",
-	"version": "1.2.3",
+	"version": "1.2.4",
 	"description": "__MSG_description__",
 	"homepage_url": "http://team.firefoxcn.net",
 	"manifest_version": 2,
@@ -30,14 +30,6 @@
 	"content_security_policy": "script-src 'self'; object-src 'self'",
 	"background": {
 		"scripts": ["src/browser-polyfill.js", "src/messaging.js", "src/storage.js", "src/background.js"]
-	},
-	"commands": {
-		"openManage": {
-			"description": "__MSG_openManage__"
-		},
-		"styleDisableAll": {
-			"description": "__MSG_disableAllStyles__"
-		}
 	},
 	"content_scripts": [{
 			"matches": ["<all_urls>"],
