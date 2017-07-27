@@ -105,9 +105,6 @@
 		"message": "是",
 		"description": "'Yes' button in a confirm dialog"
 	},
-	"createOwnStyle": {
-		"message": "创建自己的样式"
-	},
 	"dbError": {
 		"message": "应用xStyle数据库时发生了一个错误。您想要访问包含可能的解决方案的网页吗？",
 		"description": "Prompt when a DB error is encountered"

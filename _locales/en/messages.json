@@ -105,9 +105,6 @@
 		"message": "Yes",
 		"description": "'Yes' button in a confirm dialog"
 	},
-	"createOwnStyle": {
-		"message": "Create your own style"
-	},
 	"dbError": {
 		"message": "An error has occurred using the xStyle database. Would you like to visit a web page with possible solutions?",
 		"description": "Prompt when a DB error is encountered"
