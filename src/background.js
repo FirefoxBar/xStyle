@@ -1,4 +1,10 @@
 var frameIdMessageable, backStorage = localStorage;
+if (typeof(isMobile) === 'undefined') {
+	// is mobile or not
+	var isAndroid = navigator.userAgent.indexOf('Android') > 0,
+	isIOS = navigator.userAgent.indexOf('iOS') > 0,
+	isMobile = (isAndroid || isIOS);
+}
 
 function isBrowserSessionNew(){
 	return backStorage.getItem("sessioninc") == "0";
@@ -97,32 +103,39 @@ browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	sendResponse(); // avoid error
 });
 
-// contextMenus API is present in ancient Chrome but it throws an exception
-// upon encountering the unsupported parameter value "browser_action", so we have to catch it.
-runTryCatch(function() {
-	browser.contextMenus.create({
-		id: "openManage", title: browser.i18n.getMessage("openManage"),
-		type: "normal", contexts: ["browser_action"]
-	}, function() { var clearError = browser.runtime.lastError });
-	browser.contextMenus.create({
-		id: "show-badge", title: browser.i18n.getMessage("menuShowBadge"),
-		type: "checkbox", contexts: ["browser_action"], checked: prefs.get("show-badge")
-	}, function() { var clearError = browser.runtime.lastError });
-	browser.contextMenus.create({
-		id: "disableAll", title: browser.i18n.getMessage("disableAllStyles"),
-		type: "checkbox", contexts: ["browser_action"], checked: prefs.get("disableAll")
-	}, function() { var clearError = browser.runtime.lastError });
-});
 
-browser.contextMenus.onClicked.addListener(function(info, tab) {
-	if (info.menuItemId === 'openManage') {
-		openURL({"url": browser.extension.getURL("manage.html")});
-	} else if (info.menuItemId === "disableAll") {
-		disableAllStylesToggle(info.checked);
-	} else {
-		prefs.set(info.menuItemId, info.checked);
-	}
-});
+if (isMobile) {
+	browser.browserAction.onClicked.addListener(function() {
+		openURL({url: browser.extension.getURL('manage.html')});
+	});
+} else {
+	// contextMenus API is present in ancient Chrome but it throws an exception
+	// upon encountering the unsupported parameter value "browser_action", so we have to catch it.
+	runTryCatch(function() {
+		browser.contextMenus.create({
+			id: "openManage", title: browser.i18n.getMessage("openManage"),
+			type: "normal", contexts: ["browser_action"]
+		}, function() { var clearError = browser.runtime.lastError });
+		browser.contextMenus.create({
+			id: "show-badge", title: browser.i18n.getMessage("menuShowBadge"),
+			type: "checkbox", contexts: ["browser_action"], checked: prefs.get("show-badge")
+		}, function() { var clearError = browser.runtime.lastError });
+		browser.contextMenus.create({
+			id: "disableAll", title: browser.i18n.getMessage("disableAllStyles"),
+			type: "checkbox", contexts: ["browser_action"], checked: prefs.get("disableAll")
+		}, function() { var clearError = browser.runtime.lastError });
+	});
+
+	browser.contextMenus.onClicked.addListener(function(info, tab) {
+		if (info.menuItemId === 'openManage') {
+			openURL({"url": browser.extension.getURL("manage.html")});
+		} else if (info.menuItemId === "disableAll") {
+			disableAllStylesToggle(info.checked);
+		} else {
+			prefs.set(info.menuItemId, info.checked);
+		}
+	});
+}
 
 // catch direct URL hash modifications not invoked via HTML5 history API
 var tabUrlHasHash = {};

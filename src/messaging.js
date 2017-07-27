@@ -1,14 +1,31 @@
+if (typeof(isMobile) === 'undefined') {
+	// is mobile or not
+	var isAndroid = navigator.userAgent.indexOf('Android') > 0,
+	isIOS = navigator.userAgent.indexOf('iOS') > 0,
+	isMobile = (isAndroid || isIOS);
+}
+
 function notifyAllTabs(request) {
 	return new Promise(function(resolve){
-		browser.windows.getAll({populate: true}).then(function(windows) {
-			windows.forEach(function(win) {
-				win.tabs.forEach(function(tab) {
+		if (isMobile) {
+			browser.tabs.query({}).then(function(tabs) {
+				for (let tab of tabs) {
 					browser.tabs.sendMessage(tab.id, request);
 					updateIcon(tab);
-				});
+				}
+				resolve();
 			});
-			resolve();
-		});
+		} else {
+			browser.windows.getAll({populate: true}).then(function(windows) {
+				windows.forEach(function(win) {
+					win.tabs.forEach(function(tab) {
+						browser.tabs.sendMessage(tab.id, request);
+						updateIcon(tab);
+					});
+				});
+				resolve();
+			});
+		}
 		// notify all open popups
 		var reqPopup = shallowMerge({}, request, {method: "updatePopup", reason: request.method});
 		browser.runtime.sendMessage(reqPopup);
@@ -60,26 +77,33 @@ function updateIcon(tab, styles) {
 
 	function stylesReceived(styles) {
 		var disableAll = "disableAll" in styles ? styles.disableAll : prefs.get("disableAll");
-		// If no styles available for this site icon also should be disabled
-		var postfix = disableAll ? "w" : "";
-		browser.browserAction.setIcon({
-			path: {
-				128: "images/128" + postfix + ".png"
-			},
-			tabId: tab.id
-		}).then(function() {
-			// if the tab was just closed an error may occur,
-			// e.g. 'windowPosition' pref updated in edit.js::window.onbeforeunload
+		if (isMobile) {
 			if (prefs.get("show-badge")) {
-				var t = styles.length ? styles.length.toString() : "";
-				browser.browserAction.setBadgeText({text: t, tabId: tab.id});
-				browser.browserAction.setBadgeBackgroundColor({color: "#555"});
-			} else {
-				browser.browserAction.setBadgeText({text: "", tabId: tab.id});
+				var t = browser.i18n.getMessage('extName') + (styles.length ? '(' + styles.length.toString() + ')' : "");
+				browser.browserAction.setTitle({title: t, tabId: tab.id});
 			}
-		}, function(err) {
-			browser.browserAction.setBadgeText({text: "", tabId: tab.id});
-		});
+		} else {
+			// If no styles available for this site icon also should be disabled
+			var postfix = disableAll ? "w" : "";
+			browser.browserAction.setIcon({
+				path: {
+					128: "images/128" + postfix + ".png"
+				},
+				tabId: tab.id
+			}).then(function() {
+				// if the tab was just closed an error may occur,
+				// e.g. 'windowPosition' pref updated in edit.js::window.onbeforeunload
+				if (prefs.get("show-badge")) {
+					var t = styles.length ? styles.length.toString() : "";
+					browser.browserAction.setBadgeText({text: t, tabId: tab.id});
+					browser.browserAction.setBadgeBackgroundColor({color: "#555"});
+				} else {
+					browser.browserAction.setBadgeText({text: "", tabId: tab.id});
+				}
+			}, function(err) {
+				browser.browserAction.setBadgeText({text: "", tabId: tab.id});
+			});
+		}
 	}
 }
 
