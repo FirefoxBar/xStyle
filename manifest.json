@@ -31,7 +31,8 @@
 	"background": {
 		"scripts": ["src/browser-polyfill.js", "src/common.js", "src/messaging.js", "src/storage.js", "src/background.js"]
 	},
-	"content_scripts": [{
+	"content_scripts": [
+		{
 			"matches": ["<all_urls>"],
 			"run_at": "document_start",
 			"all_frames": true,
@@ -42,6 +43,12 @@
 			"run_at": "document_end",
 			"all_frames": false,
 			"js": ["src/browser-polyfill.js", "src/inject/install.js"]
+		},
+		{
+			"matches": ["https://login.microsoftonline.com/*"],
+			"run_at": "document_start",
+			"all_frames": false,
+			"js": ["src/browser-polyfill.js", "src/inject/cloud.js"]
 		}
 	],
 	"update_url": "https://ext.firefoxcn.net/xstyle/install/update.xml",

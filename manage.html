@@ -76,6 +76,10 @@
 	.page-content {
 		padding: 5px;
 	}
+	.page-content .mdl-card {
+		margin: 10px 5px;
+		width: calc(100% - 10px);
+	}
 	.page-content #installed {
 		display: flex;
 		flex-direction: row;
@@ -96,9 +100,23 @@
 		-webkit-flex-grow: 1;
 		-ms-flex-positive: 1;
 	}
-	.option {
-		margin: 10px 5px;
-		width: calc(100% - 10px);
+	.cloud .mdl-radio {
+		margin-left: 5px;
+	}
+	.cloud .mdl-data-table {
+		width: 100%;
+		margin-top: 10px;
+	}
+	.cloud .mdl-data-table .special {
+		display: none;
+	}
+	.cloud .mdl-data-table .special td {
+		text-align: center;
+		padding-top: 20px;
+		padding-bottom: 20px;
+	}
+	.cloud .mdl-button {
+		margin-right: 10px;
 	}
 	
 	@media screen and (max-width: 1024px) {
@@ -218,11 +236,40 @@
 				<div class="mdl-card__title mdl-card--expand">
 					<h2 class="mdl-card__title-text" i18n-text="optionsHeading"></h2>
 				</div>
-				<div class="mdl-card__supporting-text applies-to">
+				<div class="mdl-card__supporting-text">
 					<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" id="show-badge-label" for="show-badge">
 						<input type="checkbox" id="show-badge" class="mdl-checkbox__input">
 						<span class="mdl-checkbox__label" i18n-text="prefShowBadge"></span>
 					</label>
+				</div>
+			</div>
+			<div class="mdl-card mdl-shadow--2dp cloud">
+				<div class="mdl-card__title mdl-card--expand">
+					<h2 class="mdl-card__title-text" i18n-text="cloudTitle"></h2>
+				</div>
+				<div class="mdl-card__supporting-text">
+					<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="cloud-onedrive">
+						<input type="radio" id="cloud-onedrive" class="mdl-radio__button" name="cloud-type" value="1" checked>
+						<span class="mdl-radio__label">OneDrive</span>
+					</label>
+					<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="cloud-google">
+						<input type="radio" id="cloud-google" class="mdl-radio__button" name="cloud-type" value="1">
+						<span class="mdl-radio__label">Google Drive</span>
+					</label>
+					<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+						<thead>
+							<tr>
+								<th class="mdl-data-table__cell--non-numeric">名称</th>
+								<th class="mdl-data-table__cell--non-numeric">操作</th>
+							</tr>
+						</thead>
+						<tbody id="cloud_filelist">
+							<tr class="special template"><td class="name mdl-data-table__cell--non-numeric"></td><td class="mdl-data-table__cell--non-numeric"></td></tr>
+							<tr class="special" id="cloud_loading"><td colspan="2"><div class="mdl-spinner mdl-js-spinner is-active"></div></td></tr>
+							<tr class="special" id="cloud_loaded"><td colspan="2"><button id="cloud_export" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">导出</button><button id="cloud_reload_list" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">刷新</button></td></tr>
+							<tr class="special" id="cloud_beforeload"><td colspan="2"><button id="cloud_load_list" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">加载列表</button></td></tr>
+						</tbody>
+					</table>
 				</div>
 			</div>
 		</div>
@@ -234,5 +281,6 @@
 </div>
 <script src="third-party/mdl/material.min.js"></script>
 <script src="src/md5.min.js"></script>
+<script src="src/cloud/OneDrive.js"></script>
 </body>
 </html>

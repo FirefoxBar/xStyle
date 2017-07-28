@@ -5,7 +5,7 @@ const isMobile = (isAndroid || isIOS);
 
 //export
 const XSTYLE_DUMP_FILE_EXT = ".json";
-const XSTYLE_DUMP_FILE_NAME = "xstyle-{Y}-{m}-{d}" + XSTYLE_DUMP_FILE_EXT;
+const XSTYLE_DUMP_FILE_NAME = "xstyle-{Y}-{m}-{d}-{H}-{i}-{s}" + XSTYLE_DUMP_FILE_EXT;
 const XSTYLE_DEFAULT_SAVE_NAME = "xstyle-export" + XSTYLE_DUMP_FILE_EXT;
 
 var isFirefox = false;
@@ -39,5 +39,8 @@ function DateFormat(f, d) {
 	f = f.replace(/\{Y\}/g, d.getFullYear());
 	f = f.replace(/\{m\}/g, d.getMonth() + 1);
 	f = f.replace(/\{d\}/g, d.getDate());
+	f = f.replace(/\{H\}/g, d.getHours());
+	f = f.replace(/\{i\}/g, d.getMinutes());
+	f = f.replace(/\{s\}/g, d.getSeconds());
 	return f;
 }

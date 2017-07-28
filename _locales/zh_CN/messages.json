@@ -69,6 +69,9 @@
 		"message": "检查更新",
 		"description": "Label for the button to check a single style for an update"
 	},
+	"cloudTitle": {
+		"message": "云"
+	},
 	"cm_indentWithTabs": {
 		"message": "使用制表符智能缩进",
 		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."

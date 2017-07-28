@@ -174,7 +174,6 @@ browser.tabs.onAttached.addListener(function(tabId, data) {
 });
 
 function openURL(options) {
-	// Firefox do not support highlight a tab or switch to a tab
 	delete options.method;
 	getActiveTab(function(tab) {
 		// re-use an active new tab page

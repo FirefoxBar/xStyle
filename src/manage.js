@@ -486,6 +486,52 @@ function generateFileName(){
 	return DateFormat(XSTYLE_DUMP_FILE_NAME);
 }
 
+function getCloud() {
+	return CloudOneDrive;
+}
+
+function cloudLoadList() {
+	var cloud = getCloud();
+	document.getElementById('cloud_loaded').style.display = 'none';
+	document.getElementById('cloud_beforeload').style.display = 'none';
+	document.getElementById('cloud_loading').style.display = 'table-row';
+	document.getElementById('cloud_filelist').querySelectorAll('tr').forEach(function(el) {
+		if (!el.classList.contains('special')) {
+			el.remove();
+		}
+	});
+	cloud.getUser().then(function(r) {
+		if (r === null) {
+			window.open(cloud.getLoginUrl());
+			window.cloudCallback = cloudLoadList;
+		} else {
+			CloudOneDrive.getFileList().then(function(result) {
+				var p = document.getElementById('cloud_filelist');
+				var template = p.querySelector('.template');
+				result.forEach(function(v) {
+					var newElement = template.cloneNode(true);
+					newElement.className = '';
+					newElement.querySelector('.name').innerHTML = v.name;
+					p.insertBefore(newElement, p.children[0]);
+				});
+				document.getElementById('cloud_loaded').style.display = 'table-row';
+				document.getElementById('cloud_loading').style.display = 'none';
+			});
+		}
+	});
+}
+
+function cloudExport() {
+	var name = window.prompt('请输入文件名称', generateFileName());
+	if (name) {
+		var cloud = getCloud();
+		getStyles({}, function(styles){
+			cloud.uploadFile(name, JSON.stringify(styles));
+			cloudLoadList();
+		});
+	}
+}
+
 
 document.addEventListener("DOMContentLoaded", function() {
 	installed = document.getElementById("installed");
@@ -515,4 +561,10 @@ document.addEventListener("DOMContentLoaded", function() {
 	};
 	document.getElementById('menu-button').addEventListener('click', toggleMenu);
 	document.querySelector('.mdl-layout__obfuscator').addEventListener('click', toggleMenu);
+	
+	//cloud
+	document.getElementById('cloud_load_list').addEventListener('click', cloudLoadList);
+	document.getElementById('cloud_reload_list').addEventListener('click', cloudLoadList);
+	document.getElementById('cloud_export').addEventListener('click', cloudExport);
+	document.getElementById('cloud_beforeload').style.display = 'table-row';
 });
