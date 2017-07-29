@@ -140,5 +140,11 @@ var CloudOneDrive = {
 		return new Promise(function(resolve){
 			_this.callApi('drive/special/approot:/xstyle/' + filename + ':/content', '', 'GET').then(resolve);
 		});
+	},
+	"delete": function(filename) {
+		var _this = this;
+		return new Promise(function(resolve){
+			_this.callApi('drive/special/approot:/xstyle/' + filename + ':/', '', 'DELETE').then(resolve);
+		});
 	}
 }

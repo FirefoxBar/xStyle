@@ -512,6 +512,14 @@ function cloudLoadList() {
 					var newElement = template.cloneNode(true);
 					newElement.className = '';
 					newElement.querySelector('.name').innerHTML = v.name;
+					newElement.querySelector('.size').innerHTML = Math.round(v.size / 1000).toString() + 'kb';
+					if (typeof(componentHandler) !== 'undefined') {
+						newElement.querySelectorAll('.mdl-button').forEach(function(btn) {
+							componentHandler.upgradeElement(btn, 'MaterialButton');
+						});
+					}
+					newElement.querySelector('.import').addEventListener('click', cloudImport);
+					newElement.querySelector('.delete').addEventListener('click', cloudDelete);
 					p.insertBefore(newElement, p.children[0]);
 				});
 				document.getElementById('cloud_loaded').style.display = 'table-row';
@@ -528,6 +536,43 @@ function cloudExport() {
 		getStyles({}, function(styles){
 			cloud.uploadFile(name, JSON.stringify(styles));
 			cloudLoadList();
+		});
+	}
+}
+
+function cloudImport() {
+	var tr = this.parentElement.parentElement;
+	var filename = tr.querySelector('.name').innerHTML.trim();
+	if (confirm('您确认要导入' + filename + '吗')) {
+		var cloud = getCloud();
+		cloud.getFile(filename).then(function(content) {
+			if (typeof(content) === 'string') {
+				content = JSON.parse(content);
+			}
+			var i = 0, nextStyle;
+			function proceed(){
+				nextStyle = content[i++];
+				if (nextStyle) {
+					saveStyle(nextStyle, proceed);
+				}else{
+					i--;
+					done();
+				}
+			}
+			function done(){
+				location.reload();
+			}
+			proceed();
+		});
+	}
+}
+
+function cloudDelete() {
+	var tr = this.parentElement.parentElement;
+	var filename = tr.querySelector('.name').innerHTML.trim();
+	if (confirm('您确认要删除' + filename + '吗')) {var cloud = getCloud();
+		cloud.delete(filename).then(function() {
+			tr.remove();
 		});
 	}
 }
