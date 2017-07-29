@@ -1,6 +1,12 @@
-var id_url = getMeta("xstyle-id-url") || getMeta("stylish-id-url");
-var code_url = getMeta("xstyle-code") || getMeta("stylish-code-chrome");
-var md5_url = getMeta("xstyle-md5-url") || getMeta("stylish-md5-url");
+function getCodeUrl() {
+	return getMeta("xstyle-code") || getMeta("stylish-code-chrome");
+}
+function getMd5Url() {
+	return getMeta("xstyle-md5-url") || getMeta("stylish-md5-url");
+}
+function getIdUrl() {
+	return getMeta("xstyle-id-url") || getMeta("stylish-id-url");
+}
 
 if (typeof(getParams) !== 'function') {
 	function getParams() {
@@ -17,16 +23,16 @@ if (typeof(getParams) !== 'function') {
 	}
 }
 
-if (id_url) {
-	browser.runtime.sendMessage({method: "getStyles", url: id_url || location.href}).then(function(response) {
+if (getIdUrl()) {
+	browser.runtime.sendMessage({method: "getStyles", url: getIdUrl() || location.href}).then(function(response) {
 		if (response.length == 0) {
 			sendEvent("styleCanBeInstalled");
 		} else {
 			var installedStyle = response[0];
 			// maybe an update is needed
 			// use the md5 if available
-			if ((window.wrappedJSObject.xstyle_md5 || md5_url) && installedStyle.md5Url && installedStyle.originalMd5) {
-				getResource(window.wrappedJSObject.xstyle_md5 || md5_url, function(md5) {
+			if (getMd5Url() && installedStyle.md5Url && installedStyle.originalMd5) {
+				getResource(getMd5Url(), function(md5) {
 					if (md5 == installedStyle.originalMd5) {
 						sendEvent("styleAlreadyInstalled", {updateUrl: installedStyle.updateUrl});
 					} else {
@@ -34,7 +40,7 @@ if (id_url) {
 					}
 				});
 			} else {
-				getResource(window.wrappedJSObject.xstyle_code || code_url, function(code) {
+				getResource(getCodeUrl(), function(code) {
 					// this would indicate a failure (a style with settings?).
 					if (code == null) {
 						sendEvent("styleCanBeUpdated", {updateUrl: installedStyle.updateUrl});
@@ -90,19 +96,19 @@ function sendEvent(type, data) {
 }
 
 function styleInstall () {
-	var styleName = window.wrappedJSObject.xstyle_name || getMeta('xstyle-name');
+	var styleName = getMeta('xstyle-name');
 	if (!styleName && window.location.href.indexOf('userstyles.org/styles') >= 0) {
 		styleName = document.title.match(/(.*?)\|/)[1].trim();
 	}
 	if (confirm(browser.i18n.getMessage('styleInstall', [styleName]))) {
-		getResource(window.wrappedJSObject.xstyle_code || code_url, function(code) {
+		getResource(getCodeUrl(), function(code) {
 			styleInstallByCode(JSON.parse(code));
 		});
 	}
 }
 function styleInstallByCode(json) {
 	//Check whether the style has been installed
-	browser.runtime.sendMessage({method: "getStyles", url: json.url || window.wrappedJSObject.xstyle_id || id_url || location.href}).then(function(response) {
+	browser.runtime.sendMessage({method: "getStyles", url: json.url || getIdUrl() || location.href}).then(function(response) {
 		json.method = "saveStyle";
 		if (response.length != 0) {
 			json.id = response[0].id;
