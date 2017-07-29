@@ -1,13 +1,14 @@
 var frameIdMessageable, backStorage = localStorage;
 
 function appId() {
-	function genRand() {
-		var gen4 = function () { return parseInt((Math.random(
-			Date.now()) + 1) * (131071 + 1)).toString(10 + 20).substring(); };
-		var pk = ''; for (var i = 0; i < 7; ++i) { pk += gen4(); }
-		var lv = pk.substring(1); localStorage.setItem("appUniqueId", lv);
-		return lv;
-	} return localStorage.getItem("appUniqueId") || genRand();
+	function genRand(){
+		var r = "xxxxxxxx-xxxx-8xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(a){
+			var c = 16 * Math.random() | 0;
+			return ("x" == a ? c : 3 & c | 8).toString(16)
+		});
+		localStorage.setItem("appUniqueId", r);
+	};
+	return localStorage.getItem("appUniqueId") || genRand();
 }
 
 runTryCatch(function() {

@@ -45,7 +45,7 @@
 			"js": ["src/browser-polyfill.js", "src/inject/install.js"]
 		},
 		{
-			"matches": ["https://login.microsoftonline.com/*"],
+			"matches": ["https://login.microsoftonline.com/*", "https://ext.firefoxcn.net/*"],
 			"run_at": "document_start",
 			"all_frames": false,
 			"js": ["src/browser-polyfill.js", "src/inject/cloud.js"]

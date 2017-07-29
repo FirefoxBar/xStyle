@@ -14,7 +14,7 @@ var CloudOneDrive = {
 				var user_info = JSON.parse(response);
 				user_info.expires_at = new Date().getTime() + (user_info.expires_in * 1000);
 				localStorage.setItem('OneDrive', JSON.stringify(user_info));
-				_this.initFloder().then(resolve);
+				_this.initFolder().then(resolve);
 			};
 			var xhr = new XMLHttpRequest();
 			xhr.onreadystatechange = function() {
@@ -64,7 +64,7 @@ var CloudOneDrive = {
 			}
 		});
 	},
-	"initFloder": function() {
+	"initFolder": function() {
 		var _this = this;
 		return new Promise(function(resolve){
 			_this.callApi('drive/special/approot/children').then(function(result) {

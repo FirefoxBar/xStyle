@@ -209,6 +209,9 @@ browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		case "styleDeleted":
 			handleDelete(request.id);
 			break;
+		case "cloudLogin":
+			cloudLoginCallback(request.type, request.code);
+			break;
 	}
 });
 
@@ -487,7 +490,17 @@ function generateFileName(){
 }
 
 function getCloud() {
-	return CloudOneDrive;
+	switch (document.querySelector('input[name="cloud-type"]:checked').value) {
+		case 'OneDrive':
+			return CloudOneDrive;
+		case 'Google':
+			return CloudGoogle;
+	}
+}
+
+function cloudLoginCallback(type, code) {
+	var cloud = getCloud();
+	cloud.loginCallback(code).then(cloudLoadList);
 }
 
 function cloudLoadList() {
@@ -505,7 +518,7 @@ function cloudLoadList() {
 			window.open(cloud.getLoginUrl());
 			window.cloudCallback = cloudLoadList;
 		} else {
-			CloudOneDrive.getFileList().then(function(result) {
+			cloud.getFileList().then(function(result) {
 				var p = document.getElementById('cloud_filelist');
 				var template = p.querySelector('.template');
 				result.forEach(function(v) {
@@ -513,6 +526,9 @@ function cloudLoadList() {
 					newElement.className = '';
 					newElement.querySelector('.name').innerHTML = v.name;
 					newElement.querySelector('.size').innerHTML = Math.round(v.size / 1000).toString() + 'kb';
+					if (typeof(v.data) !== 'undefined') {
+						newElement.setAttribute('data-cloud', v.data);
+					}
 					if (typeof(componentHandler) !== 'undefined') {
 						newElement.querySelectorAll('.mdl-button').forEach(function(btn) {
 							componentHandler.upgradeElement(btn, 'MaterialButton');
@@ -534,8 +550,7 @@ function cloudExport() {
 	if (name) {
 		var cloud = getCloud();
 		getStyles({}, function(styles){
-			cloud.uploadFile(name, JSON.stringify(styles));
-			cloudLoadList();
+			cloud.uploadFile(name, JSON.stringify(styles)).then(cloudLoadList);
 		});
 	}
 }
@@ -545,7 +560,7 @@ function cloudImport() {
 	var filename = tr.querySelector('.name').innerHTML.trim();
 	if (confirm('您确认要导入' + filename + '吗')) {
 		var cloud = getCloud();
-		cloud.getFile(filename).then(function(content) {
+		cloud.getFile(filename, tr.getAttribute('data-cloud')).then(function(content) {
 			if (typeof(content) === 'string') {
 				content = JSON.parse(content);
 			}
@@ -570,11 +585,23 @@ function cloudImport() {
 function cloudDelete() {
 	var tr = this.parentElement.parentElement;
 	var filename = tr.querySelector('.name').innerHTML.trim();
-	if (confirm('您确认要删除' + filename + '吗')) {var cloud = getCloud();
-		cloud.delete(filename).then(function() {
+	if (confirm('您确认要删除' + filename + '吗')) {
+		var cloud = getCloud();
+		cloud.delete(filename, tr.getAttribute('data-cloud')).then(function() {
 			tr.remove();
 		});
 	}
+}
+
+function cloudTypeChange() {
+	document.getElementById('cloud_filelist').querySelectorAll('tr').forEach(function(el) {
+		if (!el.classList.contains('special')) {
+			el.remove();
+		}
+	});
+	document.getElementById('cloud_loaded').style.display = 'none';
+	document.getElementById('cloud_beforeload').style.display = 'table-row';
+	document.getElementById('cloud_loading').style.display = 'none';
 }
 
 
@@ -612,4 +639,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	document.getElementById('cloud_reload_list').addEventListener('click', cloudLoadList);
 	document.getElementById('cloud_export').addEventListener('click', cloudExport);
 	document.getElementById('cloud_beforeload').style.display = 'table-row';
+	document.querySelectorAll('input[name="cloud-type"]').forEach(function(e) {
+		e.addEventListener('change', cloudTypeChange);
+	});
 });
