@@ -69,6 +69,49 @@
 		"message": "检查更新",
 		"description": "Label for the button to check a single style for an update"
 	},
+	"cloudDelete": {
+		"message": "删除"
+	},
+	"cloudDeleteConfirm": {
+		"message": "您确认要删除“$filename$”吗",
+		"placeholders": {
+			"filename": {
+				"content": "$1"
+			}
+		}
+	},
+	"cloudExport": {
+		"message": "导出"
+	},
+	"cloudFileAction": {
+		"message": "操作"
+	},
+	"cloudFileName": {
+		"message": "文件名称"
+	},
+	"cloudFileSize": {
+		"message": "大小"
+	},
+	"cloudImport": {
+		"message": "导入"
+	},
+	"cloudImportConfirm": {
+		"message": "您确认要导入“$filename$”吗",
+		"placeholders": {
+			"filename": {
+				"content": "$1"
+			}
+		}
+	},
+	"cloudInputFilename": {
+		"message": "请输入文件名称"
+	},
+	"cloudLoadList": {
+		"message": "加载列表"
+	},
+	"cloudReload": {
+		"message": "刷新"
+	},
 	"cloudTitle": {
 		"message": "云"
 	},

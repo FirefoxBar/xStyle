@@ -69,6 +69,52 @@
 		"message": "Check for update",
 		"description": "Label for the button to check a single style for an update"
 	},
+	"cloudDelete": {
+		"message": "Delete"
+	},
+	"cloudDeleteConfirm": {
+		"message": "Are you sure you want to delete \"$filename$\"?",
+		"placeholders": {
+			"filename": {
+				"content": "$1"
+			}
+		}
+	},
+	"cloudExport": {
+		"message": "Export"
+	},
+	"cloudFileAction": {
+		"message": "Action"
+	},
+	"cloudFileName": {
+		"message": "Name"
+	},
+	"cloudFileSize": {
+		"message": "Size"
+	},
+	"cloudImport": {
+		"message": "Import"
+	},
+	"cloudImportConfirm": {
+		"message": "Are you sure you want to import \"$filename$\"",
+		"placeholders": {
+			"filename": {
+				"content": "$1"
+			}
+		}
+	},
+	"cloudInputFilename": {
+		"message": "Please enter the file name"
+	},
+	"cloudLoadList": {
+		"message": "Load the list"
+	},
+	"cloudReload": {
+		"message": "Refresh"
+	},
+	"cloudTitle": {
+		"message": "Cloud"
+	},
 	"cm_indentWithTabs": {
 		"message": "Use tabs with smart indentation",
 		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."

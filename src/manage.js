@@ -546,7 +546,7 @@ function cloudLoadList() {
 }
 
 function cloudExport() {
-	var name = window.prompt('请输入文件名称', generateFileName());
+	var name = window.prompt(t('cloudInputFilename'), generateFileName());
 	if (name) {
 		var cloud = getCloud();
 		getStyles({}, function(styles){
@@ -558,7 +558,7 @@ function cloudExport() {
 function cloudImport() {
 	var tr = this.parentElement.parentElement;
 	var filename = tr.querySelector('.name').innerHTML.trim();
-	if (confirm('您确认要导入' + filename + '吗')) {
+	if (confirm(t('cloudImportConfirm', [filename]))) {
 		var cloud = getCloud();
 		cloud.getFile(filename, tr.getAttribute('data-cloud')).then(function(content) {
 			if (typeof(content) === 'string') {
@@ -585,7 +585,7 @@ function cloudImport() {
 function cloudDelete() {
 	var tr = this.parentElement.parentElement;
 	var filename = tr.querySelector('.name').innerHTML.trim();
-	if (confirm('您确认要删除' + filename + '吗')) {
+	if (confirm(t('cloudDeleteConfirm', [filename]))) {
 		var cloud = getCloud();
 		cloud.delete(filename, tr.getAttribute('data-cloud')).then(function() {
 			tr.remove();

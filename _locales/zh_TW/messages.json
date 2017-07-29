@@ -69,6 +69,52 @@
 		"message": "檢查更新",
 		"description": "Label for the button to check a single style for an update"
 	},
+	"cloudDelete": {
+		"message": "刪除"
+	},
+	"cloudDeleteConfirm": {
+		"message": "您確認要刪除“$filename$”嗎",
+		"placeholders": {
+			"filename": {
+				"content": "$1"
+			}
+		}
+	},
+	"cloudExport": {
+		"message": "匯出"
+	},
+	"cloudFileAction": {
+		"message": "操作"
+	},
+	"cloudFileName": {
+		"message": "文件名稱"
+	},
+	"cloudFileSize": {
+		"message": "大小"
+	},
+	"cloudImport": {
+		"message": "匯入"
+	},
+	"cloudImportConfirm": {
+		"message": "您確認要匯入“$filename$”嗎",
+		"placeholders": {
+			"filename": {
+				"content": "$1"
+			}
+		}
+	},
+	"cloudInputFilename": {
+		"message": "請輸入文件名稱"
+	},
+	"cloudLoadList": {
+		"message": "加載列表"
+	},
+	"cloudReload": {
+		"message": "刷新"
+	},
+	"cloudTitle": {
+		"message": "雲"
+	},
 	"cm_indentWithTabs": {
 		"message": "用 Tab(\\t) 智慧縮排",
 		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
