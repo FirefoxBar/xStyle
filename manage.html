@@ -73,6 +73,13 @@
 		margin-bottom: 10px;
 		margin-left: -10px;
 	}
+	.mdl-button .mdl-spinner {
+		display: none;
+		vertical-align: middle;
+		width: 25px;
+		height: 25px;
+		margin-left: 5px;
+	}
 	.page-content {
 		padding: 5px;
 	}
@@ -161,13 +168,6 @@
 	}
 	.enabled .enable {
 		display: none;
-	}
-	.check-update .loading {
-		display: none;
-		vertical-align: middle;
-		width: 25px;
-		height: 25px;
-		margin-left: 5px;
 	}
 	.update {
 		display: none;
@@ -265,9 +265,21 @@
 							</tr>
 						</thead>
 						<tbody id="cloud_filelist">
-							<tr class="special template"><td class="name mdl-data-table__cell--non-numeric"></td><td class="size"></td><td class="mdl-data-table__cell--non-numeric"><button class="mdl-button mdl-js-ripple-effect import" i18n-text="cloudImport"></button><button class="mdl-button mdl-js-ripple-effect delete" i18n-text="cloudDelete"></button></td></tr>
+							<tr class="special template">
+								<td class="name mdl-data-table__cell--non-numeric"></td>
+								<td class="size"></td>
+								<td class="mdl-data-table__cell--non-numeric">
+									<button class="mdl-button mdl-js-ripple-effect import"><span i18n-text="cloudImport"></span><div class="mdl-spinner mdl-js-spinner is-active"></div></button>
+									<button class="mdl-button mdl-js-ripple-effect delete"><span i18n-text="cloudDelete"></span><div class="mdl-spinner mdl-js-spinner is-active"></div></button>
+								</td>
+							</tr>
 							<tr class="special" id="cloud_loading"><td colspan="3"><div class="mdl-spinner mdl-js-spinner is-active"></div></td></tr>
-							<tr class="special" id="cloud_loaded"><td colspan="3"><button id="cloud_export" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" i18n-text="cloudExport"></button><button id="cloud_reload_list" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" i18n-text="cloudReload"></button></td></tr>
+							<tr class="special" id="cloud_loaded">
+								<td colspan="3">
+									<button id="cloud_export" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" i18n-text="cloudExport"></button>
+									<button id="cloud_reload_list" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" i18n-text="cloudReload"></button>
+								</td>
+							</tr>
 							<tr class="special" id="cloud_beforeload"><td colspan="3"><button id="cloud_load_list" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" i18n-text="cloudLoadList"></button></td></tr>
 						</tbody>
 					</table>

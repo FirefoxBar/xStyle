@@ -548,6 +548,9 @@ function cloudLoadList() {
 function cloudExport() {
 	var name = window.prompt(t('cloudInputFilename'), generateFileName());
 	if (name) {
+		document.getElementById('cloud_loaded').style.display = 'none';
+		document.getElementById('cloud_beforeload').style.display = 'none';
+		document.getElementById('cloud_loading').style.display = 'table-row';
 		var cloud = getCloud();
 		getStyles({}, function(styles){
 			cloud.uploadFile(name, JSON.stringify(styles)).then(cloudLoadList);
@@ -559,6 +562,7 @@ function cloudImport() {
 	var tr = this.parentElement.parentElement;
 	var filename = tr.querySelector('.name').innerHTML.trim();
 	if (confirm(t('cloudImportConfirm', [filename]))) {
+		this.querySelector('.mdl-spinner').style.display = 'inline-block';
 		var cloud = getCloud();
 		cloud.getFile(filename, tr.getAttribute('data-cloud')).then(function(content) {
 			if (typeof(content) === 'string') {
@@ -586,6 +590,7 @@ function cloudDelete() {
 	var tr = this.parentElement.parentElement;
 	var filename = tr.querySelector('.name').innerHTML.trim();
 	if (confirm(t('cloudDeleteConfirm', [filename]))) {
+		this.querySelector('.mdl-spinner').style.display = 'inline-block';
 		var cloud = getCloud();
 		cloud.delete(filename, tr.getAttribute('data-cloud')).then(function() {
 			tr.remove();
