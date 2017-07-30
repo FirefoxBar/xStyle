@@ -264,6 +264,9 @@
 		"message": "Discard contents of current style and overwrite it with the imported style",
 		"description": "Label for the button to import and overwrite current style"
 	},
+	"installFromFile": {
+		"message": "Install from file"
+	},
 	"installUpdate": {
 		"message": "Install update",
 		"description": "Label for the button to install an update for a single style"

@@ -261,8 +261,11 @@
 		"description": "Label for the button to import and overwrite current style"
 	},
 	"importReplaceTooltip": {
-		"message": "放弃当前样式的内容，使用已导入样式覆盖它",
+		"message": "放弃当前样式并导入样式覆盖",
 		"description": "Label for the button to import and overwrite current style"
+	},
+	"installFromFile": {
+		"message": "从文件安装"
 	},
 	"installUpdate": {
 		"message": "安装更新",
