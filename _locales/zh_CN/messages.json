@@ -62,6 +62,9 @@
 		"message": "自动更新样式",
 		"description": "Auto update styles or not"
 	},
+	"autoUpdateLabel": {
+		"message": "自动更新"
+	},
 	"bckpInstStyles": {
 		"message": "备份所有已安装样式"
 	},
