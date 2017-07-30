@@ -74,8 +74,8 @@ browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			getDatabase(function() { sendResponse(true); }, function() { sendResponse(false); });
 			return true;
 		case "openURL":
-			openURL(request);
-			break;
+			openURL(request, sendResponse);
+			return true;
 		case "styleDisableAll":
 			browser.contextMenus.update("disableAll", {checked: request.disableAll});
 			break;
@@ -325,7 +325,7 @@ function autoUpdateStyles() {
 }
 toggleAutoUpdate(prefs.get('auto-update'));
 
-function openURL(options) {
+function openURL(options, sendResponse) {
 	delete options.method;
 	getActiveTab(function(tab) {
 		// re-use an active new tab page
@@ -334,6 +334,6 @@ function openURL(options) {
 		if (tab.url.indexOf('about:newtab') === 0 || tab.url.indexOf('about:home') === 0) {
 			isNewTab = true;
 		}
-		browser.tabs[isNewTab ? "update" : "create"](options);
+		browser.tabs[isNewTab ? "update" : "create"](options).then(sendResponse);
 	});
 }

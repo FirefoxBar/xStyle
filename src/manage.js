@@ -480,6 +480,9 @@ function generateFileName(){
 	return DateFormat(XSTYLE_DUMP_FILE_NAME);
 }
 
+
+// Cloud
+var cloudLoginTab = null;
 function getCloud() {
 	switch (document.querySelector('input[name="cloud-type"]:checked').value) {
 		case 'OneDrive':
@@ -491,6 +494,11 @@ function getCloud() {
 
 function cloudLoginCallback(type, code) {
 	var cloud = getCloud();
+	if (cloudLoginTab !== null) {
+		browser.tabs.remove(cloudLoginTab.id).then(function() {
+			cloudLoginTab = null;
+		});
+	}
 	cloud.loginCallback(code).then(cloudLoadList);
 }
 
@@ -506,8 +514,13 @@ function cloudLoadList() {
 	});
 	cloud.getUser().then(function(r) {
 		if (r === null) {
-			window.open(cloud.getLoginUrl());
-			window.cloudCallback = cloudLoadList;
+			browser.runtime.sendMessage({
+				"method": "openURL",
+				"url": cloud.getLoginUrl(),
+				"active": true
+			}).then(function(tab) {
+				cloudLoginTab = tab;
+			});
 		} else {
 			cloud.getFileList().then(function(result) {
 				var p = document.getElementById('cloud_filelist');

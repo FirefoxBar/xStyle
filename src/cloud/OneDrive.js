@@ -10,7 +10,6 @@ var CloudOneDrive = {
 		var _this = this;
 		return new Promise(function(resolve){
 			var callback = function(response) {
-				console.log(xhr);
 				var user_info = JSON.parse(response);
 				user_info.expires_at = new Date().getTime() + (user_info.expires_in * 1000);
 				localStorage.setItem('OneDrive', JSON.stringify(user_info));

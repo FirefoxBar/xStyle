@@ -28,7 +28,5 @@
 		method: "cloudLogin",
 		type: type,
 		code: code
-	}).then(function() {
-		window.close();
 	});
 })();
