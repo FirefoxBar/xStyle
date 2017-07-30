@@ -459,10 +459,20 @@ function onLoadFromFileClick(){
 		}
 
 		function done(){
-			location.reload();
+			window.location.reload();
 		}
 
 		proceed();
+	});
+}
+
+function onInstallFromFileClick(){
+	loadFromFile(XSTYLE_DUMP_FILE_EXT).then(function(rawText){
+		var json = JSON.parse(rawText);
+		delete json.id;
+		saveStyle(json, function() {
+			window.location.reload();
+		});
 	});
 }
 
@@ -599,6 +609,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	}
 
 	document.getElementById("check-all-updates").addEventListener("click", checkUpdateAll);
+	document.getElementById("install-from-file").addEventListener("click", onInstallFromFileClick);
 	document.getElementById("apply-all-updates").addEventListener("click", applyUpdateAll);
 	document.getElementById("file-all-styles").addEventListener('click', onSaveToFileClick);
 	document.getElementById("unfile-all-styles").addEventListener('click', onLoadFromFileClick);
