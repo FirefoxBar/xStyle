@@ -231,7 +231,11 @@ function autoUpdateStyles() {
 	};
 	var checkUpdateFullCode = function(style) {
 		download(style.url, function(responseText) {
-			var serverJson = JSON.parse(responseText);
+			try {
+				var serverJson = JSON.parse(responseText);
+			} catch (e) {
+				return;
+			}
 			if (!codeIsEqual(style.sections, serverJson.sections)) {
 				update(style, serverJson);
 			}
