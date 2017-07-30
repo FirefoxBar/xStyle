@@ -280,6 +280,10 @@
 		"message": "显示生效的样式计数",
 		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
 	},
+	"modifyCSP": {
+		"message": "修改CSP相应头",
+		"description": "Modify CSP header"
+	},
 	"noStylesForSite": {
 		"message": "您未为此网页安装任何样式",
 		"description": "Text displayed when no styles are installed for the current site"

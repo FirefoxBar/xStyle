@@ -174,6 +174,27 @@ browser.tabs.onAttached.addListener(function(tabId, data) {
 	});
 });
 
+// Modify CSP
+browser.webRequest.onHeadersReceived.addListener(function(e) {
+	if (!prefs.get("modify-csp")) {
+		return {"responseHeaders": e.responseHeaders};
+	}
+	for (var k in e.responseHeaders) {
+		if (e.responseHeaders[k].name.toLowerCase() === 'content-security-policy') {
+			if (e.responseHeaders[k].value.indexOf('style-src') < 0) {
+				break;
+			}
+			var csp = e.responseHeaders[k].value.match(/style-src (.*?);/)[1];
+			if (csp.indexOf("'unsafe-inline'") >= 0) {
+				break;
+			}
+			e.responseHeaders[k].value = e.responseHeaders[k].value.replace(/style-src (.*?);/, "style-src $1 'unsafe-inline';");
+			break;
+		}
+	}
+	return {"responseHeaders": e.responseHeaders};
+}, {urls: ["<all_urls>"]}, ['blocking', 'responseHeaders']);
+
 function openURL(options) {
 	delete options.method;
 	getActiveTab(function(tab) {

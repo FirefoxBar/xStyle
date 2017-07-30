@@ -405,6 +405,7 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 		"openEditInWindow": false,			  // new editor opens in a own browser window
 		"windowPosition": {},				   // detached window position
 		"show-badge": true,					 // display text on popup menu icon
+		"modify-csp": true,					 // modify csp
 		"disableAll": false,					// boss key
 
 		"popup.breadcrumbs": true,			  // display "New style" links as URL breadcrumbs

@@ -623,7 +623,8 @@ document.addEventListener("DOMContentLoaded", function() {
 	document.getElementById("unfile-all-styles").addEventListener('click', onLoadFromFileClick);
 
 	setupLivePrefs([
-		"show-badge"
+		"show-badge",
+		"modify-csp"
 	]);
 	
 	//menu
