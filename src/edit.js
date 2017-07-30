@@ -1070,7 +1070,8 @@ function init() {
 		}
 		addSection(null, section);
 		// default to enabled
-		document.getElementById("enabled").checked = true
+		document.getElementById("enabled").checked = true;
+		document.getElementById("autoUpdate").parentElement.display = 'none'; // hide auto update
 		tE("heading", "addStyleTitle");
 		tE("contentHeading", "addStyleTitle");
 		initHooks();
@@ -1103,6 +1104,16 @@ function init() {
 function initWithStyle(style) {
 	document.getElementById("name").value = style.name;
 	document.getElementById("enabled").checked = style.enabled;
+	if (style.url) {
+		document.getElementById("autoUpdate").checked = typeof(style.autoUpdate) === 'undefined' ? false : style.autoUpdate;
+		if (typeof(componentHandler) !== 'undefined') {
+			document.getElementById("autoUpdate").parentElement.classList.add('mdl-js-ripple-effect');
+			componentHandler.upgradeElement(document.getElementById("autoUpdate").parentElement, 'MaterialCheckbox');
+			componentHandler.upgradeElement(document.getElementById("autoUpdate").parentElement.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
+		}
+	} else {
+		document.getElementById("autoUpdate").parentElement.display = 'none';
+	}
 	//material
 	if (typeof(componentHandler) !== 'undefined') {
 		componentHandler.upgradeElement(document.getElementById("name").parentElement, 'MaterialTextfield');
@@ -1259,11 +1270,13 @@ function save() {
 	}
 	var name = document.getElementById("name").value;
 	var enabled = document.getElementById("enabled").checked;
+	var autoUpdate = document.getElementById("autoUpdate").checked;
 	var request = {
 		method: "saveStyle",
 		id: styleId,
 		name: name,
 		enabled: enabled,
+		autoUpdate: autoUpdate,
 		sections: getSectionsHashes()
 	};
 	browser.runtime.sendMessage(request).then(saveComplete);

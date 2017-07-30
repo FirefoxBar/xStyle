@@ -202,7 +202,7 @@ browser.webRequest.onHeadersReceived.addListener(function(e) {
 // enable/disable auto update
 function toggleAutoUpdate(e) {
 	if (autoUpdateTimer === null && e) {
-		autoUpdateTimer = setInterval(autoUpdateStyles, 20 * 60 * 1000); // 20 mintunes
+		autoUpdateTimer = setInterval(autoUpdateStyles, 30 * 60 * 1000); // 20 mintunes
 	}
 	if (autoUpdateTimer !== null && !e) {
 		clearInterval(autoUpdateTimer);
@@ -277,7 +277,7 @@ function autoUpdateStyles() {
 	};
 	getStyles({}, function(styles) {
 		for (let style of styles) {
-			if (!style.url) {
+			if (!style.url || !style.autoUpdate) {
 				continue;
 			} else if (!style.md5Url || !style.originalMd5) {
 				checkUpdateFullCode(style);
