@@ -217,6 +217,9 @@
 	"export": {
 		"message": "导出"
 	},
+	"exportAsUsercss": {
+		"message": "导出为user.css"
+	},
 	"exportAsJson": {
 		"message": "导出为JSON"
 	},

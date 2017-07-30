@@ -1,3 +1,5 @@
+var propertyToCss = {urls: "url", urlPrefixes: "url-prefix", domains: "domain", regexps: "regexp"};
+
 function init() {
 	var params = getParams();
 	if (!params.id) { // match should be 2 - one for the whole thing, one for the parentheses
@@ -61,8 +63,40 @@ function exportAsJson() {
 	}
 	saveAsFile(JSON.stringify(style), 'xstyle-' + style.originalMd5 + '.json');
 }
+function exportAsUsercss() {
+	var style = doExport();
+	if (!style) {
+		return;
+	}
+	var content = "/* ==UserStyle==\n";
+	content += "@name " + style.name + "\n";
+	if (style.url) {
+		content += "@homepageURL " + style.url + "\n";
+	}
+	if (style.updateUrl) {
+		content += "@updateURL " + style.updateUrl + "\n";
+	}
+	if (style.md5Url) {
+		content += "@md5URL " + style.md5Url + "\n";
+	}
+	content += "@originalMD5 " + style.originalMd5 + "\n";
+	content += "==/UserStyle== */\n\n";
+	content += style.sections.map(function(section) {
+		var cssMds = [];
+		for (var i in propertyToCss) {
+			if (section[i]) {
+				cssMds = cssMds.concat(section[i].map(function (v){
+					return propertyToCss[i] + "(\"" + v.replace(/\\/g, "\\\\") + "\")";
+				}));
+			}
+		}
+		return cssMds.length ? "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}" : section.code;
+	}).join("\n\n");
+	saveAsFile(content.trim(), 'xstyle-' + style.originalMd5 + '.user.css');
+}
 
 document.addEventListener("DOMContentLoaded", function() {
 	init();
 	document.getElementById('export-as-json').addEventListener('click', exportAsJson);
+	document.getElementById('export-as-usercss').addEventListener('click', exportAsUsercss);
 });

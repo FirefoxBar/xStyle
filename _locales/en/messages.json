@@ -217,6 +217,9 @@
 	"export": {
 		"message": "Export"
 	},
+	"exportAsUsercss": {
+		"message": "Export as user.css"
+	},
 	"exportAsJson": {
 		"message": "Export as JSON"
 	},

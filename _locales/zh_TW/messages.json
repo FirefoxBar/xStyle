@@ -217,6 +217,9 @@
 	"export": {
 		"message": "匯出"
 	},
+	"exportAsUsercss": {
+		"message": "匯出為user.css"
+	},
 	"exportAsJson": {
 		"message": "匯出為JSON"
 	},
