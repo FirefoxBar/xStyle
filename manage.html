@@ -6,87 +6,8 @@
 	<title i18n-text="manageTitle"></title>
 	<link rel="stylesheet" href="third-party/material-design-icons/material-icons.min.css"/>
 	<link rel="stylesheet" href="third-party/mdl/material.min.css"/>
+	<link rel="stylesheet" href="page.css"/>
 	<style>
-	body {
-		background-color: #EEE;
-	}
-	.mdl-card {
-		min-height: 0;
-		width: 100%;
-	}
-	.mdl-card__supporting-text {
-		width: 100%;
-		box-sizing: border-box;
-	}
-	.mdl-layout__header,
-	.menu {
-		position: fixed;
-		top: 0;
-		left: 0;
-	}
-	.menu a {
-		cursor: pointer;
-	}
-	.mdl-layout__header .mdl-layout__header-row {
-		padding-right: 0;
-	}
-	.mdl-layout__header-row .mdl-navigation__link .mdl-button {
-		padding: 5px;
-		margin-left: 10px;
-	}
-	.mdl-layout__content {
-		padding-top: 64px;
-		background-color: #EEE;
-	}
-	.section-spacer {
-		-webkit-flex-grow: 1;
-		-ms-flex-positive: 1;
-		flex-grow: 1;
-	}
-	.mdl-layout__header .mdl-layout-title {
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		max-width: calc(100% - 50px);
-	}
-	.menu {
-		border-right: none;
-	}
-	.menu .mdl-layout-title {
-		background-image: url('images/menu-head.jpg');
-		background-size: 100% 100%;
-		background-repeat: no-repeat no-repeat;
-		background-position: 0 0;
-		height: 140px;
-		color: #FFF;
-		padding-top: 20px;
-		padding-bottom: 20px;
-	}
-	.menu .mdl-layout-title p {
-		margin: 0;
-		font-size: 17px;
-	}
-	.menu .mdl-layout-title img {
-		width: 72px;
-		height: 72px;
-		display: block;
-		margin-bottom: 10px;
-		margin-left: -10px;
-	}
-	.mdl-button .mdl-spinner {
-		display: none;
-		vertical-align: middle;
-		width: 25px;
-		height: 25px;
-		margin-left: 5px;
-	}
-	.page-content {
-		padding: 5px;
-	}
-	.page-content .mdl-card {
-		margin: 10px 5px;
-		width: calc(100% - 10px);
-	}
 	.page-content #installed {
 		display: flex;
 		flex-direction: row;
@@ -127,39 +48,11 @@
 	}
 	
 	@media screen and (max-width: 1024px) {
-		.mdl-layout__header {
-			display: block;
-		}
-		.mdl-layout__header .mdl-layout__header-row {
-			padding-left: 56px;
-			padding-right: 20px;
-		}
-		.mdl-layout__header-row .mdl-navigation__link {
-			padding-left: 0;
-			padding-right: 0;
-		}
-		.hide-on-mobile {
-			display: none !important;
-		}
 		.page-content #installed .mdl-card {
 			margin: 10px 5px;
 			width: calc(100% - 10px);
 		}
 	}
-	@media screen and (min-width: 1025px) {
-		.mdl-layout--fixed-drawer > .mdl-layout__header .mdl-layout__header-row {
-			padding-left: 260px;
-		}
-		.mdl-mini-footer {
-			padding-left: 262px;
-		}
-		.hide-on-desktop {
-			display: none !important;
-		}
-	}
-	</style>
-
-	<style>
 	.mdl-card__menu .mdl-button {
 		color: #555;
 	}
@@ -187,7 +80,7 @@
 				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect homepage hidden" target="_blank" i18n-text="homepage"></a>
 				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect style-edit-link" href="edit.html?id=" i18n-text="editStyleLabel"></a>
 				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect delete" i18n-text="deleteStyleLabel"></a>
-				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect export" i18n-text="exportStyleLabel"></a>
+				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect style-export-link" href="export.html?id=" i18n-text="export"></a>
 				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect check-update hidden"><span i18n-text="checkForUpdate"></span><div class="loading mdl-spinner mdl-js-spinner is-active"></div></a>
 			</div>
 			<div class="mdl-card__menu">
@@ -301,7 +194,6 @@
 	<button class="mdl-snackbar__action" type="button"></button>
 </div>
 <script src="third-party/mdl/material.min.js"></script>
-<script src="src/md5.min.js"></script>
 <script src="src/cloud/OneDrive.js"></script>
 <script src="src/cloud/Google.js"></script>
 </body>

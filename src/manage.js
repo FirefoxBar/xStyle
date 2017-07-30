@@ -123,9 +123,10 @@ function createStyleElement(style) {
 			var styleid = getGlobalId(event);
 		}
 	});
+	var exportLink = e.querySelector(".style-export-link");
+	exportLink.setAttribute("href", exportLink.getAttribute("href") + style.id);
 	e.querySelector(".enable").addEventListener("click", function(event) { enable(event, true); }, false);
 	e.querySelector(".disable").addEventListener("click", function(event) { enable(event, false); }, false);
-	e.querySelector(".export").addEventListener("click", doExport, false);
 	if (style.updateUrl) {
 		e.querySelector(".check-update").addEventListener("click", doCheckUpdate, false);
 		e.querySelector(".check-update").classList.remove('hidden');
@@ -151,26 +152,6 @@ function doDelete(event) {
 	}
 	var id = getId(event);
 	deleteStyle(id);
-}
-
-function doExport(event) {
-	var id = getId(event);
-	browser.runtime.sendMessage({method: "getStyles", id: id}).then(function(styles) {
-		var style = styles[0];
-		var originalMd5 = md5(JSON.stringify(style.sections));
-		var result = {"name": style.name, "updateUrl": null, "md5Url": null, "originalMd5": originalMd5, "url": "https://ext.firefoxcn.net/xstyle/md5namespace/" + originalMd5, "sections": style.sections};
-		saveAsFile(JSON.stringify(result), 'xstyle-' + originalMd5 + '.json');
-		// Copy md5 to clipboard
-		if (isChrome || FIREFOX_VERSION >= 51) {
-			var copyText = document.createElement("input");
-			copyText.style = "position:fixed;top:-10px;left:-10px;width:1px;height:1px;display:block";
-			document.getElementsByTagName('body')[0].appendChild(copyText);
-			copyText.value = originalMd5;
-			copyText.select();
-			document.execCommand("Copy");
-			copyText.remove();
-		}
-	});
 }
 
 function getId(event) {

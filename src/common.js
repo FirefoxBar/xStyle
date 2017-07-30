@@ -44,3 +44,17 @@ function DateFormat(f, d) {
 	f = f.replace(/\{s\}/g, d.getSeconds());
 	return f;
 }
+
+//get url params
+function getParams() {
+	var params = {};
+	var urlParts = location.href.split("?", 2);
+	if (urlParts.length == 1) {
+		return params;
+	}
+	urlParts[1].split("&").forEach(function(keyValue) {
+		var splitKeyValue = keyValue.split("=", 2);
+		params[decodeURIComponent(splitKeyValue[0])] = decodeURIComponent(splitKeyValue[1]);
+	});
+	return params;
+}

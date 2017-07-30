@@ -1621,19 +1621,6 @@ function showCodeMirrorPopup(title, html, options) {
 	return popup;
 }
 
-function getParams() {
-	var params = {};
-	var urlParts = location.href.split("?", 2);
-	if (urlParts.length == 1) {
-		return params;
-	}
-	urlParts[1].split("&").forEach(function(keyValue) {
-		var splitKeyValue = keyValue.split("=", 2);
-		params[decodeURIComponent(splitKeyValue[0])] = decodeURIComponent(splitKeyValue[1]);
-	});
-	return params;
-}
-
 browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	switch (request.method) {
 		case "styleUpdated":

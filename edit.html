@@ -5,6 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="third-party/material-design-icons/material-icons.min.css"/>
 	<link rel="stylesheet" href="third-party/mdl/material.min.css"/>
+	<link rel="stylesheet" href="page.css"/>
 	
 	<script src="src/browser-polyfill.js"></script>
 	<script src="src/common.js"></script>
@@ -45,79 +46,6 @@
 	<script src="third-party/codemirror/keymap/vim.js"></script>
 
 	<style type="text/css">
-	body {
-		background-color: #EEE;
-	}
-	.mdl-card {
-		min-height: 0;
-		width: 100%;
-	}
-	.mdl-card__supporting-text {
-		width: 100%;
-		box-sizing: border-box;
-	}
-	.mdl-layout__header,
-	.menu {
-		position: fixed;
-		top: 0;
-		left: 0;
-	}
-	.menu a {
-		cursor: pointer;
-	}
-	.mdl-layout__header .mdl-layout__header-row {
-		padding-right: 0;
-	}
-	.mdl-layout__header-row .mdl-navigation__link .mdl-button {
-		padding: 5px;
-		margin-left: 10px;
-	}
-	.mdl-layout__content {
-		padding-top: 64px;
-		background-color: #EEE;
-	}
-	.section-spacer {
-		-webkit-flex-grow: 1;
-		-ms-flex-positive: 1;
-		flex-grow: 1;
-	}
-	.mdl-layout__header .mdl-layout-title {
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		max-width: calc(100% - 50px);
-	}
-	.menu {
-		border-right: none;
-	}
-	.menu .mdl-layout-title {
-		background-image: url('images/menu-head.jpg');
-		background-size: 100% 100%;
-		background-repeat: no-repeat no-repeat;
-		background-position: 0 0;
-		height: 140px;
-		color: #FFF;
-		padding-top: 20px;
-		padding-bottom: 20px;
-	}
-	.menu .mdl-layout-title p {
-		margin: 0;
-		font-size: 17px;
-	}
-	.menu .mdl-layout-title img {
-		width: 72px;
-		height: 72px;
-		display: block;
-		margin-bottom: 10px;
-		margin-left: -10px;
-	}
-	.page-content {
-		padding: 5px;
-	}
-	.page-content .mdl-card {
-		margin: 10px 5px;
-		width: calc(100% - 10px);
-	}
 	.page-content .half {
 		display: flex;
 		flex-direction: row;
@@ -135,15 +63,6 @@
 		vertical-align: middle;
 	}
 	.page-content .half .option {
-		margin-bottom: 5px;
-	}
-	.applies-to {
-		margin-top: 10px;
-	}
-	.applies-to > label {
-		padding-top: 5px;
-	}
-	.applies-to-list li {
 		margin-bottom: 5px;
 	}
 	#save-button {
@@ -219,6 +138,7 @@
 	.applies-to label {
 		flex: auto;
 		margin-top: 0.2rem;
+		padding-top: 6px;
 	}
 	.applies-to ul {
 		flex: auto;
@@ -400,37 +320,10 @@
 		background-color: rgba(0, 0, 0, 0.05);
 	}
 
-	@media screen and (max-width: 1024px) {
-		.mdl-layout__header {
-			display: block;
-		}
-		.mdl-layout__header .mdl-layout__header-row {
-			padding-left: 56px;
-			padding-right: 20px;
-		}
-		.mdl-layout__header-row .mdl-navigation__link {
-			padding-left: 0;
-			padding-right: 0;
-		}
-		.hide-on-mobile {
-			display: none !important;
-		}
-	}
 	@media screen and (max-width: 1400px) {
 		.page-content .half .mdl-card {
 			margin: 10px 5px;
 			width: calc(100% - 10px);
-		}
-	}
-	@media screen and (min-width: 1025px) {
-		.mdl-layout--fixed-drawer > .mdl-layout__header .mdl-layout__header-row {
-			padding-left: 260px;
-		}
-		.mdl-mini-footer {
-			padding-left: 262px;
-		}
-		.hide-on-desktop {
-			display: none !important;
 		}
 	}
 	</style>

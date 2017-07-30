@@ -214,13 +214,14 @@
 		"message": "已禁用",
 		"description": "Label for the button to enable a style"
 	},
-	"exportLabel": {
-		"message": "导出",
-		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+	"export": {
+		"message": "导出"
 	},
-	"exportStyleLabel": {
-		"message": "导出",
-		"description": "Export a style as a json file"
+	"exportAsJson": {
+		"message": "导出为JSON"
+	},
+	"exportHelp": {
+		"message": "URL：主页地址。并用于区别不同样式（需保证不同样式URL不一致）<br>Update URL：更新地址，内容为导出的完整文件<br>MD5 URL：检查是否有更新的地址，内容为最新版本的Original MD5<br>Original MD5：系统生成用于标识最新版本的MD5"
 	},
 	"extName": {
 		"message": "xStyle"
