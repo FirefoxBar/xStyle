@@ -58,12 +58,12 @@
 		"message": "应用全部更新",
 		"description": "Label for the button to apply all detected updates"
 	},
+	"autoUpdateLabel": {
+		"message": "自动更新"
+	},
 	"autoUpdateStyles": {
 		"message": "自动更新样式",
 		"description": "Auto update styles or not"
-	},
-	"autoUpdateLabel": {
-		"message": "自动更新"
 	},
 	"bckpInstStyles": {
 		"message": "备份所有已安装样式"
@@ -221,7 +221,7 @@
 		"message": "导出为JSON"
 	},
 	"exportHelp": {
-		"message": "URL：主页地址。并用于区别不同样式（需保证不同样式URL不一致）<br>Update URL：更新地址，内容为导出的完整文件<br>MD5 URL：检查是否有更新的地址，内容为最新版本的Original MD5<br>Original MD5：系统生成用于标识最新版本的MD5"
+		"message": "URL：主页地址。并用于区别不同样式（需保证不同样式的URL不一致）<br>Update URL：更新地址，内容为导出的完整文件<br>MD5 URL：检查是否有更新的地址，内容为最新版本的Original MD5<br>Original MD5：系统生成用于标识最新版本的MD5"
 	},
 	"extName": {
 		"message": "xStyle"
