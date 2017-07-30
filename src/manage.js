@@ -624,7 +624,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	setupLivePrefs([
 		"show-badge",
-		"modify-csp"
+		"modify-csp",
+		"auto-update"
 	]);
 	
 	//menu

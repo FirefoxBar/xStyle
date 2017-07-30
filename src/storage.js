@@ -306,6 +306,7 @@ function setupLivePrefs(IDs) {
 	IDs.forEach(function(id) {
 		localIDs[id] = true;
 		updateElement(id).addEventListener("change", function() {
+			notifyBackground({"method": "prefChanged", "prefName": this.id, "value": isCheckbox(this) ? this.checked : this.value});
 			prefs.set(this.id, isCheckbox(this) ? this.checked : this.value);
 		});
 	});
@@ -406,6 +407,7 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 		"windowPosition": {},				   // detached window position
 		"show-badge": true,					 // display text on popup menu icon
 		"modify-csp": true,					 // modify csp
+		"auto-update": false,                 // Auto update styles
 		"disableAll": false,					// boss key
 
 		"popup.breadcrumbs": true,			  // display "New style" links as URL breadcrumbs

@@ -1,4 +1,5 @@
 var frameIdMessageable, backStorage = localStorage;
+var autoUpdateTimer = null;
 
 function appId() {
 	function genRand(){
@@ -81,6 +82,9 @@ browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		case "prefChanged":
 			if (request.prefName == "show-badge") {
 				browser.contextMenus.update("show-badge", {checked: request.value});
+			}
+			if (request.prefName == "auto-update") {
+				toggleAutoUpdate(request.value);
 			}
 			break;
 	}
@@ -194,6 +198,100 @@ browser.webRequest.onHeadersReceived.addListener(function(e) {
 	}
 	return {"responseHeaders": e.responseHeaders};
 }, {urls: ["<all_urls>"]}, ['blocking', 'responseHeaders']);
+
+// enable/disable auto update
+function toggleAutoUpdate(e) {
+	if (autoUpdateTimer === null && e) {
+		autoUpdateTimer = setInterval(autoUpdateStyles, 20 * 60 * 1000); // 20 mintunes
+	}
+	if (autoUpdateTimer !== null && !e) {
+		clearInterval(autoUpdateTimer);
+		autoUpdateTimer = null;
+	}
+}
+function autoUpdateStyles() {
+	var download = function(url, callback) {
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function (aEvt) {
+			if (xhr.readyState == 4) {
+				if (xhr.status == 200) {
+					callback(xhr.responseText)
+				}
+			}
+		}
+		if (url.length > 2000) {
+			var parts = url.split("?");
+			xhr.open("POST", parts[0], true);
+			xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+			xhr.send(parts[1]);
+		} else {
+			xhr.open("GET", url, true);
+			xhr.send();
+		}
+	};
+	var checkUpdateFullCode = function(style) {
+		download(style.url, function(responseText) {
+			var serverJson = JSON.parse(responseText);
+			if (!codeIsEqual(style.sections, serverJson.sections)) {
+				update(style, serverJson);
+			}
+		});
+	};
+	var checkUpdateMd5 = function(style, callback) {
+		download(style.md5Url, function(responseText) {
+			if (responseText.length != 32) {
+				callback(false);
+				return;
+			}
+			callback(responseText != style.originalMd5);
+		});
+	};
+	var codeIsEqual = function(a, b) {
+		if (a.length != b.length) {
+			return false;
+		}
+		var properties = ["code", "urlPrefixes", "urls", "domains", "regexps"];
+		for (var i = 0; i < a.length; i++) {
+			var found = false;
+			for (var j = 0; j < b.length; j++) {
+				var allEquals = properties.every(function(property) {
+					return jsonEquals(a[i], b[j], property);
+				});
+				if (allEquals) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				return false;
+			}
+		}
+		return true;
+	};
+	var update = function(style, serverJson) {
+		// update everything but name
+		delete serverJson.name;
+		serverJson.id = style.id;
+		serverJson.method = "saveStyle";
+		browser.runtime.sendMessage(updatedCode);
+	};
+	getStyles({}, function(styles) {
+		for (let style of styles) {
+			if (!style.url) {
+				continue;
+			} else if (!style.md5Url || !style.originalMd5) {
+				checkUpdateFullCode(style);
+			} else {
+				checkUpdateMd5(style, function(needsUpdate) {
+					if (needsUpdate) {
+						checkUpdateFullCode(style);
+					}
+				});
+			}
+		}
+	});
+}
+toggleAutoUpdate(prefs.get('auto-update'));
 
 function openURL(options) {
 	delete options.method;

@@ -58,6 +58,10 @@
 		"message": "应用全部更新",
 		"description": "Label for the button to apply all detected updates"
 	},
+	"autoUpdateStyles": {
+		"message": "自动更新样式",
+		"description": "Auto update styles or not"
+	},
 	"bckpInstStyles": {
 		"message": "备份所有已安装样式"
 	},
