@@ -230,7 +230,7 @@ function autoUpdateStyles() {
 		}
 	};
 	var checkUpdateFullCode = function(style) {
-		download(style.url, function(responseText) {
+		download(style.updateUrl, function(responseText) {
 			try {
 				var serverJson = JSON.parse(responseText);
 			} catch (e) {
