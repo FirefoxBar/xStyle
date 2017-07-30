@@ -277,7 +277,7 @@ function autoUpdateStyles() {
 		delete serverJson.name;
 		serverJson.id = style.id;
 		serverJson.method = "saveStyle";
-		browser.runtime.sendMessage(updatedCode);
+		browser.runtime.sendMessage(serverJson);
 	};
 	getStyles({}, function(styles) {
 		for (let style of styles) {
