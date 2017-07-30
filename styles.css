@@ -67,15 +67,15 @@ body.blocked > DIV {
 	height: 366px;
 }
 #sitename{
-	height:44px;
-	padding-left: 16px;
-	padding-right: 30px;
+	height:42px;
+	padding-left: 10px;
+	padding-right: 40px;
 	font-size: 16px;
 	font-weight: bold;
 	font-style: normal;
 	font-stretch: normal;
 	color: #2c3e50;
-	line-height:46px;
+	line-height:42px;
 	border-bottom: 1px solid #d7d7d7;
 	overflow: hidden;
 	white-space: nowrap;
@@ -234,7 +234,7 @@ body.blocked > DIV {
 	height: 22px;
 	width: 22px;
 	position: absolute;
-	top: 12px;
+	top: 9px;
 	right: 10px
 }
 /** zero styles >**/
