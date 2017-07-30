@@ -36,10 +36,10 @@ function initWithStyle(style) {
 function doExport() {
 	var result = {
 		"name": document.getElementById("name").value,
-		"updateUrl": document.getElementById("updateUrl").value,
-		"md5Url": document.getElementById("md5Url").value,
-		"originalMd5": document.getElementById("originalMd5").value,
-		"url": document.getElementById("url").value,
+		"updateUrl": document.getElementById("updateUrl").value || null,
+		"md5Url": document.getElementById("md5Url").value || null,
+		"originalMd5": document.getElementById("originalMd5").value || null,
+		"url": document.getElementById("url").value || null,
 		"sections": window.style.sections
 	};
 	// Copy md5 to clipboard
@@ -59,7 +59,7 @@ function exportAsJson() {
 	if (!style) {
 		return;
 	}
-	saveAsFile(JSON.stringify(style), 'xstyle-' + originalMd5 + '.json');
+	saveAsFile(JSON.stringify(style), 'xstyle-' + style.originalMd5 + '.json');
 }
 
 document.addEventListener("DOMContentLoaded", function() {
