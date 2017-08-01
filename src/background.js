@@ -15,8 +15,6 @@ function appId() {
 runTryCatch(function() {
 	browser.tabs.sendMessage(0, {}, {frameId: 0}).then(function() {
 		frameIdMessageable = true;
-	}, function (err) {
-		var clearError = err;
 	});
 });
 
@@ -39,8 +37,7 @@ function webNavigationListener(method, data) {
 	}
 	getStyles({matchUrl: data.url, enabled: true, asHash: true}, function(styleHash) {
 		if (method) {
-			browser.tabs.sendMessage(data.tabId, {method: method, styles: styleHash},
-				frameIdMessageable ? {frameId: data.frameId} : undefined);
+			browser.tabs.sendMessage(data.tabId, {method: method, styles: styleHash}, frameIdMessageable ? {frameId: data.frameId} : undefined);
 		}
 		if (data.frameId == 0) {
 			updateIcon({id: data.tabId, url: data.url}, styleHash);

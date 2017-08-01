@@ -1,27 +1,34 @@
 function notifyAllTabs(request) {
 	return new Promise(function(resolve){
-		if (isMobile) {
-			browser.tabs.query({}).then(function(tabs) {
-				for (let tab of tabs) {
-					browser.tabs.sendMessage(tab.id, request);
-					updateIcon(tab);
-				}
-				resolve();
-			});
-		} else {
-			browser.windows.getAll({populate: true}).then(function(windows) {
-				windows.forEach(function(win) {
-					win.tabs.forEach(function(tab) {
-						browser.tabs.sendMessage(tab.id, request);
-						updateIcon(tab);
-					});
+		browser.tabs.getCurrent().then(function(selfTab) {
+			if (isMobile) {
+				browser.tabs.query({}).then(function(tabs) {
+					for (let tab of tabs) {
+						if (canStyle(tab.url) && tab.id !== selfTab.id) {
+							console.log(tab.url);
+							browser.tabs.sendMessage(tab.id, request);
+							updateIcon(tab);
+						}
+					}
+					resolve();
 				});
-				resolve();
-			});
-		}
-		// notify all open popups
-		var reqPopup = shallowMerge({}, request, {method: "updatePopup", reason: request.method});
-		browser.runtime.sendMessage(reqPopup);
+			} else {
+				browser.windows.getAll({populate: true}).then(function(windows) {
+					windows.forEach(function(win) {
+						win.tabs.forEach(function(tab) {
+							if (canStyle(tab.url) && tab.id !== selfTab.id) {
+								browser.tabs.sendMessage(tab.id, request);
+								updateIcon(tab);
+							}
+						});
+					});
+					resolve();
+				});
+			}
+			// notify all open popups
+			var reqPopup = shallowMerge({}, request, {method: "updatePopup", reason: request.method});
+			browser.runtime.sendMessage(reqPopup);
+		});
 	});
 }
 function notifyBackground(request) {
@@ -42,7 +49,7 @@ function processRawStylesResponse(resp){
 function updateIcon(tab, styles) {
 	// while NTP is still loading only process the request for its main frame with a real url
 	// (but when it's loaded we should process style toggle requests from popups, for example)
-	if (tab.url == "chrome://newtab/" && tab.status != "complete") {
+	if (!canStyle(tab.url) && tab.status != "complete") {
 		return;
 	}
 	if (styles) {

@@ -238,12 +238,7 @@ function getApplicableSections(style, url) {
 }
 
 function sectionAppliesToUrl(section, url) {
-	// only http, https, file, extension allowed
-	if (url.indexOf("http") !== 0 && url.indexOf("file") !== 0 && url.indexOf("moz-extension") !== 0 && url.indexOf("chrome-extension") !== 0 && url.indexOf("ftp") !== 0) {
-		return false;
-	}
-	// other extensions can't be styled
-	if ((url.indexOf("moz-extension") == 0 || url.indexOf("chrome-extension") == 0) && url.indexOf(browser.extension.getURL("")) != 0) {
+	if (!canStyle(url)) {
 		return false;
 	}
 	if (section.urls.length == 0 && section.domains.length == 0 && section.urlPrefixes.length == 0 && section.regexps.length == 0) {
