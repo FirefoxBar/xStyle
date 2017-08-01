@@ -3,8 +3,7 @@
 		"gecko": {
 			"id": "xstyle@addon.firefoxcn.net",
 			"update_url": "https://ext.firefoxcn.net/xstyle/install/update.json",
-			"strict_min_version": "49.0",
-			"strict_max_version": "57.0"
+			"strict_min_version": "49.0"
 		}
 	},
 	"name": "__MSG_extName__",
