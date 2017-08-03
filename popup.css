@@ -100,6 +100,11 @@ body.blocked > DIV {
 	background-color: #95a5a6;
 	float: left;
 }
+.bottom_controls::after {
+	display: table;
+	content: "";
+	clear: both;
+}
 
 #nostyles, #unavailable-message{
 	height: 57px;
