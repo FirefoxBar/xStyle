@@ -138,7 +138,7 @@
 	.applies-to label {
 		flex: auto;
 		margin-top: 0.2rem;
-		padding-top: 6px;
+		padding-top: 10px;
 	}
 	.applies-to ul {
 		flex: auto;
@@ -150,29 +150,21 @@
 		display: flex;
 		list-style-type: none;
 		align-items: center;
-		margin-bottom: 0.35rem;
+		padding-top: 5px;
+		padding-bottom: 5px;
 	}
-	.applies-to li > *:not(button) {
-		flex: auto;
-		min-height: 1.4rem;
+	.applies-to li > * {
 		margin-left: 0.35rem;
-	}
-	.applies-to li .add-applies-to {
-		visibility: hidden;
-		text-align: left;
-	}
-	.applies-to li:last-child .add-applies-to {
-		visibility: visible
-	}
-	.applies-to li .add-applies-to:first-child {
-		margin-left: 1rem;
 	}
 	.applies-to li .applies-value {
 		flex-grow: 99;
-		padding-left: 0.2rem;
 	}
-	.applies-to img {
-		vertical-align: bottom;
+	.applies-to li .mdl-textfield {
+		padding-top: 1px;
+		padding-bottom: 1px;
+	}
+	.applies-to li .mdl-textfield__label::after {
+		bottom: 5px;
 	}
 	/************ help popup ************/
 	#help-popup {
@@ -336,14 +328,17 @@
 				<option value="domain" i18n-text="appliesDomainOption"></option>
 				<option value="regexp" i18n-text="appliesRegexpOption"></option>
 			</select>
-			<input name="applies-value" class="applies-value style-contributor">
+			<div class="mdl-textfield applies-value style-contributor">
+				<input class="mdl-textfield__input" type="text" name="applies-value">
+				<label class="mdl-textfield__label">Applies to</label>
+			</div>
 			<button class="mdl-button mdl-js-button mdl-js-ripple-effect remove-applies-to" i18n-text="appliesRemove"></button>
 			<button class="mdl-button mdl-js-button mdl-js-ripple-effect add-applies-to" i18n-text="appliesAdd"></button>
 		</li>
 	</template>
 	<template data-id="appliesToEverything">
 		<li class="applies-to-everything" i18n-html="appliesToEverything">
-			<button class="add-applies-to" i18n-text="appliesSpecify"></button>
+			<button class="mdl-button mdl-js-button mdl-js-ripple-effect add-applies-to" i18n-text="appliesSpecify"></button>
 		</li>
 	</template>
 	<template data-id="section">

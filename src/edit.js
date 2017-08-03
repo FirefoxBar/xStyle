@@ -1,5 +1,7 @@
 "use strict";
 
+var appliesToId = 999; // use of template
+
 var styleId = null;
 var dirty = {}; // only the actually dirty items here
 var editors = []; // array of all CodeMirror instances
@@ -457,6 +459,12 @@ function addAppliesTo(list, name, value) {
 		e = template.appliesToEverything.cloneNode(true);
 	}
 	e.querySelector(".add-applies-to").addEventListener("click", function() {addAppliesTo(this.parentNode.parentNode)}, false);
+	if (e.querySelector(".mdl-textfield") && typeof(componentHandler) !== 'undefined') {
+		e.querySelector('.mdl-textfield input').setAttribute('id', 'appliesTo-' + appliesToId);
+		e.querySelector('.mdl-textfield label').setAttribute('for', 'appliesTo-' + appliesToId);
+		componentHandler.upgradeElement(e.querySelector(".mdl-textfield"), 'MaterialTextfield');
+		appliesToId++;
+	}
 	list.appendChild(e);
 }
 
