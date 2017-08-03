@@ -1079,7 +1079,7 @@ function init() {
 		addSection(null, section);
 		// default to enabled
 		document.getElementById("enabled").checked = true;
-		document.getElementById("autoUpdate").parentElement.display = 'none'; // hide auto update
+		document.getElementById("autoUpdate").parentElement.style.display = 'none'; // hide auto update
 		tE("heading", "addStyleTitle");
 		tE("contentHeading", "addStyleTitle");
 		initHooks();
@@ -1120,7 +1120,7 @@ function initWithStyle(style) {
 			componentHandler.upgradeElement(document.getElementById("autoUpdate").parentElement.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
 		}
 	} else {
-		document.getElementById("autoUpdate").parentElement.display = 'none';
+		document.getElementById("autoUpdate").parentElement.style.display = 'none';
 	}
 	//material
 	if (typeof(componentHandler) !== 'undefined') {
