@@ -21,7 +21,7 @@ function init() {
 function initWithStyle(style) {
 	window.style = style;
 	document.getElementById("name").value = style.name;
-	document.getElementById("author").value = style.author;
+	document.getElementById("author").value = style.author || '';
 	document.getElementById("updateUrl").value = style.updateUrl || '';
 	document.getElementById("md5Url").value = style.md5Url || '';
 	document.getElementById("originalMd5").value = style.originalMd5 || md5(JSON.stringify(style.sections));
@@ -29,6 +29,7 @@ function initWithStyle(style) {
 	//material
 	if (typeof(componentHandler) !== 'undefined') {
 		componentHandler.upgradeElement(document.getElementById("name").parentElement, 'MaterialTextfield');
+		componentHandler.upgradeElement(document.getElementById("author").parentElement, 'MaterialTextfield');
 		componentHandler.upgradeElement(document.getElementById("updateUrl").parentElement, 'MaterialTextfield');
 		componentHandler.upgradeElement(document.getElementById("md5Url").parentElement, 'MaterialTextfield');
 		componentHandler.upgradeElement(document.getElementById("originalMd5").parentElement, 'MaterialTextfield');
