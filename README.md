@@ -4,7 +4,7 @@ A user style manager for Firefox build on WebExtension. Based on stylish develop
 
 ## Releases
 
-Lastest: [1.3.1](https://github.com/FirefoxBar/xStyle/releases/tag/1.3.1)
+Lastest: [1.3.2](https://github.com/FirefoxBar/xStyle/releases/tag/1.3.2)
 
 ## License
 
