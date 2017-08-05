@@ -91,38 +91,6 @@ function createStyleElement(style) {
 	}
 	var editLink = e.querySelector(".style-edit-link");
 	editLink.setAttribute("href", editLink.getAttribute("href") + style.id);
-	editLink.addEventListener("click", function(event) {
-		if (!event.altKey) {
-			var left = event.button == 0, middle = event.button == 1,
-				shift = event.shiftKey, ctrl = event.ctrlKey;
-			var openWindow = left && shift && !ctrl;
-			var openBackgroundTab = (middle && !shift) || (left && ctrl && !shift);
-			var openForegroundTab = (middle && shift) || (left && ctrl && shift);
-			var url = event.target.href || event.target.parentNode.href;
-			event.preventDefault();
-			event.stopPropagation();
-			if (openWindow || openBackgroundTab || openForegroundTab) {
-				if (openWindow) {
-					var options = prefs.get("windowPosition");
-					options.url = url;
-					browser.windows.create(options);
-				} else {
-					browser.runtime.sendMessage({
-						method: "openURL",
-						url: url,
-						active: openForegroundTab
-					});
-				}
-			} else {
-				history.replaceState({scrollY: window.scrollY}, document.title);
-				getActiveTab(function(tab) {
-					sessionStorageHash("manageStylesHistory").set(tab.id, url);
-					location.href = url;
-				});
-			}
-			var styleid = getGlobalId(event);
-		}
-	});
 	var exportLink = e.querySelector(".style-export-link");
 	exportLink.setAttribute("href", exportLink.getAttribute("href") + style.id);
 	e.querySelector(".enable").addEventListener("click", function(event) { enable(event, true); }, false);

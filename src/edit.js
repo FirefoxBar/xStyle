@@ -384,51 +384,7 @@ document.addEventListener("wheel", function(event) {
 	}
 });
 
-browser.tabs.query({currentWindow: true}).then(function(tabs) {
-	var windowId = tabs[0].windowId;
-	if (prefs.get("openEditInWindow")) {
-		if (tabs.length == 1 && window.history.length == 1) {
-			browser.windows.getAll().then(function(windows) {
-				if (windows.length > 1) {
-					sessionStorageHash("saveSizeOnClose").set(windowId, true);
-					saveSizeOnClose = true;
-				}
-			});
-		} else {
-			saveSizeOnClose = sessionStorageHash("saveSizeOnClose").value[windowId];
-		}
-	}
-	browser.tabs.onRemoved.addListener(function(tabId, info) {
-		sessionStorageHash("manageStylesHistory").unset(tabId);
-		if (info.windowId == windowId && info.isWindowClosing) {
-			sessionStorageHash("saveSizeOnClose").unset(windowId);
-		}
-	});
-});
-
-getActiveTab(function(tab) {
-	useHistoryBack = sessionStorageHash("manageStylesHistory").value[tab.id] == location.href;
-});
-
-function goBackToManage(event) {
-	if (useHistoryBack) {
-		event.stopPropagation();
-		event.preventDefault();
-		history.back();
-	} else {
-		window.location.href = event.target.getAttribute('data-href');
-	}
-}
-
 window.onbeforeunload = function() {
-	if (saveSizeOnClose) {
-		prefs.set("windowPosition", {
-			left: screenLeft,
-			top: screenTop,
-			width: outerWidth,
-			height: outerHeight
-		});
-	}
 	document.activeElement.blur();
 	if (isCleanGlobal()) {
 		return;
@@ -1162,7 +1118,6 @@ function initHooks() {
 	document.getElementById("beautify").addEventListener("click", beautify);
 	document.getElementById("save-button").addEventListener("click", save, false);
 	document.getElementById("keyMap-help").addEventListener("click", showKeyMapHelp, false);
-	document.getElementById("cancel-button").addEventListener("click", goBackToManage);
 	document.getElementById("lint-help").addEventListener("click", showLintHelp);
 	document.getElementById("lint").addEventListener("click", gotoLintIssue);
 	

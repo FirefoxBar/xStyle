@@ -92,7 +92,6 @@ function updateIcon(tab, styles) {
 				tabId: tab.id
 			}).then(function() {
 				// if the tab was just closed an error may occur,
-				// e.g. 'windowPosition' pref updated in edit.js::window.onbeforeunload
 				if (prefs.get("show-badge")) {
 					var t = styles.length ? styles.length.toString() : "";
 					browser.browserAction.setBadgeText({text: t, tabId: tab.id});

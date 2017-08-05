@@ -162,19 +162,6 @@ function disableAllStylesToggle(newState) {
 // Get the DB so that any first run actions will be performed immediately when the background page loads.
 getDatabase(function() {}, reportError);
 
-// When an edit page gets attached or detached, remember its state so we can do the same to the next one to open.
-var editFullUrl = browser.extension.getURL("edit.html");
-browser.tabs.onAttached.addListener(function(tabId, data) {
-	browser.tabs.get(tabId).then(function(tabData) {
-		if (tabData.url.indexOf(editFullUrl) == 0) {
-			browser.windows.get(tabData.windowId, {populate: true}).then(function(win) {
-				// If there's only one tab in this window, it's been dragged to new window
-				prefs.set("openEditInWindow", win.tabs.length == 1);
-			});
-		}
-	});
-});
-
 // Modify CSP
 browser.webRequest.onHeadersReceived.addListener(function(e) {
 	if (!prefs.get("modify-csp")) {

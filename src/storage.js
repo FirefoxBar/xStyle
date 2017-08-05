@@ -398,8 +398,6 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 
 	var defaults = {
 		"ExternalSuffix": "Ext",				// Suffix to get value from external resource
-		"openEditInWindow": false,			  // new editor opens in a own browser window
-		"windowPosition": {},				   // detached window position
 		"show-badge": true,					 // display text on popup menu icon
 		"modify-csp": true,					 // modify csp
 		"auto-update": false,                 // Auto update styles
