@@ -4,7 +4,7 @@ function notifyAllTabs(request) {
 			if (isMobile) {
 				browser.tabs.query({}).then(function(tabs) {
 					for (let tab of tabs) {
-						if (canStyle(tab.url) && tab.id !== selfTab.id) {
+						if (canStyle(tab.url) && (typeof(selfTab) !== 'undefined' && tab.id !== selfTab.id)) {
 							console.log(tab.url);
 							browser.tabs.sendMessage(tab.id, request);
 							updateIcon(tab);
@@ -16,7 +16,7 @@ function notifyAllTabs(request) {
 				browser.windows.getAll({populate: true}).then(function(windows) {
 					windows.forEach(function(win) {
 						win.tabs.forEach(function(tab) {
-							if (canStyle(tab.url) && tab.id !== selfTab.id) {
+							if (canStyle(tab.url) && (typeof(selfTab) !== 'undefined' && tab.id !== selfTab.id)) {
 								browser.tabs.sendMessage(tab.id, request);
 								updateIcon(tab);
 							}

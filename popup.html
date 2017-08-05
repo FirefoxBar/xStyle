@@ -10,7 +10,7 @@
 	<li id="installed-style-{{id}}" class="mdl-list__item mdl-list__item--two-line entry">
 		<span class="mdl-list__item-primary-content">
 			<span class="mdl-list__item-avatar">{{style_first_word}}</span>
-			<span class="style-name">{{name}}</span>
+			<span class="style-name" title="{{name}}">{{name}}</span>
 			<span class="mdl-list__item-sub-title">
 				<span class="style-author">{{author}}</span>
 				<a class="mdl-button mdl-js-button mdl-button--icon edit" href="{{style_edit_url}}"><i class="material-icons">create</i></a>
@@ -18,7 +18,7 @@
 			</span>
 		</span>
 		<span class="mdl-list__item-secondary-action">
-			<label class="mdl-switch mdl-js-switch" for="list-switch-{{id}}">
+			<label class="mdl-switch mdl-js-ripple-effect" for="list-switch-{{id}}">
 				<input type="checkbox" id="list-switch-{{id}}" class="mdl-switch__input activate" />
 			</label>
 		</span>

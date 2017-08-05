@@ -126,7 +126,9 @@ function addStyleToInstalled(style){
 	el.querySelector(".delete").addEventListener('click', onDeleteStyleClick(style));
 	//material
 	if (typeof(componentHandler) !== 'undefined') {
-		componentHandler.upgradeElement(el.querySelector(".mdl-js-switch"), 'MaterialSwitch');
+		var switcher = el.querySelector(".mdl-switch");
+		componentHandler.upgradeElement(switcher, 'MaterialSwitch');
+		componentHandler.upgradeElement(switcher.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
 	}
 	getInstalledStylesEl().appendChild(el);
 	return el;
