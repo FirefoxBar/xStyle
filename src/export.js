@@ -21,6 +21,7 @@ function init() {
 function initWithStyle(style) {
 	window.style = style;
 	document.getElementById("name").value = style.name;
+	document.getElementById("author").value = style.author;
 	document.getElementById("updateUrl").value = style.updateUrl || '';
 	document.getElementById("md5Url").value = style.md5Url || '';
 	document.getElementById("originalMd5").value = style.originalMd5 || md5(JSON.stringify(style.sections));
@@ -42,6 +43,7 @@ function doExport() {
 		"md5Url": document.getElementById("md5Url").value || null,
 		"originalMd5": document.getElementById("originalMd5").value || null,
 		"url": document.getElementById("url").value || null,
+		"author": document.getElementById("author").value || null,
 		"sections": window.style.sections
 	};
 	// Copy md5 to clipboard

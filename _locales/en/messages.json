@@ -363,8 +363,8 @@
 		"message": "Remove section",
 		"description": "Label for the button to remove a section"
 	},
-	"styleActiveLabel": {
-		"message": "ACTIVE"
+	"styleAuthor": {
+		"message": "Author"
 	},
 	"styleBadRegexp": {
 		"message": "Regexp is invalid.",

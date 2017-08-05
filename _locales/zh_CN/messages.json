@@ -363,8 +363,8 @@
 		"message": "删除此部分",
 		"description": "Label for the button to remove a section"
 	},
-	"styleActiveLabel": {
-		"message": "激活"
+	"styleAuthor": {
+		"message": "作者"
 	},
 	"styleBadRegexp": {
 		"message": "正则表达式无效。",
