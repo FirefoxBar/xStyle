@@ -21,6 +21,7 @@ function showStyles(styles) {
 	styles.sort(function(a, b) { return a.name.localeCompare(b.name)});
 	styles.map(createStyleElement).forEach(function(e) {
 		installed.appendChild(e);
+		recalculateStyleRight(e);
 	});
 	if (history.state) {
 		window.scrollTo(0, history.state.scrollY);
@@ -42,6 +43,7 @@ function createStyleElement(style) {
 	}
 
 	var styleName = e.querySelector(".style-name");
+	styleName.setAttribute('title', style.name);
 	styleName.appendChild(document.createTextNode(style.name));
 	var domains = [];
 	var urls = [];
@@ -108,6 +110,15 @@ function createStyleElement(style) {
 	return e;
 }
 
+// Recalculate the maximum width of the style title
+function recalculateStyleRight(e) {
+	var menuWidth = e.querySelector('.mdl-card__menu').offsetWidth;
+	console.log(e.querySelector('.mdl-card__menu'));
+	console.log(menuWidth);
+	e.querySelector('.mdl-card__title').style.paddingRight = (24 + menuWidth).toString() + 'px';
+}
+
+
 function enable(event, enabled) {
 	var id = getId(event);
 	enableStyle(id, enabled);
@@ -153,7 +164,9 @@ browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			handleUpdate(request.style);
 			break;
 		case "styleAdded":
-			installed.appendChild(createStyleElement(request.style));
+			var e = createStyleElement(request.style);
+			installed.appendChild(e);
+			recalculateStyleRight(e);
 			break;
 		case "styleDeleted":
 			handleDelete(request.id);
@@ -167,6 +180,7 @@ browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 function handleUpdate(style) {
 	var element = createStyleElement(style);
 	installed.replaceChild(element, installed.querySelector("[style-id='" + style.id + "']"));
+	recalculateStyleRight(element);
 	if (style.id == lastUpdatedStyleId) {
 		lastUpdatedStyleId = null;
 		showToast(t('updateCompleted'));
@@ -322,6 +336,8 @@ function handleNeedsUpdate(needsUpdate, id, serverJson, isNoToast) {
 	switch (needsUpdate) {
 		case "yes":
 			e.updatedCode = serverJson;
+			e.querySelector('.update').style.display = 'inline-block';
+			recalculateStyleRight(e);
 			return;
 		case "no":
 			needsUpdate = t('updateCheckSucceededNoUpdate');
