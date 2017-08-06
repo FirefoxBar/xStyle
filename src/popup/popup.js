@@ -16,18 +16,6 @@ const disableAllCheckbox = document.getElementById("disable-all-checkbox");
 var menutype;
 var website;
 
-function sendDisableAll(value){
-	return new Promise(function(resolve){
-		if (value === undefined || value === null) {
-			value = !prefs.get("disableAll");
-		}
-		prefs.set("disableAll", value);
-		notifyBackground({method: "styleDisableAll", disableAll: value}).then(function() {
-			notifyAllTabs({method: "styleDisableAll", disableAll: value}).then(resolve);
-		});
-	});
-}
-
 function isDisabledAll(){
 	return browser.extension.getBackgroundPage().prefs.get("disableAll");
 }
@@ -39,7 +27,7 @@ function buildDomainForFiltering(url){
 
 
 function renderPageForAllCases(){
-	renderAllSwitch();
+	renderAllSwitch(true);
 	disableAllCheckbox.addEventListener('change', onDisableAllCheckboxChange);
 }
 
@@ -97,21 +85,17 @@ function installedStyleToElement(style){
 	return MustacheTemplate.render("style-installed-item", style);
 }
 
-function renderAllSwitch(){
+function renderAllSwitch(isFirst){
 	if (!isDisabledAll()){
 		disableAllCheckbox.checked = true;
-		installed.classList.remove("all-off");
-		installed.classList.add("all-on");
 		body.classList.remove("all-off");
 		body.classList.add("all-on");
 	}else{
-		installed.classList.remove("all-on");
-		installed.classList.add("all-off");
 		body.classList.remove("all-on");
 		body.classList.add("all-off");
 	}
 	//material
-	if (typeof(componentHandler) !== 'undefined') {
+	if (typeof(componentHandler) !== 'undefined' && isFirst) {
 		disableAllCheckbox.parentElement.classList.add('mdl-js-ripple-effect');
 		componentHandler.upgradeElement(disableAllCheckbox.parentElement, 'MaterialSwitch');
 		componentHandler.upgradeElement(disableAllCheckbox.parentElement.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
@@ -119,7 +103,12 @@ function renderAllSwitch(){
 }
 
 function onDisableAllCheckboxChange(){
-	sendDisableAll(!this.checked).then(renderAllSwitch);
+	var disable = !this.checked;
+	prefs.set("disableAll", disable);
+	renderAllSwitch();
+	notifyBackground({method: "styleDisableAll", disableAll: value}).then(function() {
+		notifyAllTabs({method: "styleDisableAll", disableAll: value});
+	});
 }
 
 function onActivateChange(style){

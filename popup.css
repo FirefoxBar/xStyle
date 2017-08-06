@@ -40,7 +40,7 @@ body.have-styles #styles {
 	padding: 8px;
 }
 #installed .mdl-list__item-primary-content {
-	width: calc(100% - 40px);
+	width: calc(100% - 50px);
 }
 #installed .mdl-list__item-avatar {
 	height: 45px;
@@ -63,8 +63,11 @@ body.have-styles #styles {
 	max-width: calc(100% - 145px);
 	display: inline-block;
 }
-.all-off #installed, #installed.all-off{
-	opacity: 0.7;
+#installed .mdl-list__item-secondary-action {
+	padding-right: 10px;
+}
+body.all-off #installed {
+	opacity: 0.6;
 	pointer-events: none;
 }
 

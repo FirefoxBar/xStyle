@@ -4,10 +4,9 @@ function notifyAllTabs(request) {
 			if (isMobile) {
 				browser.tabs.query({}).then(function(tabs) {
 					for (let tab of tabs) {
+						updateIcon(tab);
 						if (canStyle(tab.url) && (typeof(selfTab) !== 'undefined' && tab.id !== selfTab.id)) {
-							console.log(tab.url);
 							browser.tabs.sendMessage(tab.id, request);
-							updateIcon(tab);
 						}
 					}
 					resolve();
@@ -16,9 +15,9 @@ function notifyAllTabs(request) {
 				browser.windows.getAll({populate: true}).then(function(windows) {
 					windows.forEach(function(win) {
 						win.tabs.forEach(function(tab) {
+							updateIcon(tab);
 							if (canStyle(tab.url) && (typeof(selfTab) !== 'undefined' && tab.id !== selfTab.id)) {
 								browser.tabs.sendMessage(tab.id, request);
-								updateIcon(tab);
 							}
 						});
 					});
@@ -49,7 +48,20 @@ function processRawStylesResponse(resp){
 function updateIcon(tab, styles) {
 	// while NTP is still loading only process the request for its main frame with a real url
 	// (but when it's loaded we should process style toggle requests from popups, for example)
-	if (!canStyle(tab.url) && tab.status != "complete") {
+	if (tab.status != "complete") {
+		return;
+	}
+	var icon = "images/128.png";
+	if (prefs.get('disableAll')) {
+		icon = "images/128w.png";
+	}
+	if (!canStyle(tab.url)) {
+		browser.browserAction.setIcon({
+			path: {
+				128: icon
+			},
+			tabId: tab.id
+		});
 		return;
 	}
 	if (styles) {
@@ -63,7 +75,7 @@ function updateIcon(tab, styles) {
 				}
 			}
 			stylesReceived(styles);
-		}, function(err){});
+		});
 		return;
 	}
 	getTabRealURL(tab, function(url) {
@@ -76,18 +88,18 @@ function updateIcon(tab, styles) {
 	});
 
 	function stylesReceived(styles) {
-		var disableAll = "disableAll" in styles ? styles.disableAll : prefs.get("disableAll");
+		if (styles.disableAll) {
+			icon = "images/128w.png";
+		}
 		if (isMobile) {
 			if (prefs.get("show-badge")) {
 				var t = browser.i18n.getMessage('extName') + (styles.length ? '(' + styles.length.toString() + ')' : "");
 				browser.browserAction.setTitle({title: t, tabId: tab.id});
 			}
 		} else {
-			// If no styles available for this site icon also should be disabled
-			var postfix = disableAll ? "w" : "";
 			browser.browserAction.setIcon({
 				path: {
-					128: "images/128" + postfix + ".png"
+					128: icon
 				},
 				tabId: tab.id
 			}).then(function() {
@@ -99,8 +111,6 @@ function updateIcon(tab, styles) {
 				} else {
 					browser.browserAction.setBadgeText({text: "", tabId: tab.id});
 				}
-			}, function(err) {
-				browser.browserAction.setBadgeText({text: "", tabId: tab.id});
 			});
 		}
 	}
