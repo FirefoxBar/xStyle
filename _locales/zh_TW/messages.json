@@ -28,7 +28,7 @@
 	},
 	"appliesLabel": {
 		"message": "作用於",
-		"description": "Label for 'applies to' fields on the edit/add screen"
+		"description": "Label for 'applies to' fields on the edit\/add screen"
 	},
 	"appliesRegexpOption": {
 		"message": "符合正規表示式的網址",
@@ -217,17 +217,23 @@
 	"export": {
 		"message": "匯出"
 	},
-	"exportAsUsercss": {
-		"message": "匯出為user.css"
-	},
 	"exportAsJson": {
 		"message": "匯出為JSON"
+	},
+	"exportAsUsercss": {
+		"message": "匯出為user.css"
 	},
 	"exportHelp": {
 		"message": "URL：主页地址。并用于区别不同样式（需保证不同样式的URL不一致）<br>Update URL：更新地址，內容為導出的完整文件<br>MD5 URL：檢查是否有更新的地址，內容為最新版本的Original MD5<br>Original MD5：系統生成用於標識最新版本的MD5"
 	},
 	"extName": {
 		"message": "xStyle"
+	},
+	"fontName": {
+		"message": "字體"
+	},
+	"fontSize": {
+		"message": "字體大小"
 	},
 	"helpAlt": {
 		"message": "說明",
@@ -279,7 +285,7 @@
 		"description": "Label for the CSSLint issues block on the style edit page"
 	},
 	"issuesHelp": {
-		"message": " <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a>工具認為此樣式代碼存在問題：",
+		"message": " <a href='https:\/\/github.com\/CSSLint\/csslint' target='_blank'>CSSLint<\/a>工具認為此樣式代碼存在問題：",
 		"description": "Help popup message for the CSSLint issues block on the style edit page"
 	},
 	"manageHeading": {
@@ -344,7 +350,7 @@
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
 	},
 	"searchRegexp": {
-		"message": "若要以正規表示式搜尋，請使用/re/語法",
+		"message": "若要以正規表示式搜尋，請使用\/re\/語法",
 		"description": "Label after the search input field in the editor shown on Ctrl-F"
 	},
 	"searchStyles": {
@@ -404,11 +410,11 @@
 	},
 	"styleMozillaFormatExport": {
 		"message": "匯出為 Mozilla 格式",
-		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
+		"description": "Heading for the section with buttons to import\/export Mozilla format of the style"
 	},
 	"styleMozillaFormatImport": {
 		"message": "從 Mozilla 格式匯入",
-		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
+		"description": "Heading for the section with buttons to import\/export Mozilla format of the style"
 	},
 	"styleName": {
 		"message": "名稱",

@@ -82,6 +82,12 @@
 	.style-name-box {
 		width: 100%;
 	}
+	#options .mdl-textfield {
+		padding-bottom: 1px;
+	}
+	#options .mdl-textfield__label::after {
+		bottom: 5px;
+	}
 	
 	/* code */
 	.code {
@@ -322,6 +328,7 @@
 		}
 	}
 	</style>
+	<style id="font-style"></style>
 
 	<template data-id="appliesTo">
 		<li>
@@ -478,20 +485,28 @@
 							</label>
 						</div>
 						<div class="mdl-cell mdl-cell--4-col">
-							<div class="option aligned">
+							<div class="option">
 								<label id="keyMap-label" for="editor.keyMap" i18n-text="cm_keyMap"></label>
 								<select data-option="keyMap" id="editor.keyMap"></select>
 								<i id="keyMap-help" class="help-button material-icons" i18n-title="helpAlt">help_outline</i>
 							</div>
-							<div class="option aligned">
+							<div class="option">
 								<label id="theme-label" for="editor.theme" i18n-text="cm_theme"></label>
 								<select data-option="theme" id="editor.theme"></select>
+							</div>
+							<div class="option">
+								<label id="fontName-label" for="editor.fontName" i18n-text="fontName"></label>
+								<select data-option="fontName" id="editor.fontName"></select>
 							</div>
 						</div>
 						<div class="mdl-cell mdl-cell--4-col">
 							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 								<input class="mdl-textfield__input" data-option="tabSize" id="editor.tabSize" type="number" min="0">
 								<label class="mdl-textfield__label" id="tabSize-label" for="editor.tabSize" i18n-text="cm_tabSize"></label>
+							</div>
+							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+								<input class="mdl-textfield__input" data-option="fontSize" id="editor.fontSize" type="number" min="10">
+								<label class="mdl-textfield__label" id="fontSize-label" for="editor.fontSize" i18n-text="fontSize"></label>
 							</div>
 						</div>
 					</div>

@@ -429,6 +429,8 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 		},
 		"editor.lintDelay": 500,				// lint gutter marker update delay, ms
 		"editor.lintReportDelay": 4500,		 // lint report update delay, ms
+		"editor.fontSize": 16, // font size
+		"editor.fontName": "sans-serif" // font size
 	};
 
 	var values = deepCopy(defaults);

@@ -241,16 +241,18 @@ function initCodeMirror() {
 		var themeControl = document.getElementById("editor.theme");
 		themeControl.innerHTML = optionsHtmlFromArray(['default', '3024-day', '3024-night', 'ambiance-mobile', 'ambiance', 'base16-dark', 'base16-light', 'blackboard', 'cobalt', 'colorforth', 'eclipse', 'elegant', 'erlang-dark', 'lesser-dark', 'liquibyte', 'mbo', 'mdn-like', 'midnight', 'monokai', 'neat', 'neo', 'night', 'paraiso-dark', 'paraiso-light', 'pastel-on-dark', 'rubyblue', 'solarized', 'the-matrix', 'tomorrow-night-bright', 'tomorrow-night-eighties', 'twilight', 'vibrant-ink', 'xq-dark', 'xq-light', 'zenburn']);
 		document.getElementById("editor.keyMap").innerHTML = optionsHtmlFromArray(Object.keys(CM.keyMap).sort());
+		document.getElementById("editor.fontName").innerHTML = optionsHtmlFromArray(['sans-serif', 'Source Code Pro', 'Microsoft YaHei', 'Consolas', 'Rotobo', 'PingFang SC', 'PingFang TC', 'WenQuanYi Micro Hei']);
 		document.getElementById("options").addEventListener("change", acmeEventListener, false);
+		setupLivePrefs(
+			document.querySelectorAll("#options *[data-option][id^='editor.']")
+				.map(function(option) { return option.id })
+		);
+		updateFontStyle();
 		if (typeof(componentHandler) !== 'undefined') {
 			Array.prototype.forEach.call(document.querySelectorAll('#options input[type="checkbox"'), function(el) {
 				componentHandler.upgradeElement(el.parentElement, 'MaterialCheckbox');
 			});
 		}
-		setupLivePrefs(
-			document.querySelectorAll("#options *[data-option][id^='editor.']")
-				.map(function(option) { return option.id })
-		);
 	});
 
 	hotkeyRerouter.setState(true);
@@ -270,6 +272,10 @@ function acmeEventListener(event) {
 		case "tabSize":
 			CodeMirror.setOption("indentUnit", value);
 			break;
+		case "fontSize":
+		case "fontName":
+			updateFontStyle();
+			return;
 		case "theme":
 			// use non-localized "default" internally
 			if (!value || value == "default" || value == t("defaultTheme")) {
@@ -296,6 +302,13 @@ function acmeEventListener(event) {
 			return;
 	}
 	CodeMirror.setOption(option, value);
+}
+
+// Update font css
+function updateFontStyle() {
+	var name = prefs.get("editor.fontName");
+	var size = parseInt(prefs.get("editor.fontSize"));
+	document.getElementById('font-style').innerHTML = '.CodeMirror { font-size: ' + size.toString() + 'px !important;font-family: "' + name + '" !important; line-height: ' + (size + 6).toString() + 'px !important; }';
 }
 
 // replace given textarea with the CodeMirror editor
