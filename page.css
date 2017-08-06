@@ -78,6 +78,16 @@ body {
 	margin: 10px 5px;
 	width: calc(100% - 10px);
 }
+.page-content .mdl-card .mdl-card--expand {
+	flex-grow: 0;
+	-webkit-flex-grow: 0;
+	-ms-flex-positive: 0;
+}
+.page-content .mdl-card .mdl-card__supporting-text {
+	flex-grow: 1;
+	-webkit-flex-grow: 1;
+	-ms-flex-positive: 1;
+}
 @media screen and (max-width: 1024px) {
 	.mdl-layout__header {
 		display: block;
