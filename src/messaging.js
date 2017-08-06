@@ -112,12 +112,6 @@ function getDomainName(href){
 	return l.hostname;
 }
 
-function getActiveTab(callback) {
-	browser.tabs.query({currentWindow: true, active: true}).then(function(tabs) {
-		callback(tabs[0]);
-	});
-}
-
 function getActiveTabRealURL(callback) {
 	getActiveTab(function(tab) {
 		getTabRealURL(tab, callback);

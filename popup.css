@@ -14,21 +14,26 @@ a, a:visited {
 .section-spacer {
 	flex-grow: 1;
 }
-
-body > DIV {
-	padding-bottom: 2px;
+.tabs-container > section {
+	display: none;
+	height: 460px;
+	box-sizing: border-box;
 }
-body > DIV:last-of-type,
-body.blocked > DIV {
-	border-bottom: none;
+body.unavailable #unavailable {
+	display: block;	
+}
+body.zerostyles #zerostyles {
+	display: block;	
+}
+body.have-styles #styles {
+	display: block;	
 }
 #installed {
 	background-color: #fcfcfc;
 	margin-top: 1px;
 	margin-bottom: 0;
 	padding-top: 0;
-	height: 400px;
-	overflow-y: scroll;
+	overflow-y: auto;
 	overflow-x: hidden;
 }
 #installed .mdl-list__item {
@@ -64,8 +69,15 @@ body.blocked > DIV {
 }
 
 #zerostyles, #unavailable {
-	height: 366px;
+	font-size: 16px;
+	font-weight: 500;
+	font-style: normal;
+	font-stretch: normal;
+	text-align: center;
+	color: #2c3e50;
+	padding: 200px 25px;
 }
+
 #sitename{
 	height:42px;
 	padding-left: 10px;
@@ -104,23 +116,6 @@ body.blocked > DIV {
 	display: table;
 	content: "";
 	clear: both;
-}
-
-#nostyles, #unavailable-message{
-	height: 57px;
-	font-size: 16px;
-	font-weight: 500;
-	font-style: normal;
-	font-stretch: normal;
-	text-align: center;
-	color: #2c3e50;
-	padding:25px;
-	margin-top: 130px;
-	margin-bottom: 213px;
-}
-#unavailable-message{
-	display: block;
-	margin: 0;
 }
 
 .tabs-container .notification{
@@ -204,26 +199,7 @@ body.blocked > DIV {
 	width: auto;
 }
 
-/**< zero styles **/
-#zerostyles, #unavailable{
-	font-size: 16px;
-	font-weight: 500;
-	font-style: normal;
-	font-stretch: normal;
-	text-align: center;
-	color: #2c3e50;
-	padding:25px;
-	position:relative;
-	padding-left:23px;
-	padding-right:23px;
-}
-
-#zerostyles .message,
-#unavailable .message {
-	margin-top:130px;
-}
-
-#chose_style, #create_style {
+#create_style {
 	position:absolute;
 	left:67px;
 	font-size: 14px;
@@ -242,4 +218,3 @@ body.blocked > DIV {
 	top: 10px;
 	right: 10px
 }
-/** zero styles >**/

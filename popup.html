@@ -38,21 +38,17 @@
 <div id="sitename">firefoxcn.net</div>
 <a id="getFromUserstyle" target="_blank"></a>
 <div class="tabs-container">
-    <section id="tab-item-installed" class="tab-item tab-installed">
+    <section id="styles" class="tab-item tab-installed">
         <div id="disable-all-container">
 			<div class="disable-all-lable" i18n-text="allStyles"></div>
 			<label class="mdl-switch" for="disable-all-checkbox">
 				<input type="checkbox" id="disable-all-checkbox" class="mdl-switch__input"/>
 			</label>
         </div>
-        <div id="unavailable" class="hide">
-			<div class="message" i18n-text="xStyleUnavailableForURL"></div>
-        </div>
-        <div id="zerostyles" class="hide">
-			<div class="message" i18n-text="popupHaveNoStyle"></div>
-        </div>
-        <ul id="installed" class="hide mdl-list"></ul>
+        <ul id="installed" class="mdl-list"></ul>
     </section>
+	<section id="unavailable" i18n-text="xStyleUnavailableForURL"></section>
+	<section id="zerostyles" i18n-text="popupHaveNoStyle"></section>
 </div>
 <div class="bottom_controls">
     <a id="write-new-style-link" class="add_style open-manage-link" href="/edit.html" target="_blank" tabindex="-1" i18n-text="openCreate"></a>

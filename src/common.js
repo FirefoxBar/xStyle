@@ -71,3 +71,10 @@ function canStyle(url) {
 	}
 	return true;
 }
+
+// Get Active Tab
+function getActiveTab(callback) {
+	browser.tabs.query({currentWindow: true, active: true}).then(function(tabs) {
+		callback(tabs[0]);
+	});
+}

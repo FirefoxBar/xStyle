@@ -1,56 +1,20 @@
-var ENABLED_CLASS = "enabled",
-DISABLED_CLASS = "disabled",
-ZERO_INSTALLED_CLASS = "zero-installed";
-UNAVAILABLE_CLASS = "unavailable";
+const ENABLED_CLASS = "enabled";
+const DISABLED_CLASS = "disabled";
+const ZERO_INSTALLED_CLASS = "zerostyles";
+const UNAVAILABLE_CLASS = "unavailable";
+const STYLES_CLASS = "have-styles";
 
 var writeStyleTemplate = document.createElement("a");
 writeStyleTemplate.className = "write-style-link";
 
-var installed = document.getElementById("installed");
+const installed = document.getElementById("installed");
+const body = document.getElementsByTagName('body')[0];
+const zeroStyles = document.getElementById("zerostyles");
+const unavailable = document.getElementById("unavailable");
+const disableAllCheckbox = document.getElementById("disable-all-checkbox");
 
 var menutype;
 var website;
-
-getActiveTab(updatePopUp);
-
-function getActiveTabPromise() {
-	return new Promise(function(resolve){
-		browser.tabs.query({currentWindow: true, active: true}).then(function(tabs) {
-			resolve(tabs[0]);
-		});
-	});
-}
-
-function getBodyEl(){
-	return document.body;
-}
-
-function getZeroStylesEl(){
-	return document.getElementById("zerostyles");
-}
-
-function getUnavailableEl(){
-	return document.getElementById("unavailable");
-}
-
-function getInstalledStylesEl(){
-	var installed = document.getElementById("installed");
-	if (installed){
-		getInstalledStylesEl = function(){
-			return installed;
-		}
-	}
-	return installed;
-}
-
-function getInstalledStylesTabContainer(){
-	var installedTab = document.getElementById("tab-item-installed");
-	return installedTab;
-}
-
-function getDisableAllCheckbox(){
-	return document.getElementById("disable-all-checkbox");
-}
 
 function sendDisableAll(value){
 	return new Promise(function(resolve){
@@ -73,24 +37,21 @@ function buildDomainForFiltering(url){
 	return parsed.protocol + "//" + parsed.hostname + "/";
 }
 
-getActiveTabPromise().then(function(currentTab){
-	if (currentTab.url.indexOf('about:') === 0) {
-		renderPageForUnavailable();
-	} else {
-		getInstalledStyleForDomain(currentTab.url).then(renderInstalledTab);
-	}
-});
 
-function renderPageForUnavailable() {
-	renderForAllCases();
-	getInstalledStylesTabContainer().classList.add(UNAVAILABLE_CLASS);
-	getUnavailableEl().classList.remove('hide');
-	getZeroStylesEl().classList.add('hide');
-	getInstalledStylesEl().classList.add('hide');
+function renderPageForAllCases(){
+	renderAllSwitch();
+	disableAllCheckbox.addEventListener('change', onDisableAllCheckboxChange);
 }
 
+// render for unavailable page
+function renderPageForUnavailable() {
+	renderPageForAllCases();
+	body.classList.add(UNAVAILABLE_CLASS);
+}
+
+// render for available page
 function renderInstalledTab(styles){
-	renderForAllCases();
+	renderPageForAllCases();
 	if (styles.length == 0){
 		renderPageForNoStyles();
 	} else {
@@ -98,16 +59,14 @@ function renderInstalledTab(styles){
 	}
 }
 
+// render for a page with no style
 function renderPageForNoStyles(){
-	getInstalledStylesTabContainer().classList.add(ZERO_INSTALLED_CLASS);
-	getZeroStylesEl().classList.remove('hide');
-	getInstalledStylesEl().classList.add('hide');
+	body.classList.add(ZERO_INSTALLED_CLASS);
 }
 
+// render for a page with styles
 function renderPageWithStyles(styles){
-	getInstalledStylesTabContainer().classList.remove(ZERO_INSTALLED_CLASS);
-	getZeroStylesEl().classList.add('hide');
-	getInstalledStylesEl().classList.remove('hide');
+	body.classList.add(STYLES_CLASS);
 	styles.forEach(function(style){
 		addStyleToInstalled(style);
 	});
@@ -130,7 +89,7 @@ function addStyleToInstalled(style){
 		componentHandler.upgradeElement(switcher, 'MaterialSwitch');
 		componentHandler.upgradeElement(switcher.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
 	}
-	getInstalledStylesEl().appendChild(el);
+	installed.appendChild(el);
 	return el;
 }
 
@@ -140,28 +99,23 @@ function installedStyleToElement(style){
 
 function renderAllSwitch(){
 	if (!isDisabledAll()){
-		getDisableAllCheckbox().checked = true;
-		getInstalledStylesEl().classList.remove("all-off");
-		getInstalledStylesEl().classList.add("all-on");
-		getBodyEl().classList.remove("all-off");
-		getBodyEl().classList.add("all-on");
+		disableAllCheckbox.checked = true;
+		installed.classList.remove("all-off");
+		installed.classList.add("all-on");
+		body.classList.remove("all-off");
+		body.classList.add("all-on");
 	}else{
-		getInstalledStylesEl().classList.remove("all-on");
-		getInstalledStylesEl().classList.add("all-off");
-		getBodyEl().classList.remove("all-on");
-		getBodyEl().classList.add("all-off");
+		installed.classList.remove("all-on");
+		installed.classList.add("all-off");
+		body.classList.remove("all-on");
+		body.classList.add("all-off");
 	}
 	//material
 	if (typeof(componentHandler) !== 'undefined') {
-		getDisableAllCheckbox().parentElement.classList.add('mdl-js-ripple-effect');
-		componentHandler.upgradeElement(getDisableAllCheckbox().parentElement, 'MaterialSwitch');
-		componentHandler.upgradeElement(getDisableAllCheckbox().parentElement.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
+		disableAllCheckbox.parentElement.classList.add('mdl-js-ripple-effect');
+		componentHandler.upgradeElement(disableAllCheckbox.parentElement, 'MaterialSwitch');
+		componentHandler.upgradeElement(disableAllCheckbox.parentElement.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
 	}
-}
-
-function renderForAllCases(){
-	renderAllSwitch();
-	getDisableAllCheckbox().addEventListener('change', onDisableAllCheckboxChange);
 }
 
 function onDisableAllCheckboxChange(){
@@ -189,7 +143,7 @@ function onStyleDeleted(style){
 		var old = document.getElementById("installed-style-"+style.id);
 		var parent = old.parentNode;
 		parent.removeChild(old);
-		if (getInstalledStylesEl().childNodes.length == 0){
+		if (installed.childNodes.length == 0){
 			renderPageForNoStyles();
 		}
 	}
@@ -276,6 +230,15 @@ browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 				handleDelete(request.id);
 				break;
 		}
+	}
+});
+
+getActiveTab(function(tab) {
+	updatePopUp(tab);
+	if (canStyle(tab.url)) {
+		getInstalledStyleForDomain(tab.url).then(renderInstalledTab);
+	} else {
+		renderPageForUnavailable();
 	}
 });
 
