@@ -163,9 +163,6 @@ class CrxBuild
 
         $crx = "$crxHeader$publicKeyDer$sig$zipFileContent";
         file_put_contents($crxFile, $crx);
-        if (PHP_SAPI == 'cli') {
-            echo "Crx file is created\n";
-        }
         openssl_pkey_free($this->_privateKey);
     }
 }
