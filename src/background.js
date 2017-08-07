@@ -176,7 +176,8 @@ browser.webRequest.onHeadersReceived.addListener(function(e) {
 // enable/disable auto update
 function toggleAutoUpdate(e) {
 	if (autoUpdateTimer === null && e) {
-		autoUpdateTimer = setInterval(autoUpdateStyles, 30 * 60 * 1000); // 30 mintunes
+		autoUpdateStyles();
+		autoUpdateTimer = setInterval(autoUpdateStyles, 4 * 60 * 60 * 1000); // 4 hours
 	}
 	if (autoUpdateTimer !== null && !e) {
 		clearInterval(autoUpdateTimer);

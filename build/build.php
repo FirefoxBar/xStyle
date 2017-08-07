@@ -50,7 +50,7 @@ echo "Sign firefox extension finished\n";
 //Add update files
 $fx_update = json_decode(file_get_contents('output/update.json'), 1);
 if (count($fx_update['addons'][$gecko_id]['updates']) > 2) {
-	unset($fx_update['addons'][$gecko_id]['updates'][0]);
+	array_splice($fx_update['addons'][$gecko_id]['updates'], 0, count($fx_update['addons'][$gecko_id]['updates']) - 2);
 }
 $fx_update['addons'][$gecko_id]['updates'][] = [
 	"version" => $version,
