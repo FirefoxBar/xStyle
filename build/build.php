@@ -1,6 +1,8 @@
 <?php
 define('EXTENSION_DIR', realpath(__DIR__ . '/..'));
+require('config.php');
 require('CrxBuild.php');
+require('XpiBuild.php');
 // Get version from README.md
 preg_match('/releases\/tag\/(.*?)\)/', file_get_contents(EXTENSION_DIR . '/README.md'), $matches);
 $version = $matches[1];
