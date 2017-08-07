@@ -1,0 +1,55 @@
+{
+	"name": "__MSG_extName__",
+	"short_name": "__MSG_extName__",
+	"version": "__version__",
+	"description": "__MSG_description__",
+	"homepage_url": "http://team.firefoxcn.net",
+	"manifest_version": 2,
+	"icons": {
+		"128": "images/128.png"
+	},
+	"permissions": [
+		"tabs",
+		"webNavigation",
+		"webRequest",
+		"webRequestBlocking",
+		"contextMenus",
+		"storage",
+		"downloads",
+		"*://*/*",
+		"clipboardWrite"
+	],
+	"content_security_policy": "script-src 'self'; object-src 'self'",
+	"background": {
+		"scripts": ["src/browser-polyfill.js", "src/common.js", "src/messaging.js", "src/storage.js", "src/background.js"]
+	},
+	"content_scripts": [
+		{
+			"matches": ["<all_urls>"],
+			"run_at": "document_start",
+			"all_frames": true,
+			"js": ["src/browser-polyfill.js", "src/inject/apply.js"]
+		},
+		{
+			"matches": ["http://userstyles.org/*", "https://userstyles.org/*", "http://*.firefoxcn.net/*", "https://*.firefoxcn.net/*", "https://*.github.io/*", "https://*.oschina.io/*"],
+			"run_at": "document_end",
+			"all_frames": false,
+			"js": ["src/browser-polyfill.js", "src/inject/install.js"]
+		},
+		{
+			"matches": ["https://login.microsoftonline.com/*", "https://ext.firefoxcn.net/*"],
+			"run_at": "document_start",
+			"all_frames": false,
+			"js": ["src/browser-polyfill.js", "src/inject/cloud.js"]
+		}
+	],
+	"update_url": "https://ext.firefoxcn.net/xstyle/install/update.xml",
+	"browser_action": {
+		"default_icon": {
+			"128": "images/128.png"
+		},
+		"default_title": "__MSG_extName__",
+		"default_popup": "popup.html"
+	},
+	"default_locale": "en"
+}
