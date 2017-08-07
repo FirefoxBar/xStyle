@@ -154,19 +154,24 @@ function parseUrl(url){
 }
 
 function updatePopUp(tab) {
-	website = getSiteName(tab.url);
-	updateSiteName(website);
-	updateCreateStyleLink(getSiteName(tab.url));
+	updateSiteName(tab.url);
+	updateCreateStyleLink(tab.url);
 }
 
-function updateCreateStyleLink(tabDomain){
-	var createNewStyleLink = document.getElementById('write-new-style-link');
-	createNewStyleLink.href += "?domain="+tabDomain;
+function updateCreateStyleLink(url){
+	if (canStyle(url)) {
+		var createNewStyleLink = document.getElementById('write-new-style-link');
+		createNewStyleLink.href += "?domain=" + getSiteName(url);
+	}
 }
 
-function updateSiteName(siteName){
-	document.getElementById('sitename').innerHTML = siteName;
-	document.getElementById('getFromUserstyle').href = "https://userstyles.org/styles/browse/all/" + siteName;
+function updateSiteName(url){
+	document.getElementById('sitename').innerHTML = getSiteName(url);
+	if (canStyle(url)) {
+		document.getElementById('getFromUserstyle').href = "https://userstyles.org/styles/browse/all/" + getSiteName(url);
+	} else {
+		document.getElementById('getFromUserstyle').style.display = 'none';
+	}
 }
 
 function getSiteName(tabUrl){

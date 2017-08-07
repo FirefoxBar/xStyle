@@ -49,6 +49,9 @@ $hash = $xpi->sign();
 echo "Sign firefox extension finished\n";
 //Add update files
 $fx_update = json_decode(file_get_contents('output/update.json'), 1);
+if (count($fx_update['addons'][$gecko_id]['updates']) > 2) {
+	unset($fx_update['addons'][$gecko_id]['updates'][0]);
+}
 $fx_update['addons'][$gecko_id]['updates'][] = [
 	"version" => $version,
 	"update_link" => "https://github.com/FirefoxBar/xStyle/releases/download/$version/xstyle-$version-signed.xpi",
@@ -62,3 +65,4 @@ $cr_update = "<?xml version='1.0' encoding='UTF-8'?>
   </app>
 </gupdate>";
 file_put_contents('output/update.xml', $cr_update);
+echo "Created update files\n";
