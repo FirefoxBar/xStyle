@@ -48,20 +48,16 @@ function processRawStylesResponse(resp){
 function updateIcon(tab, styles) {
 	// while NTP is still loading only process the request for its main frame with a real url
 	// (but when it's loaded we should process style toggle requests from popups, for example)
-	if (tab.status != "complete") {
-		return;
-	}
 	var icon = "images/128.png";
 	if (prefs.get('disableAll')) {
 		icon = "images/128w.png";
 	}
 	if (!canStyle(tab.url)) {
 		browser.browserAction.setIcon({
-			path: {
-				128: icon
-			},
+			path: { 128: icon },
 			tabId: tab.id
 		});
+		browser.browserAction.setBadgeText({text: "", tabId: tab.id});
 		return;
 	}
 	if (styles) {

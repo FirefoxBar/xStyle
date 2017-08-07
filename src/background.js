@@ -122,24 +122,14 @@ if (isMobile) {
 	});
 }
 
-// catch direct URL hash modifications not invoked via HTML5 history API
-var tabUrlHasHash = {};
 browser.tabs.onUpdated.addListener(function(tabId, info, tab) {
 	if (info.status == "loading" && info.url) {
-		if (info.url.indexOf('#') > 0) {
-			tabUrlHasHash[tabId] = true;
-		} else if (tabUrlHasHash[tabId]) {
-			delete tabUrlHasHash[tabId];
+		if (canStyle(info.url)) {
+			webNavigationListener("styleReplaceAll", {tabId: tabId, frameId: 0, url: info.url});
 		} else {
-			// do nothing since the tab neither had # before nor has # now
-			return;
+			updateIcon(tab);
 		}
-		webNavigationListener("styleReplaceAll", {tabId: tabId, frameId: 0, url: info.url});
 	}
-});
-
-browser.tabs.onRemoved.addListener(function(tabId, info) {
-	delete tabUrlHasHash[tabId];
 });
 
 browser.tabs.onReplaced.addListener(function (addedTabId, removedTabId) {
