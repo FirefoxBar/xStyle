@@ -1049,8 +1049,8 @@ function init() {
 		// default to enabled
 		document.getElementById("enabled").checked = true;
 		document.getElementById("autoUpdate").parentElement.style.display = 'none'; // hide auto update
-		tE("heading", "addStyleTitle");
-		tE("contentHeading", "addStyleTitle");
+		document.getElementById("heading").innerHTML = t("addStyleTitle");
+		document.getElementById("contentHeading").innerHTML = t("addStyleTitle");
 		initHooks();
 		//material
 		if (typeof(componentHandler) !== 'undefined') {
@@ -1062,8 +1062,8 @@ function init() {
 		return;
 	}
 	// This is an edit
-	tE("contentHeading", "editStyleHeading", null, false);
-	tE("heading", "editStyleHeading", null, false);
+	document.getElementById("contentHeading").innerHTML = t("editStyleHeading");
+	document.getElementById("heading").innerHTML = t("editStyleHeading");
 	requestStyle();
 	function requestStyle() {
 		browser.runtime.sendMessage({method: "getStyles", id: params.id}).then(function callback(styles) {
@@ -1295,7 +1295,8 @@ function saveComplete(style) {
 	// Go from new style URL to edit style URL
 	if (location.href.indexOf("id=") == -1) {
 		history.replaceState({}, document.title, "edit.html?id=" + style.id);
-		tE("heading", "editStyleHeading", null, false);
+		document.getElementById("contentHeading").innerHTML = t("editStyleHeading");
+		document.getElementById("heading").innerHTML = t("editStyleHeading");
 	}
 	showToast(t('saveComplete'));
 	updateTitle();
