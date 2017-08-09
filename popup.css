@@ -30,11 +30,12 @@ body.have-styles #styles {
 }
 #installed {
 	background-color: #fcfcfc;
-	margin-top: 1px;
+	margin-top: 0;
 	margin-bottom: 0;
 	padding-top: 0;
 	overflow-y: auto;
 	overflow-x: hidden;
+	height: calc(100% - 60px);
 }
 #installed .mdl-list__item {
 	padding: 8px;
@@ -99,6 +100,10 @@ body.all-off #installed {
 	box-sizing: border-box;
 }
 
+.bottom_controls {
+	z-index: 99;
+	position: relative;
+}
 .bottom_controls .manage_styles, .bottom_controls .add_style {
 	display:block;
 	width: 50%;
