@@ -1,10 +1,25 @@
 # xStyle
 
-A user style manager for Firefox build on WebExtension. Based on Stylish development.
-
-## Releases
-
 [![GitHub release](https://img.shields.io/github/release/FirefoxBar/xStyle.svg)](https://github.com/FirefoxBar/xStyle/releases)
+[![license](https://img.shields.io/github/license/FirefoxBar/xStyle.svg)](https://github.com/FirefoxBar/xStyle)
+
+A user style manager for Firefox and Chrome. Build on WebExtension. Lastest release is [1.3.4](https://github.com/FirefoxBar/xStyle/releases/tag/1.3.4)
+
+For more documentation, Please visit [wiki](https://github.com/FirefoxBar/xStyle/wiki)
+
+## Requirements
+
+* Firefox 49+
+
+* Chrome
+
+## Installation on Chrome (Windows)
+
+You should download [Administrators Policy Templates](http://www.chromium.org/administrators/policy-templates) and install it.
+
+Then, allow Chrome to install local plugins, add the ID of this extension(`dbbjndgnfkbjmciadekfomemdiledmam`) to the whitelist.
+
+For more information, see [kafan](http://bbs.kafan.cn/thread-1689765-1-1.html) and [tieba](http://tieba.baidu.com/p/3091171066)
 
 ## Licenses
 
