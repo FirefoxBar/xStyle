@@ -1,12 +1,12 @@
 # xStyle
 
-A user style manager for Firefox build on WebExtension. Based on stylish development.
+A user style manager for Firefox build on WebExtension. Based on Stylish development.
 
 ## Releases
 
-Lastest: [1.3.4](https://github.com/FirefoxBar/xStyle/releases/tag/1.3.4)
+[![GitHub release](https://img.shields.io/github/release/FirefoxBar/xStyle.svg)](https://github.com/FirefoxBar/xStyle/releases)
 
-## License
+## Licenses
 
 For copyright status of the "third-party/codemirror" directory, see [third-party/codemirror/LICENSE](third-party/codemirror/LICENSE).
 
