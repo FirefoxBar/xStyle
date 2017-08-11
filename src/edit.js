@@ -1345,77 +1345,67 @@ function fromMozillaFormat() {
 	function doImport() {
 		var replaceOldStyle = this.name == "import-replace";
 		popup.querySelector(".close-icon").click();
-		var mozStyle = trimNewLines(popup.codebox.getValue());
-		var parser = new exports.css.Parser(), lines = mozStyle.split("\n");
-		var sectionStack = [{code: "", start: {line: 1, col: 1}}];
-		var errors = "", oldSectionCount = editors.length;
+		var mozStyle = trimNewLines(popup.codebox.getValue().replace("@namespace url(http://www.w3.org/1999/xhtml);", ""));
 		var firstAddedCM;
-
-		parser.addListener("startdocument", function(e) {
-			var outerText = getRange(sectionStack.last.start, (--e.col, e));
-			var gapComment = outerText.match(/(\/\*[\s\S]*?\*\/)[\s\n]*$/);
-			var section = {code: "", start: backtrackTo(this, exports.css.Tokens.LBRACE, "end")};
-			// move last comment before @-moz-document inside the section
-			if (gapComment && !gapComment[1].match(/\/\*\s*AGENT_SHEET\s*\*\//)) {
-				section.code = gapComment[1] + "\n";
-				outerText = trimNewLines(outerText.substring(0, gapComment.index));
-			}
-			if (outerText) {
-				sectionStack.last.code = outerText;
-				doAddSection(sectionStack.last);
-				sectionStack.last.code = "";
-			}
-			e.functions.forEach(function(f) {
-				var m = f.match(/^(url|url-prefix|domain|regexp)\((['"]?)(.+?)\2?\)$/);
+		// split by @-moz-document
+		var sections = mozStyle.split('@-moz-document ');
+		for (let f of sections) {
+			var section = {
+				"urls": [],
+				"urlPrefixes": [],
+				"domains": [],
+				"regexps": [],
+				"code": ""
+			};
+			while (true) {
+				f = trimNewLines(trimNewLines(f).replace(/^,/, ''));
+				var m = f.match(/^(url|url-prefix|domain|regexp)\((['"]?)(.+?)\2\)/);
+				if (!m) {
+					break;
+				}
+				f = f.replace(m[0], '');
 				var aType = CssToProperty[m[1]];
 				var aValue = aType != "regexps" ? m[3] : m[3].replace(/\\\\/g, "\\");
-				(section[aType] = section[aType] || []).push(aValue);
-			});
-			sectionStack.push(section);
-		});
-
-		parser.addListener("enddocument", function(e) {
-			var end = backtrackTo(this, exports.css.Tokens.RBRACE, "start");
-			var section = sectionStack.pop();
-			section.code += getRange(section.start, end);
-			sectionStack.last.start = (++end.col, end);
-			doAddSection(section);
-		});
-
-		parser.addListener("endstylesheet", function() {
-			// add nonclosed outer sections (either broken or the last global one)
-			var endOfText = {line: lines.length, col: lines.last.length + 1};
-			sectionStack.last.code += getRange(sectionStack.last.start, endOfText);
-			sectionStack.forEach(doAddSection);
-
-			delete maximizeCodeHeight.stats;
-			editors.forEach(function(cm) {
-				maximizeCodeHeight(cm.getSection(), cm == editors.last);
-			});
-
-			makeSectionVisible(firstAddedCM);
-			firstAddedCM.focus();
-
-			if (errors) {
-				showHelp(t("issues"), errors);
+				if (section[aType].indexOf(aValue) < 0) {
+					section[aType].push(aValue);
+				}
 			}
-		});
-
-		parser.addListener("error", function(e) {
-			errors += e.line + ":" + e.col + " " + e.message.replace(/ at line \d.+$/, "") + "<br>";
-		});
-
-		parser.parse(mozStyle);
-
-		function getRange(start, end) {
-			if (start.line == end.line) {
-				return lines[start.line - 1].substr(start.col - 1, end.col - start.col + 1).trim();
-			} else {
-				return trimNewLines(lines[start.line - 1].substr(start.col - 1) + "\n" +
-					lines.slice(start.line, end.line - 1).join("\n") +
-					"\n" + lines[end.line - 1].substring(0, end.col - 1));
+			// split this stype
+			var index = 0;
+			var leftCount = 0;
+			while (index < f.length) {
+				// ignore comments
+				if (f[index] === '/' && f[index + 1] === '*') {
+					index += 2;
+					while (f[index] !== '*' || f[index + 1] !== '/') {
+						index++;
+					}
+					index += 2;
+				}
+				if (f[index] === '{') {
+					leftCount++;
+				}
+				if (f[index] === '}') {
+					leftCount--;
+				}
+				index++;
+				if (leftCount <= 0) {
+					break;
+				}
+			}
+			section.code = trimNewLines(f.substr(1, index - 2));
+			doAddSection(section);
+			if (index < f.length) {
+				doAddSection({
+					"urls": [],
+					"urlPrefixes": [],
+					"domains": [],
+					"regexps": [],
+					"code": trimNewLines(f.substr(index))
+				});
 			}
 		}
+
 		function doAddSection(section) {
 			if (!firstAddedCM) {
 				if (!initFirstSection(section)) {
@@ -1431,9 +1421,7 @@ function fromMozillaFormat() {
 		}
 		// do onetime housekeeping as the imported text is confirmed to be a valid style
 		function initFirstSection(section) {
-			// skip adding the first global section when there's no code/comments
-			if (!section.code.replace("@namespace url(http://www.w3.org/1999/xhtml);", "") /* ignore boilerplate NS */
-					.replace(/[\s\n]/g, "")) { /* ignore all whitespace including new lines */
+			if (!section.code) {
 				return false;
 			}
 			if (replaceOldStyle) {
@@ -1447,14 +1435,6 @@ function fromMozillaFormat() {
 				}
 			}
 			return true;
-		}
-	}
-	function backtrackTo(parser, tokenType, startEnd) {
-		var tokens = parser._tokenStream._lt;
-		for (var i = tokens.length - 2; i >= 0; --i) {
-			if (tokens[i].type == tokenType) {
-				return {line: tokens[i][startEnd+"Line"], col: tokens[i][startEnd+"Col"]};
-			}
 		}
 	}
 	function trimNewLines(s) {
