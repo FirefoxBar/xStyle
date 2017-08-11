@@ -1129,6 +1129,7 @@ function initHooks() {
 	document.getElementById("to-mozilla").addEventListener("click", showMozillaFormat, false);
 	document.getElementById("from-mozilla").addEventListener("click", fromMozillaFormat);
 	document.getElementById("beautify").addEventListener("click", beautify);
+	document.getElementById("save-link").addEventListener("click", save, false);
 	document.getElementById("save-button").addEventListener("click", save, false);
 	document.getElementById("keyMap-help").addEventListener("click", showKeyMapHelp, false);
 	document.getElementById("lint-help").addEventListener("click", showLintHelp);

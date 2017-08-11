@@ -342,6 +342,9 @@
 	"retrieveBckp": {
 		"message": "从备份文件导入"
 	},
+	"save": {
+		"message": "保存"
+	},
 	"saveComplete": {
 		"message": "已保存"
 	},
