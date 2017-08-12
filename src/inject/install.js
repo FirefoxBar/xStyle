@@ -68,6 +68,7 @@ function styleInstallByCode(json) {
 		json.method = "saveStyle";
 		if (response.length != 0) {
 			json.id = response[0].id;
+			delete json.name;
 		}
 		browser.runtime.sendMessage(json).then(function(response) {
 			sendEvent("styleInstalled");
