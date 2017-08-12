@@ -5,7 +5,7 @@
 // parse mozilla format, return sections
 function parseMozillaFormat(css) {
 	var allSection = [];
-	var mozStyle = trimNewLines(css.replace("@namespace url(http://www.w3.org/1999/xhtml);", ""));
+	var mozStyle = trimNewLines(css.replace(/@namespace url\((.*?)\);/g, ""));
 	// split by @-moz-document
 	var sections = mozStyle.split('@-moz-document ');
 	for (let f of sections) {
@@ -52,17 +52,21 @@ function parseMozillaFormat(css) {
 				break;
 			}
 		}
-		section.code = trimNewLines(f.substr(1, index - 2));
-		addSection(section);
-		if (index < f.length) {
-			addSection({
-				"urls": [],
-				"urlPrefixes": [],
-				"domains": [],
-				"regexps": [],
-				"code": trimNewLines(f.substr(index))
-			});
+		if (f[0] === '{') {
+			section.code = trimNewLines(f.substr(1, index - 2));
+			if (index < f.length) {
+				addSection(style, {
+					"urls": [],
+					"urlPrefixes": [],
+					"domains": [],
+					"regexps": [],
+					"code": trimNewLines(f.substr(index))
+				});
+			}
+		} else {
+			section.code = trimNewLines(f);
 		}
+		addSection(style, section);
 	}
 	return allSection;
 	function addSection(section) {
