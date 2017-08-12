@@ -74,7 +74,7 @@ function usoInstall () {
 						"sections": parseMozillaFormat(results[0])
 					};
 					styleInstallByCode(style);
-				})
+				});
 			});
 		}
 	}

@@ -186,14 +186,42 @@ function toggleAutoUpdate(e) {
 }
 function autoUpdateStyles() {
 	var checkUpdateFullCode = function(style) {
+		if (!style.updateUrl) {
+			return;
+		}
 		getURL(style.updateUrl).then(function(responseText) {
 			try {
 				var serverJson = JSON.parse(responseText);
+				if (!codeIsEqual(style.sections, serverJson.sections)) {
+					update(style, serverJson);
+				}
 			} catch (e) {
-				return;
-			}
-			if (!codeIsEqual(style.sections, serverJson.sections)) {
-				update(style, serverJson);
+				var sections = parseMozillaFormat(responseText);
+				if (!codeIsEqual(style.sections, sections)) {
+					if (style.md5Url) {
+						getURL(style.md5Url).then(function(md5) {
+							update(style, {
+								"name": style.name,
+								"updateUrl": style.updateUrl,
+								"md5Url": style.md5Url || null,
+								"url": style.url || null,
+								"author": style.author || null,
+								"originalMd5": md5,
+								"sections": parseMozillaFormat(responseText)
+							});
+						});
+					} else {
+						update(style, {
+							"name": style.name,
+							"updateUrl": style.updateUrl,
+							"md5Url": style.md5Url || null,
+							"url": style.url || null,
+							"author": style.author || null,
+							"originalMd5": null,
+							"sections": parseMozillaFormat(responseText)
+						});
+					}
+				}
 			}
 		});
 	};
