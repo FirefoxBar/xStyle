@@ -23,47 +23,6 @@ if (typeof(getParams) !== 'function') {
 	}
 }
 
-if (getIdUrl()) {
-	browser.runtime.sendMessage({method: "getStyles", url: getIdUrl() || location.href}).then(function(response) {
-		if (response.length == 0) {
-			sendEvent("styleCanBeInstalled");
-		} else {
-			var installedStyle = response[0];
-			// maybe an update is needed
-			// use the md5 if available
-			if (getMd5Url() && installedStyle.md5Url && installedStyle.originalMd5) {
-				getResource(getMd5Url(), function(md5) {
-					if (md5 == installedStyle.originalMd5) {
-						sendEvent("styleAlreadyInstalled", {updateUrl: installedStyle.updateUrl});
-					} else {
-						sendEvent("styleCanBeUpdated", {updateUrl: installedStyle.updateUrl});
-					}
-				});
-			} else {
-				getResource(getCodeUrl(), function(code) {
-					// this would indicate a failure (a style with settings?).
-					if (code == null) {
-						sendEvent("styleCanBeUpdated", {updateUrl: installedStyle.updateUrl});
-					}
-					var json = JSON.parse(code);
-					if (json.sections.length == installedStyle.sections.length) {
-						if (json.sections.every(function(section) {
-							return installedStyle.sections.some(function(installedSection) {
-								return sectionsAreEqual(section, installedSection);
-							});
-						})) {
-							// everything's the same
-							sendEvent("styleAlreadyInstalled", {updateUrl: installedStyle.updateUrl});
-							return;
-						};
-					}
-					sendEvent("styleCanBeUpdated", {updateUrl: installedStyle.updateUrl});
-				});
-			}
-		}
-	});
-}
-
 function sectionsAreEqual(a, b) {
 	if (a.code != b.code) {
 		return false;
@@ -97,9 +56,6 @@ function sendEvent(type, data) {
 
 function styleInstall () {
 	var styleName = getMeta('xstyle-name');
-	if (!styleName && window.location.href.indexOf('userstyles.org/styles') >= 0) {
-		styleName = document.title.match(/(.*?)\|/)[1].trim();
-	}
 	if (confirm(browser.i18n.getMessage('styleInstall', [styleName]))) {
 		getResource(getCodeUrl(), function(code) {
 			styleInstallByCode(JSON.parse(code));
@@ -118,10 +74,9 @@ function styleInstallByCode(json) {
 		});
 	});
 }
-document.addEventListener("stylishInstall", styleInstall, false);
 document.addEventListener("xstyleInstall", styleInstall, false);
-document.addEventListener("stylishUpdate", styleInstall, false);
-// For a special website
+
+// For open page
 if (window.location.href.indexOf('https://ext.firefoxcn.net/xstyle/install/open.html') === 0) {
 	var params = getParams();
 	if (params.code) {

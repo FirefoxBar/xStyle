@@ -1346,65 +1346,11 @@ function fromMozillaFormat() {
 	function doImport() {
 		var replaceOldStyle = this.name == "import-replace";
 		popup.querySelector(".close-icon").click();
-		var mozStyle = trimNewLines(popup.codebox.getValue().replace("@namespace url(http://www.w3.org/1999/xhtml);", ""));
+		var mozStyle = trimNewLines(popup.codebox.getValue());
 		var firstAddedCM;
-		// split by @-moz-document
-		var sections = mozStyle.split('@-moz-document ');
-		for (let f of sections) {
-			var section = {
-				"urls": [],
-				"urlPrefixes": [],
-				"domains": [],
-				"regexps": [],
-				"code": ""
-			};
-			while (true) {
-				f = trimNewLines(trimNewLines(f).replace(/^,/, ''));
-				var m = f.match(/^(url|url-prefix|domain|regexp)\((['"]?)(.+?)\2\)/);
-				if (!m) {
-					break;
-				}
-				f = f.replace(m[0], '');
-				var aType = CssToProperty[m[1]];
-				var aValue = aType != "regexps" ? m[3] : m[3].replace(/\\\\/g, "\\");
-				if (section[aType].indexOf(aValue) < 0) {
-					section[aType].push(aValue);
-				}
-			}
-			// split this stype
-			var index = 0;
-			var leftCount = 0;
-			while (index < f.length) {
-				// ignore comments
-				if (f[index] === '/' && f[index + 1] === '*') {
-					index += 2;
-					while (f[index] !== '*' || f[index + 1] !== '/') {
-						index++;
-					}
-					index += 2;
-				}
-				if (f[index] === '{') {
-					leftCount++;
-				}
-				if (f[index] === '}') {
-					leftCount--;
-				}
-				index++;
-				if (leftCount <= 0) {
-					break;
-				}
-			}
-			section.code = trimNewLines(f.substr(1, index - 2));
-			doAddSection(section);
-			if (index < f.length) {
-				doAddSection({
-					"urls": [],
-					"urlPrefixes": [],
-					"domains": [],
-					"regexps": [],
-					"code": trimNewLines(f.substr(index))
-				});
-			}
+		var sections = parseMozillaFormat(mozStyle);
+		for (let s of sections) {
+			doAddSection(s);
 		}
 
 		function doAddSection(section) {
