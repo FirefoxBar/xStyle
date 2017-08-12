@@ -79,9 +79,12 @@ function getActiveTab(callback) {
 	});
 }
 
+function trimNewLines(s) {
+	return s.replace(/^[\s\n]+/, "").replace(/[\s\n]+$/, "");
+}
 
 function parseMozillaFormat(css) {
-	var allSection = {};
+	var allSection = [];
 	var mozStyle = trimNewLines(css.replace("@namespace url(http://www.w3.org/1999/xhtml);", ""));
 	// split by @-moz-document
 	var sections = mozStyle.split('@-moz-document ');
@@ -142,9 +145,6 @@ function parseMozillaFormat(css) {
 		}
 	}
 	return allSection;
-	function trimNewLines(s) {
-		return s.replace(/^[\s\n]+/, "").replace(/[\s\n]+$/, "");
-	}
 	function addSection(section) {
 		// don't add empty sections
 		if (!(section.code || section.urls || section.urlPrefixes || section.domains || section.regexps)) {

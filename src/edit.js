@@ -1384,9 +1384,6 @@ function fromMozillaFormat() {
 			return true;
 		}
 	}
-	function trimNewLines(s) {
-		return s.replace(/^[\s\n]+/, "").replace(/[\s\n]+$/, "");
-	}
 }
 
 function showAppliesToHelp() {
