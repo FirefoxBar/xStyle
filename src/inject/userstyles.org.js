@@ -3,10 +3,13 @@ browser.runtime.sendMessage({method: "getStyles", url: getIdUrl() || location.hr
 		sendEvent("styleCanBeInstalled");
 	} else {
 		var installedStyle = response[0];
+		if (installedStyle.updateUrl !== null && installedStyle.updateUrl.includes('?')) {
+			sendEvent("styleCanBeUpdated", {updateUrl: installedStyle.updateUrl});
+		}
 		// maybe an update is needed
 		// use the md5 if available
 		if (getMd5Url() && installedStyle.md5Url && installedStyle.originalMd5) {
-			getResource(getMd5Url(), function(md5) {
+			getURL(getMd5Url()).then(function(md5) {
 				if (md5 == installedStyle.originalMd5) {
 					sendEvent("styleAlreadyInstalled", {updateUrl: installedStyle.updateUrl});
 				} else {
@@ -14,7 +17,7 @@ browser.runtime.sendMessage({method: "getStyles", url: getIdUrl() || location.hr
 				}
 			});
 		} else {
-			getResource(getCodeUrl(), function(code) {
+			getURL(getCodeUrl()).then(function(code) {
 				// this would indicate a failure (a style with settings?).
 				if (code == null) {
 					sendEvent("styleCanBeUpdated", {updateUrl: installedStyle.updateUrl});
@@ -50,7 +53,7 @@ function usoInstall () {
 	});
 	if (confirm(browser.i18n.getMessage('styleInstall', [styleName]))) {
 		if (hasAdvanced()) {
-			getResource(getCodeUrl(), function(code) {
+			getURL(getCodeUrl()).then(function(code) {
 				var style = JSON.parse(code);
 				style.author = author;
 				styleInstallByCode(style);
@@ -58,20 +61,20 @@ function usoInstall () {
 		} else {
 			getAdvanced().then(function(advanced) {
 				var cssURL = 'https://userstyles.org/styles/' + style_id + '.css?' + advanced;
-				getResource(cssURL, function(code) {
+				var css = getURL(cssURL);
+				var md5 = getURL(getMd5Url());
+				Promise.all([css, md5]).then(function(results) {
 					var style = {
 						"name": styleName,
 						"updateUrl": 'https://userstyles.org/styles/' + style_id + '.css?' + advanced,
 						"md5Url": getMd5Url(),
 						"url": getIdUrl(),
 						"author": author,
-						"sections": parseMozillaFormat(code)
+						"originalMd5": results[1],
+						"sections": parseMozillaFormat(results[0])
 					};
-					getResource(getMd5Url(), function(md5) {
-						style.originalMd5 = md5;
-						styleInstallByCode(style);
-					});
-				});
+					styleInstallByCode(style);
+				})
 			});
 		}
 	}
