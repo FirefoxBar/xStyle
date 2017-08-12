@@ -185,27 +185,8 @@ function toggleAutoUpdate(e) {
 	}
 }
 function autoUpdateStyles() {
-	var download = function(url, callback) {
-		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function (aEvt) {
-			if (xhr.readyState == 4) {
-				if (xhr.status == 200) {
-					callback(xhr.responseText)
-				}
-			}
-		}
-		if (url.length > 2000) {
-			var parts = url.split("?");
-			xhr.open("POST", parts[0], true);
-			xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-			xhr.send(parts[1]);
-		} else {
-			xhr.open("GET", url, true);
-			xhr.send();
-		}
-	};
 	var checkUpdateFullCode = function(style) {
-		download(style.updateUrl, function(responseText) {
+		getURL(style.updateUrl).then(function(responseText) {
 			try {
 				var serverJson = JSON.parse(responseText);
 			} catch (e) {
@@ -217,7 +198,7 @@ function autoUpdateStyles() {
 		});
 	};
 	var checkUpdateMd5 = function(style, callback) {
-		download(style.md5Url, function(responseText) {
+		getURL(style.md5Url).then(function(responseText) {
 			if (responseText.length != 32) {
 				callback(false);
 				return;

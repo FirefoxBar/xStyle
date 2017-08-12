@@ -80,7 +80,7 @@ document.addEventListener("xstyleInstall", styleInstall, false);
 if (window.location.href.indexOf('https://ext.firefoxcn.net/xstyle/install/open.html') === 0) {
 	var params = getParams();
 	if (params.code) {
-		getResource(params.code, function(code) {
+		getURL(params.code).then(function(code) {
 			var json = JSON.parse(code);
 			if (confirm(browser.i18n.getMessage('styleInstall', [json.name]))) {
 				styleInstallByCode(json);
@@ -92,32 +92,4 @@ if (window.location.href.indexOf('https://ext.firefoxcn.net/xstyle/install/open.
 function getMeta(name) {
 	var e = document.querySelector("link[rel='" + name + "']");
 	return e ? e.getAttribute("href") : null;
-}
-
-function getResource(url, callback) {
-	if (url.indexOf("#") == 0) {
-		if (callback) {
-			callback(document.getElementById(url.substring(1)).innerText);
-		}
-		return;
-	}
-	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function() {
-		if (xhr.readyState == 4 && callback) {
-			if (xhr.status >= 400) {
-				callback(null);
-			} else {
-				callback(xhr.responseText);
-			}
-		}
-	};
-	if (url.length > 2000) {
-		var parts = url.split("?");
-		xhr.open("POST", parts[0], true);
-		xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-		xhr.send(parts[1]);
-	} else {
-		xhr.open("GET", url, true);
-		xhr.send();
-	}
 }

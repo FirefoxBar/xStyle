@@ -292,41 +292,19 @@ function checkUpdate(element, callback, isNoToast) {
 }
 
 function checkUpdateFullCode(url, forceUpdate, successCallback, failureCallback) {
-	download(url, function(responseText) {
+	getURL(url).then(function(responseText) {
 		successCallback(forceUpdate, JSON.parse(responseText));
-	}, failureCallback);
+	}).catch(failureCallback);
 }
 
 function checkUpdateMd5(originalMd5, md5Url, successCallback, failureCallback) {
-	download(md5Url, function(responseText) {
+	getURL(md5Url).then(function(responseText) {
 		if (responseText.length != 32) {
 			failureCallback(-1);
 			return;
 		}
 		successCallback(responseText != originalMd5);
-	}, failureCallback);
-}
-
-function download(url, successCallback, failureCallback) {
-	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function (aEvt) {
-		if (xhr.readyState == 4) {
-			if (xhr.status == 200) {
-				successCallback(xhr.responseText)
-			} else {
-				failureCallback(xhr.status);
-			}
-		}
-	}
-	if (url.length > 2000) {
-		var parts = url.split("?");
-		xhr.open("POST", parts[0], true);
-		xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-		xhr.send(parts[1]);
-	} else {
-		xhr.open("GET", url, true);
-		xhr.send();
-	}
+	}).catch(failureCallback);
 }
 
 function handleNeedsUpdate(needsUpdate, id, serverJson, isNoToast) {

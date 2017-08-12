@@ -82,3 +82,27 @@ function getActiveTab(callback) {
 function trimNewLines(s) {
 	return s.replace(/^[\s\n]+/, "").replace(/[\s\n]+$/, "");
 }
+
+function getURL(url, isPost) {
+	return new Promise(function(resolve, fail) {
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState == 4 && callback) {
+				if (xhr.status >= 400) {
+					fail();
+				} else {
+					resolve(xhr.responseText);
+				}
+			}
+		};
+		if (url.length > 2000 || isPost) {
+			var parts = url.split("?");
+			xhr.open("POST", parts[0], true);
+			xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+			xhr.send(parts[1]);
+		} else {
+			xhr.open("GET", url, true);
+			xhr.send();
+		}
+	});
+}

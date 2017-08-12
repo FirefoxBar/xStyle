@@ -345,6 +345,12 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 		"b64": [btoa, atob],
 		"url": [encodeURIComponent, decodeURIComponent],
 		"requestWrapper": function(httpMethod, url, done) {
+			if (typeof(getURL) !== 'undefined') {
+				getURL(url, httpMethod === 'POST').then(done).catch(function() {
+					done(null);
+				});
+				return;
+			}
 			var xhr = new XMLHttpRequest();
 			xhr.onreadystatechange = function() {
 				if (xhr.readyState == 4 && done) {
