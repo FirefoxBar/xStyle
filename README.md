@@ -47,4 +47,4 @@ Copyright © 2005-2014 [Jason Barnabe](https://github.com/JasonBarnabe)
 
 Copyright © 2017 [FirefoxBar Team](http://team.firefoxcn.net)
 
-Open source under GPLv3.
+Open source under GPLv3 license.
