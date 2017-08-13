@@ -55,7 +55,7 @@ function parseMozillaFormat(css) {
 		if (f[0] === '{') {
 			section.code = trimNewLines(f.substr(1, index - 2));
 			if (index < f.length) {
-				addSection(style, {
+				addSection({
 					"urls": [],
 					"urlPrefixes": [],
 					"domains": [],
@@ -66,12 +66,12 @@ function parseMozillaFormat(css) {
 		} else {
 			section.code = trimNewLines(f);
 		}
-		addSection(style, section);
+		addSection(section);
 	}
 	return allSection;
 	function addSection(section) {
 		// don't add empty sections
-		if (!(section.code || section.urls || section.urlPrefixes || section.domains || section.regexps)) {
+		if (!section.code || (!section.urls && !section.urlPrefixes && !section.domains && !section.regexps)) {
 			return;
 		}
 		allSection.push(section);

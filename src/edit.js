@@ -8,9 +8,6 @@ var editors = []; // array of all CodeMirror instances
 var saveSizeOnClose;
 var useHistoryBack; // use browser history back when "back to manage" is clicked
 
-// direct & reverse mapping of @-moz-document keywords and internal property names
-var propertyToCss = {urls: "url", urlPrefixes: "url-prefix", domains: "domain", regexps: "regexp"};
-var CssToProperty = {"url": "urls", "url-prefix": "urlPrefixes", "domain": "domains", "regexp": "regexps"};
 
 // Chrome pre-34
 Element.prototype.matches = Element.prototype.matches || Element.prototype.webkitMatchesSelector;
