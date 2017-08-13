@@ -2,6 +2,7 @@
 require('config.php');
 define('OUTPUT_DIR', realpath(__DIR__ . '/../_locales') . '/');
 $language_list = ['en', 'zh_CN', 'zh_TW'];
+$placeholders = json_decode(file_get_contents('locales_placeholder.json'), 1);
 function fetchUrl($url) {
 	$ch = curl_init($url);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -21,7 +22,13 @@ foreach ($language_list as $v) {
 	do {
 		$language = json_decode(fetchUrl('https://www.transifex.com/api/2/project/xstyle/resource/messages/translation/' . $v . '/'), 1);
 	} while (empty($language));
-	file_put_contents(OUTPUT_DIR . $v . '/messages.json', str_replace('    ', "\t", $language['content']));
+	$content = json_decode($language['content'], 1);
+	ksort($content);
+	// Add placeholders
+	foreach ($placeholders as $kk => $vv) {
+		$content[$kk]['placeholders'] = $vv;
+	}
+	file_put_contents(OUTPUT_DIR . $v . '/messages.json', str_replace('    ', "\t", json_encode($content, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)));
 	echo "ok\n";
 }
 echo "All ok\n";

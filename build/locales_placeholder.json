@@ -1,0 +1,32 @@
+{
+	"cloudDeleteConfirm": {
+		"filename": {
+			"content": "$1"
+		}
+	},
+	"cloudImportConfirm": {
+		"filename": {
+			"content": "$1"
+		}
+	},
+	"editStyleTitle": {
+		"stylename": {
+			"content": "$1"
+		}
+	},
+	"styleInstall": {
+		"stylename": {
+			"content": "$1"
+		}
+	},
+	"styleUpdate": {
+		"stylename": {
+			"content": "$1"
+		}
+	},
+	"updateCheckFailBadResponseCode": {
+		"code": {
+			"content": "$1"
+		}
+	}
+}
