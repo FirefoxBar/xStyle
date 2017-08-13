@@ -87,7 +87,7 @@ function getURL(url, isPost) {
 	return new Promise(function(resolve, fail) {
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
-			if (xhr.readyState == 4 && callback) {
+			if (xhr.readyState == 4) {
 				if (xhr.status >= 400) {
 					fail();
 				} else {

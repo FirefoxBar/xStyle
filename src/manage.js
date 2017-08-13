@@ -98,10 +98,9 @@ function createStyleElement(style) {
 	e.querySelector(".enable").addEventListener("click", function(event) { enable(event, true); }, false);
 	e.querySelector(".disable").addEventListener("click", function(event) { enable(event, false); }, false);
 	if (style.updateUrl) {
-		e.querySelector(".update").addEventListener("click", doCheckUpdate, false);
+		e.querySelector(".update").addEventListener("click", doUpdate, false);
 		e.querySelector(".update").classList.remove('hidden');
 	}
-	e.querySelector(".update").addEventListener("click", doUpdate, false);
 	e.querySelector(".delete").addEventListener("click", doDelete, false);
 	//material
 	if (typeof(componentHandler) !== 'undefined') {

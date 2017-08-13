@@ -43,7 +43,7 @@ browser.runtime.sendMessage({method: "getStyles", url: getIdUrl() || location.hr
 function usoInstall () {
 	var md5_url = getMeta('stylish-md5-url');
 	var style_id = md5_url.match(/\/(\d+)\.md5/)[1];
-	var styleName = document.title.match(/(.*?)\|/)[1].trim();
+	var styleName = document.getElementById('stylish-description').innerHTML.trim();
 	// Get author
 	var author = null;
 	document.querySelectorAll('#left_information > div').forEach(function(e) {
@@ -53,12 +53,6 @@ function usoInstall () {
 	});
 	if (confirm(browser.i18n.getMessage('styleInstall', [styleName]))) {
 		if (hasAdvanced()) {
-			getURL(getCodeUrl()).then(function(code) {
-				var style = JSON.parse(code);
-				style.author = author;
-				styleInstallByCode(style);
-			});
-		} else {
 			getAdvanced().then(function(advanced) {
 				var cssURL = 'https://userstyles.org/styles/' + style_id + '.css?' + advanced;
 				var css = getURL(cssURL);
@@ -75,6 +69,12 @@ function usoInstall () {
 					};
 					styleInstallByCode(style);
 				});
+			});
+		} else {
+			getURL(getCodeUrl()).then(function(code) {
+				var style = JSON.parse(code);
+				style.author = author;
+				styleInstallByCode(style);
 			});
 		}
 	}
