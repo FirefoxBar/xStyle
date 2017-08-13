@@ -98,8 +98,8 @@ function createStyleElement(style) {
 	e.querySelector(".enable").addEventListener("click", function(event) { enable(event, true); }, false);
 	e.querySelector(".disable").addEventListener("click", function(event) { enable(event, false); }, false);
 	if (style.updateUrl) {
-		e.querySelector(".check-update").addEventListener("click", doCheckUpdate, false);
-		e.querySelector(".check-update").classList.remove('hidden');
+		e.querySelector(".update").addEventListener("click", doCheckUpdate, false);
+		e.querySelector(".update").classList.remove('hidden');
 	}
 	e.querySelector(".update").addEventListener("click", doUpdate, false);
 	e.querySelector(".delete").addEventListener("click", doDelete, false);
@@ -199,26 +199,7 @@ function doCheckUpdate(event) {
 	var styleid = getGlobalId(event);
 }
 
-function applyUpdateAll() {
-	var btnApply = document.getElementById("apply-all-updates");
-	btnApply.disabled = true;
-	setTimeout(function() {
-		btnApply.style.display = "none";
-		btnApply.disabled = false;
-	}, 1000);
-
-	document.querySelectorAll(".can-update .update").forEach(function(button) {
-		button.click();
-	});
-}
-
-function checkUpdateAll() {
-	var btnCheck = document.getElementById("check-all-updates");
-	var btnApply = document.getElementById("apply-all-updates");
-
-	btnCheck.disabled = true;
-	btnApply.classList.add("hidden");
-
+function updateAllStyles() {
 	var elements = document.querySelectorAll("[style-update-url]");
 	var toCheckCount = elements.length;
 	var updatableCount = 0;
@@ -240,104 +221,39 @@ function checkUpdateAll() {
 }
 
 function checkUpdate(element, callback, isNoToast) {
-	element.querySelector(".check-update .loading").style.display = "inline-block";
-	element.className = element.className.replace("checking-update", "").replace("no-update", "").replace("can-update", "") + " checking-update";
+	element.querySelector(".update .loading").style.display = "inline-block";
 	var id = element.getAttribute("style-id");
-	var url = element.getAttribute("style-update-url");
-	var md5Url = element.getAttribute("style-md5-url");
-	var originalMd5 = element.getAttribute("style-original-md5");
 
-	function handleSuccess(forceUpdate, serverJson) {
-		browser.runtime.sendMessage({method: "getStyles", id: id}).then(function(styles) {
-			var style = styles[0];
-			var needsUpdate = false;
-			if (!forceUpdate && codeIsEqual(style.sections, serverJson.sections)) {
-				handleNeedsUpdate("no", id, serverJson, isNoToast);
-			} else {
-				handleNeedsUpdate("yes", id, serverJson, isNoToast);
-				needsUpdate = true;
-			}
+	browser.runtime.sendMessage({method: "getStyles", "id": id}).then(function(response) {
+		var style = response[0];
+		if (!style.md5Url || !style.originalMd5) {
+			updateStyleFullCode(style);
 			if (callback) {
-				callback(needsUpdate);
+				callback(true);
 			}
-		});
-	}
-
-	function handleFailure(status) {
-		if (status == 0) {
-			handleNeedsUpdate(t('updateCheckFailServerUnreachable'), id, null, isNoToast);
 		} else {
-			handleNeedsUpdate(t('updateCheckFailBadResponseCode', [status]), id, null, isNoToast);
-		}
-		if (callback) {
-			callback(false);
-		}
-	}
-
-	if (!md5Url || !originalMd5) {
-		checkUpdateFullCode(url, false, handleSuccess, handleFailure)
-	} else {
-		checkUpdateMd5(originalMd5, md5Url, function(needsUpdate) {
-			if (needsUpdate) {
-				// If the md5 shows a change we will update regardless of whether the code looks different
-				checkUpdateFullCode(url, true, handleSuccess, handleFailure);
-			} else {
-				handleNeedsUpdate("no", id, null, isNoToast);
-				if (callback) {
-					callback(false);
+			checkStyleUpdateMd5(style).then(function(needsUpdate) {
+				if (needsUpdate) {
+					updateStyleFullCode(style);
+					if (callback) {
+						callback(true);
+					}
+				} else {
+					handleNoNeedsUpdate(isNoToast);
+					if (callback) {
+						callback(false);
+					}
 				}
-			}
-		}, handleFailure);
-	}
-}
-
-function checkUpdateFullCode(url, forceUpdate, successCallback, failureCallback) {
-	getURL(url).then(function(responseText) {
-		successCallback(forceUpdate, JSON.parse(responseText));
-	}).catch(failureCallback);
-}
-
-function checkUpdateMd5(originalMd5, md5Url, successCallback, failureCallback) {
-	getURL(md5Url).then(function(responseText) {
-		if (responseText.length != 32) {
-			failureCallback(-1);
-			return;
+			});
 		}
-		successCallback(responseText != originalMd5);
-	}).catch(failureCallback);
-}
+	});
 
-function handleNeedsUpdate(needsUpdate, id, serverJson, isNoToast) {
-	var e = document.querySelector("[style-id='" + id + "']");
-	e.className = e.className.replace("checking-update", "");
-	e.querySelector(".check-update .loading").style.display = "none";
-	switch (needsUpdate) {
-		case "yes":
-			e.updatedCode = serverJson;
-			e.querySelector('.update').style.display = 'inline-block';
-			recalculateStyleRight(e);
-			return;
-		case "no":
-			needsUpdate = t('updateCheckSucceededNoUpdate');
-			break;
+	function handleNoNeedsUpdate(isNoToast) {
+		element.querySelector(".check-update .loading").style.display = "none";
+		if (!isNoToast) {
+			showToast(t('updateCheckSucceededNoUpdate'));
+		}
 	}
-	if (!isNoToast) {
-		showToast(needsUpdate);
-	}
-}
-
-function doUpdate(event) {
-	var element = getStyleElement(event);
-
-	var updatedCode = element.updatedCode;
-	// update everything but name
-	delete updatedCode.name;
-	updatedCode.id = element.getAttribute('style-id');
-	updatedCode.method = "saveStyle";
-
-	// updating the UI will be handled by the general update listener
-	lastUpdatedStyleId = updatedCode.id;
-	browser.runtime.sendMessage(updatedCode);
 }
 
 function showToast(message) {
@@ -531,9 +447,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		delete document.xstyleStyles;
 	}
 
-	document.getElementById("check-all-updates").addEventListener("click", checkUpdateAll);
+	document.getElementById("update-all-styles").addEventListener("click", updateAllStyles);
 	document.getElementById("install-from-file").addEventListener("click", onInstallFromFileClick);
-	document.getElementById("apply-all-updates").addEventListener("click", applyUpdateAll);
 	document.getElementById("file-all-styles").addEventListener('click', onSaveToFileClick);
 	document.getElementById("unfile-all-styles").addEventListener('click', onLoadFromFileClick);
 

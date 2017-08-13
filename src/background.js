@@ -185,72 +185,16 @@ function toggleAutoUpdate(e) {
 	}
 }
 function autoUpdateStyles() {
-	var checkUpdateFullCode = function(style) {
-		if (!style.updateUrl) {
-			return;
-		}
-		getURL(style.updateUrl).then(function(responseText) {
-			try {
-				var serverJson = JSON.parse(responseText);
-				if (!codeIsEqual(style.sections, serverJson.sections)) {
-					update(style, serverJson);
-				}
-			} catch (e) {
-				var sections = parseMozillaFormat(responseText);
-				if (!codeIsEqual(style.sections, sections)) {
-					if (style.md5Url) {
-						getURL(style.md5Url).then(function(md5) {
-							update(style, {
-								"name": style.name,
-								"updateUrl": style.updateUrl,
-								"md5Url": style.md5Url || null,
-								"url": style.url || null,
-								"author": style.author || null,
-								"originalMd5": md5,
-								"sections": parseMozillaFormat(responseText)
-							});
-						});
-					} else {
-						update(style, {
-							"name": style.name,
-							"updateUrl": style.updateUrl,
-							"md5Url": style.md5Url || null,
-							"url": style.url || null,
-							"author": style.author || null,
-							"originalMd5": null,
-							"sections": parseMozillaFormat(responseText)
-						});
-					}
-				}
-			}
-		});
-	};
-	var checkUpdateMd5 = function(style, callback) {
-		getURL(style.md5Url).then(function(responseText) {
-			if (responseText.length != 32) {
-				callback(false);
-				return;
-			}
-			callback(responseText != style.originalMd5);
-		});
-	};
-	var update = function(style, serverJson) {
-		// update everything but name
-		delete serverJson.name;
-		serverJson.id = style.id;
-		serverJson.method = "saveStyle";
-		browser.runtime.sendMessage(serverJson);
-	};
 	getStyles({}, function(styles) {
 		for (let style of styles) {
 			if (!style.url || !style.autoUpdate) {
 				continue;
 			} else if (!style.md5Url || !style.originalMd5) {
-				checkUpdateFullCode(style);
+				updateStyleFullCode(style);
 			} else {
-				checkUpdateMd5(style, function(needsUpdate) {
+				checkStyleUpdateMd5(style).then(function(needsUpdate) {
 					if (needsUpdate) {
-						checkUpdateFullCode(style);
+						updateStyleFullCode(style);
 					}
 				});
 			}

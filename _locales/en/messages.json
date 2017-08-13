@@ -171,10 +171,6 @@
 		"message": "Import",
 		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
 	},
-	"updateCheckFailServerUnreachable": {
-		"message": "Update failed - server unreachable.",
-		"description": "Text that displays when an update check failed because the update server is unreachable"
-	},
 	"deleteStyleConfirm": {
 		"message": "Are you sure you want to delete this style?",
 		"description": "Confirmation before deleting a style"
@@ -270,10 +266,6 @@
 	"openManage": {
 		"message": "Manage Styles",
 		"description": "Link to open the manage page."
-	},
-	"updateCheckFailBadResponseCode": {
-		"message": "Update failed - server responded with code $code$.",
-		"description": "Text that displays when an update check failed because the response code indicates an error"
 	},
 	"appliesSpecify": {
 		"message": "Specify",

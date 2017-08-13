@@ -78,6 +78,66 @@ function parseMozillaFormat(css) {
 	}
 }
 
+// check md5 fior update
+function checkStyleUpdateMd5(style) {
+	return new Promise(function(resolve) {
+		if (!style.md5Url || !style.originalMd5) {
+			resolve(false);
+		}
+		getURL(style.md5Url).then(function(responseText) {
+			if (responseText.length != 32) {
+				resolve(false);
+			}
+			resolve(responseText != style.originalMd5);
+		});
+	});
+};
+
+// update a style
+function updateStyleFullCode(style) {
+	var update = function(style, serverJson) {
+		// update everything but name
+		delete serverJson.name;
+		serverJson.id = style.id;
+		serverJson.method = "saveStyle";
+		browser.runtime.sendMessage(serverJson);
+	};
+	if (!style.updateUrl) {
+		return;
+	}
+	getURL(style.updateUrl).then(function(responseText) {
+		try {
+			var serverJson = JSON.parse(responseText);
+			update(style, serverJson);
+		} catch (e) {
+			var sections = parseMozillaFormat(responseText);
+			if (style.md5Url) {
+				getURL(style.md5Url).then(function(md5) {
+					update(style, {
+						"name": style.name,
+						"updateUrl": style.updateUrl,
+						"md5Url": style.md5Url || null,
+						"url": style.url || null,
+						"author": style.author || null,
+						"originalMd5": md5,
+						"sections": parseMozillaFormat(responseText)
+					});
+				});
+			} else {
+				update(style, {
+					"name": style.name,
+					"updateUrl": style.updateUrl,
+					"md5Url": style.md5Url || null,
+					"url": style.url || null,
+					"author": style.author || null,
+					"originalMd5": null,
+					"sections": parseMozillaFormat(responseText)
+				});
+			}
+		}
+	});
+};
+
 // two json is equal or not
 function jsonEquals(a, b, property) {
 	var aProp = a[property], typeA = getType(aProp);

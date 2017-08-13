@@ -58,9 +58,6 @@
 	.enabled .enable {
 		display: none;
 	}
-	.update {
-		display: none;
-	}
 	.menu .hidden {
 		display: none;
 	}
@@ -77,12 +74,11 @@
 				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect style-edit-link" href="edit.html?id=" i18n-text="editStyleLabel"></a>
 				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect delete" i18n-text="deleteStyleLabel"></a>
 				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect style-export-link" href="export.html?id=" i18n-text="export"></a>
-				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect check-update hidden"><span i18n-text="checkForUpdate"></span><div class="loading mdl-spinner mdl-js-spinner is-active"></div></a>
+				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect update hidden"><span i18n-text="updateOneStyle"></span><div class="loading mdl-spinner mdl-js-spinner is-active"></div></a>
 			</div>
 			<div class="mdl-card__menu">
 				<button class="mdl-button mdl-js-button mdl-button--icon enable" i18n-title="enableStyleLabel"><i class="material-icons">block</i></button>
 				<button class="mdl-button mdl-js-button mdl-button--icon disable" i18n-title="disableStyleLabel"><i class="material-icons">done</i></button>
-				<button class="mdl-button mdl-js-button mdl-button--icon update"><i class="material-icons">get_app</i></button>
 			</div>
 		</section>
 	</template>
@@ -115,8 +111,7 @@
 			<a class="mdl-navigation__link" id="install-from-file" i18n-text="installFromFile"></a>
 			<a class="mdl-navigation__link" id="file-all-styles" i18n-text="bckpInstStyles"></a>
 			<a class="mdl-navigation__link" id="unfile-all-styles" i18n-text="retrieveBckp"></a>
-			<a class="mdl-navigation__link" id="check-all-updates" i18n-text="checkAllUpdates"></a>
-			<a class="mdl-navigation__link hidden" id="apply-all-updates" i18n-text="applyAllUpdates"></a>
+			<a class="mdl-navigation__link" id="update-all-styles" i18n-text="updateAllStyles"></a>
 			<a class="mdl-navigation__link" href="http://stylish.team.firefoxcn.net/" i18n-text="importFromFirefoxStylish"></a>
 		</nav>
 	</div>
