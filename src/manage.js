@@ -261,8 +261,8 @@ function onSaveToFileClick(){
 }
 
 function onLoadFromFileClick(){
-	loadFromFile(XSTYLE_DUMP_FILE_EXT).then(function(rawText){
-		var json = JSON.parse(rawText);
+	loadFromFile(XSTYLE_DUMP_FILE_EXT).then(function(result){
+		var json = JSON.parse(result[0]);
 
 		var i = 0, nextStyle;
 
@@ -285,9 +285,41 @@ function onLoadFromFileClick(){
 }
 
 function onInstallFromFileClick(){
-	loadFromFile(XSTYLE_DUMP_FILE_EXT).then(function(rawText){
-		var json = JSON.parse(rawText);
-		delete json.id;
+	loadFromFile('.json,.css').then(function(result) {
+		var filename = result[1];
+		var rawText = result[0];
+		// Detect file type
+		var filetype = filename.match(/\.(.*?)$/);
+		if (!filetype) {
+			// unknow type
+			showToast(t('fileTypeUnknown'));
+			return;
+		}
+		filetype = filetype[1].toLowerCase();
+		var json = null;
+		switch (filetype) {
+			case 'json':
+				json = JSON.parse(rawText);
+				delete json.id;
+				break;
+			case 'css':
+				// TODO: add user.css support
+				var styleName = filename.match(/^(.*?)\./)[1].replace(/([_\-])/g, ' ');
+				styleName = styleName[0].toUpperCase() + styleName.substr(1);
+				json = {
+					"name": styleName,
+					"updateUrl": null,
+					"md5Url": null,
+					"url": null,
+					"author": null,
+					"originalMd5": null,
+					"sections": parseMozillaFormat(rawText)
+				};
+				break;
+			default:
+				showToast(t('fileTypeUnknown'));
+				return;
+		}
 		saveStyle(json, function() {
 			window.location.reload();
 		});

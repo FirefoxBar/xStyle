@@ -238,6 +238,10 @@
 		"message": "xStyle",
 		"description": ""
 	},
+	"fileTypeUnknown": {
+		"message": "Unknown file type",
+		"description": ""
+	},
 	"fontName": {
 		"message": "Font",
 		"description": ""

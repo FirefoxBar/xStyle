@@ -34,12 +34,13 @@ function loadFromFile(formatToFilter){
 		fileInput.addEventListener('change', changeHandler);
 		function changeHandler(){
 			if (fileInput.value != fileInput.initialValue){
+				var filename = fileInput.files[0].name;
 				var fReader = new FileReader();
 				fReader.readAsText(fileInput.files[0]);
 				fReader.onloadend = function(event){
 					fileInput.removeEventListener('change', changeHandler);
 					fileInput.remove();
-					resolve(event.target.result);
+					resolve([event.target.result, filename]);
 				}
 			}
 		}
