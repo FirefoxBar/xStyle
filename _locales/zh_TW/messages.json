@@ -495,12 +495,5 @@
 	"xStyleUnavailableForURL": {
 		"message": "xStyle 不能作用於此類網頁",
 		"description": "Note in the toolbar pop-up when on a URL xStyle can't affect"
-	},
-	"updateCheckFailBadResponseCode": {
-		"placeholders": {
-			"code": {
-				"content": "$1"
-			}
-		}
 	}
 }

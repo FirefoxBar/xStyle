@@ -495,12 +495,5 @@
 	"xStyleUnavailableForURL": {
 		"message": "xStyle does not work on pages like this.",
 		"description": "Note in the toolbar pop-up when on a URL xStyle can't affect"
-	},
-	"updateCheckFailBadResponseCode": {
-		"placeholders": {
-			"code": {
-				"content": "$1"
-			}
-		}
 	}
 }

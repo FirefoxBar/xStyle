@@ -23,10 +23,5 @@
 		"stylename": {
 			"content": "$1"
 		}
-	},
-	"updateCheckFailBadResponseCode": {
-		"code": {
-			"content": "$1"
-		}
 	}
 }
