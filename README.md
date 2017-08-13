@@ -21,6 +21,12 @@ Then, allow Chrome to install local plugins, add the ID of this extension(`dbbjn
 
 For more information, see [kafan](http://bbs.kafan.cn/thread-1689765-1-1.html) and [tieba](http://tieba.baidu.com/p/3091171066)
 
+## For contributors
+
+You can contribute codes by [submit a pull request](https://github.com/FirefoxBar/xStyle/compare).
+
+You can help us to translate this extension on [transifex](https://www.transifex.com/sytec/xstyle/).
+
 ## Licenses
 
 For copyright status of the "third-party/codemirror" directory, see [third-party/codemirror/LICENSE](third-party/codemirror/LICENSE).
