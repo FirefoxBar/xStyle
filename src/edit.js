@@ -323,6 +323,9 @@ function setupCodeMirror(textarea, index) {
 		}
 	});
 
+	cm.on('change', autocompleteOnTyping);
+	cm.on('pick', autocompletePicked);
+
 	cm.on("change", indicateCodeChange);
 	cm.on("blur", function(cm) {
 		editors.lastActive = cm;
@@ -372,6 +375,24 @@ function setupCodeMirror(textarea, index) {
 
 	editors.splice(index || editors.length, 0, cm);
 	return cm;
+}
+
+function autocompleteOnTyping(cm, info) {
+	if (cm.state.completionActive || info.origin && !info.origin.includes('input') || !info.text.last) {
+		return;
+	}
+	if (cm.state.autocompletePicked) {
+		cm.state.autocompletePicked = false;
+		return;
+	}
+	if (info.text.last.match(/[-\w!]+$/)) {
+		cm.state.autocompletePicked = false;
+		cm.execCommand('autocomplete');
+	}
+}
+
+function autocompletePicked(cm) {
+	cm.state.autocompletePicked = true;
 }
 
 function indicateCodeChange(cm) {
