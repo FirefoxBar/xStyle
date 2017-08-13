@@ -20,7 +20,7 @@ foreach ($language_list as $v) {
 	}
 	echo "Downloading $v ... ";
 	do {
-		$language = json_decode(fetchUrl('https://www.transifex.com/api/2/project/xstyle/resource/messages/translation/' . $v . '/'), 1);
+		$language = json_decode(fetchUrl('https://www.transifex.com/api/2/project/xstyle/resource/messages/translation/' . $v . '/?mode=onlyreviewed'), 1);
 	} while (empty($language));
 	$content = json_decode($language['content'], 1);
 	ksort($content);
