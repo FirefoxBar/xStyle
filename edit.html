@@ -46,6 +46,10 @@
 	<script src="third-party/codemirror/keymap/emacs.js"></script>
 	<script src="third-party/codemirror/keymap/vim.js"></script>
 
+	<link rel="stylesheet" href="third-party/colorpicker/colorpicker.css" />
+	<script type="text/javascript" src="third-party/colorpicker/colorpicker.js" ></script>
+	<script type="text/javascript" src="third-party/colorpicker/colorview.js" ></script>
+
 	<style type="text/css">
 	.page-content .half {
 		display: flex;
@@ -120,6 +124,9 @@
 	}
 	.CodeMirror-search-hint {
 		color: #888;
+	}
+	.codemirror-colorview {
+		vertical-align: middle;
 	}
 	@-webkit-keyframes highlight {
 		from {
@@ -401,7 +408,7 @@
 	</template>
 	<template data-id="lintItem">
 		<li class="mdl-list__item mdl-list__item--two-line">
-    		<span class="mdl-list__item-primary-content">
+			<span class="mdl-list__item-primary-content">
 				<span><i class="severity CodeMirror-lint-marker-{{severity}}"></i> At line <span class="line">{{line}}</span> col <span class="col">{{col}}</span></span>
 				<span class="mdl-list__item-sub-title" title="{{message}}">{{message}}</span>
 			</span>

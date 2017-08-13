@@ -305,12 +305,23 @@ function acmeEventListener(event) {
 function updateFontStyle() {
 	var name = prefs.get("editor.fontName");
 	var size = parseInt(prefs.get("editor.fontSize"));
-	document.getElementById('font-style').innerHTML = '.CodeMirror { font-size: ' + size.toString() + 'px !important;font-family: "' + name + '" !important; line-height: ' + (size + 6).toString() + 'px !important; }';
+	document.getElementById('font-style').innerHTML = '.CodeMirror { font-size: ' + size.toString() + 'px !important;font-family: "' + name + '" !important; line-height: ' + (size + 6).toString() + 'px !important; } .codemirror-colorview { height:' + (size - 2).toString() + 'px;width:' + (size - 2).toString() + 'px; }';
 }
 
 // replace given textarea with the CodeMirror editor
 function setupCodeMirror(textarea, index) {
-	var cm = CodeMirror.fromTextArea(textarea);
+	var cm = CodeMirror.fromTextArea(textarea, {
+		lineNumbers: true,
+		mode : "css",
+		extraKeys : {
+			'Ctrl-K' : function (cm, event) {
+				cm.state.colorpicker.popup_color_picker();
+			}
+		},
+		colorpicker : {
+			mode : 'edit'
+		}
+	});
 
 	cm.on("change", indicateCodeChange);
 	cm.on("blur", function(cm) {
