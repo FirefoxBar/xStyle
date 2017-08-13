@@ -29,11 +29,13 @@ You can help us to translate this extension on [transifex](https://www.transifex
 
 ## Licenses
 
-For copyright status of the "third-party/codemirror" directory, see [third-party/codemirror/LICENSE](third-party/codemirror/LICENSE).
+Copyright status of the "third-party/codemirror" directory, see [third-party/codemirror/LICENSE](third-party/codemirror/LICENSE).
 
 Copyright status of the "src/browser-polyfill.js" is [MPL 2.0](http://mozilla.org/MPL/2.0/).
 
-Copyright status of the "third-party/csslint.js" is [MIT](https://github.com/CSSLint/csslint/blob/master/LICENSE).
+Copyright status of the "third-party/csslint/csslint.js" is [MIT](https://github.com/CSSLint/csslint/blob/master/LICENSE).
+
+Copyright status of the "third-party/colorpicker" directory is [MIT](https://github.com/easylogic/codemirror-colorpicker/blob/master/LICENSE).
 
 Copyright status of the "third-party/mdl" directory is [Apache 2.0](https://github.com/google/material-design-lite/blob/mdl-1.x/LICENSE).
 
