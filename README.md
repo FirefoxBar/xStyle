@@ -3,7 +3,7 @@
 [![GitHub release](https://img.shields.io/github/release/FirefoxBar/xStyle.svg)](https://github.com/FirefoxBar/xStyle/releases)
 [![license](https://img.shields.io/github/license/FirefoxBar/xStyle.svg)](https://github.com/FirefoxBar/xStyle)
 
-A user style manager for Firefox and Chrome. Build on WebExtension. Lastest release is [1.3.4](https://github.com/FirefoxBar/xStyle/releases/tag/1.3.4)
+A user style manager for Firefox and Chrome. Build on WebExtension. Lastest release is [1.4.0](https://github.com/FirefoxBar/xStyle/releases/tag/1.4.0)
 
 For more documentation, Please visit [wiki](https://github.com/FirefoxBar/xStyle/wiki)
 
