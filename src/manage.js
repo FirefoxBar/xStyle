@@ -206,12 +206,7 @@ function updateAllStyles() {
 				++updatableCount;
 			}
 			if (--toCheckCount == 0) {
-				btnCheck.disabled = false;
-				if (updatableCount) {
-					btnApply.classList.remove("hidden");
-				} else {
-					showToast(t('updateAllCheckSucceededNoUpdate'));
-				}
+				showToast(t('updateAllCheckSucceededNoUpdate'));
 			}
 		}, true);
 	});
@@ -246,7 +241,7 @@ function checkUpdate(element, callback, isNoToast) {
 	});
 
 	function handleNoNeedsUpdate(isNoToast) {
-		element.querySelector(".check-update .loading").style.display = "none";
+		element.querySelector(".update .loading").style.display = "none";
 		if (!isNoToast) {
 			showToast(t('updateCheckSucceededNoUpdate'));
 		}
