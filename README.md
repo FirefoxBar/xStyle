@@ -41,4 +41,10 @@ Copyright status of the "third-party/mdl" directory is [Apache 2.0](https://gith
 
 Copyright status of the "third-party/material-design-icons" directory is [Apache 2.0](https://github.com/google/material-design-icons/blob/master/LICENSE).
 
-Everything else is GPLv3.
+Everything else:
+
+Copyright © 2005-2014 [Jason Barnabe](https://github.com/JasonBarnabe)
+
+Copyright © 2017 [FirefoxBar Team](http://team.firefoxcn.net)
+
+Open source under GPLv3.
