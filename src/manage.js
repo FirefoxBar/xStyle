@@ -105,7 +105,7 @@ function createStyleElement(style) {
 	e.querySelector(".delete").addEventListener("click", doDelete, false);
 	//material
 	if (typeof(componentHandler) !== 'undefined') {
-		componentHandler.upgradeElement(e.querySelector(".check-update .loading"), 'MaterialSpinner');
+		componentHandler.upgradeElement(e.querySelector(".update .loading"), 'MaterialSpinner');
 	}
 	return e;
 }
@@ -113,8 +113,6 @@ function createStyleElement(style) {
 // Recalculate the maximum width of the style title
 function recalculateStyleRight(e) {
 	var menuWidth = e.querySelector('.mdl-card__menu').offsetWidth;
-	console.log(e.querySelector('.mdl-card__menu'));
-	console.log(menuWidth);
 	e.querySelector('.mdl-card__title').style.paddingRight = (24 + menuWidth).toString() + 'px';
 }
 
@@ -194,7 +192,7 @@ function handleDelete(id) {
 	}
 }
 
-function doCheckUpdate(event) {
+function doUpdate(event) {
 	checkUpdate(getStyleElement(event));
 	var styleid = getGlobalId(event);
 }
