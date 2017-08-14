@@ -1,7 +1,3 @@
-/**
- * 用于用户样式相关判断和处理
- */
-
 // parse mozilla format, return sections
 function parseMozillaFormat(css) {
 	var allSection = [];
@@ -29,7 +25,7 @@ function parseMozillaFormat(css) {
 				section[aType].push(aValue);
 			}
 		}
-		// split this stype
+		// split this section
 		var index = 0;
 		var leftCount = 0;
 		while (index < f.length) {
@@ -78,7 +74,7 @@ function parseMozillaFormat(css) {
 	}
 }
 
-// check md5 fior update
+// check md5 for update
 function checkStyleUpdateMd5(style) {
 	return new Promise(function(resolve) {
 		if (!style.md5Url || !style.originalMd5) {

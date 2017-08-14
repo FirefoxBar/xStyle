@@ -9,7 +9,7 @@
 	},
 	"allStyles": {
 		"message": "所有样式",
-		"description": ""
+		"description": "Label of switch on\/off all styles in the popup panel"
 	},
 	"appliesAdd": {
 		"message": "添加",
@@ -57,23 +57,23 @@
 	},
 	"autoUpdateLabel": {
 		"message": "自动更新",
-		"description": ""
+		"description": "Switch on\/off automatically update for one style"
 	},
 	"autoUpdateStyles": {
 		"message": "自动更新样式",
-		"description": "Auto update styles or not"
+		"description": "Auto update all styles or not"
 	},
 	"bckpInstStyles": {
 		"message": "备份所有已安装样式",
-		"description": ""
+		"description": "Backup button in management page"
 	},
 	"cloudDelete": {
 		"message": "删除",
-		"description": ""
+		"description": "Button to delete a cloud file"
 	},
 	"cloudDeleteConfirm": {
 		"message": "您确认要删除“$filename$”吗",
-		"description": "",
+		"description": "A comfirm if user want to delete a cloud file",
 		"placeholders": {
 			"filename": {
 				"content": "$1"
@@ -82,27 +82,27 @@
 	},
 	"cloudExport": {
 		"message": "导出",
-		"description": ""
+		"description": "Button to export all styles to cloud"
 	},
 	"cloudFileAction": {
 		"message": "操作",
-		"description": ""
+		"description": "Table title for do somethings with a cloud file"
 	},
 	"cloudFileName": {
 		"message": "文件名称",
-		"description": ""
+		"description": "Table title for name of one file"
 	},
 	"cloudFileSize": {
 		"message": "大小",
-		"description": ""
+		"description": "Table title for file size of one file"
 	},
 	"cloudImport": {
 		"message": "导入",
-		"description": ""
+		"description": "Button to import styles from a cloud file"
 	},
 	"cloudImportConfirm": {
 		"message": "您确认要导入“$filename$”吗",
-		"description": "",
+		"description": "A confirm if user want to import styles from a cloud file",
 		"placeholders": {
 			"filename": {
 				"content": "$1"
@@ -111,19 +111,19 @@
 	},
 	"cloudInputFilename": {
 		"message": "请输入文件名称",
-		"description": ""
+		"description": "Tell user enter a file name when user want to export styles to cloud"
 	},
 	"cloudLoadList": {
 		"message": "加载列表",
-		"description": ""
+		"description": "Button to load cloud file list"
 	},
 	"cloudReload": {
 		"message": "刷新",
-		"description": ""
+		"description": "Button to refresh cloud file list"
 	},
 	"cloudTitle": {
 		"message": "云",
-		"description": ""
+		"description": "Title of cloud section"
 	},
 	"cm_indentWithTabs": {
 		"message": "使用制表符智能缩进",
@@ -212,7 +212,7 @@
 	},
 	"editorSetting": {
 		"message": "编辑器设置",
-		"description": ""
+		"description": "Label for the title of editor setting in edit page"
 	},
 	"enableStyleLabel": {
 		"message": "已禁用",
@@ -220,35 +220,35 @@
 	},
 	"export": {
 		"message": "导出",
-		"description": ""
+		"description": "Export one style in management page"
 	},
 	"exportAsJson": {
 		"message": "导出为JSON",
-		"description": ""
+		"description": "Button to export a style as a JSON file"
 	},
 	"exportAsUsercss": {
 		"message": "导出为user.css",
-		"description": ""
+		"description": "Button to export a style as a user.css file"
 	},
 	"exportHelp": {
 		"message": "URL：主页地址。并用于区别不同样式（需保证不同样式的URL不一致）<br>Update URL：更新地址，内容为导出的完整文件<br>MD5 URL：检查是否有更新的地址，内容为最新版本的Original MD5<br>Original MD5：系统生成用于标识最新版本的MD5",
-		"description": ""
+		"description": "A description of each input box in export page"
 	},
 	"extName": {
 		"message": "xStyle",
-		"description": ""
+		"description": "Extension name"
 	},
 	"fileTypeUnknown": {
 		"message": "文件类型未知",
-		"description": ""
+		"description": "A toast when user want to install style from a file but selected a unsupported file"
 	},
 	"fontName": {
 		"message": "字体",
-		"description": ""
+		"description": "Label for set font for editor"
 	},
 	"fontSize": {
 		"message": "字体大小",
-		"description": ""
+		"description": "Label for set font size for editor"
 	},
 	"helpAlt": {
 		"message": "帮助",
@@ -264,7 +264,7 @@
 	},
 	"homepage": {
 		"message": "主页",
-		"description": ""
+		"description": "Label for homepage button in management page"
 	},
 	"importAppendLabel": {
 		"message": "追加到样式",
@@ -276,7 +276,7 @@
 	},
 	"importFromFirefoxStylish": {
 		"message": "从 Stylish for Firefox 导入",
-		"description": ""
+		"description": "Link to import styles from Stylish for Firefox"
 	},
 	"importLabel": {
 		"message": "导入",
@@ -292,7 +292,7 @@
 	},
 	"installFromFile": {
 		"message": "从文件安装",
-		"description": ""
+		"description": "Button to install a style from a file"
 	},
 	"installUpdate": {
 		"message": "安装更新",
@@ -340,7 +340,7 @@
 	},
 	"popupHaveNoStyle": {
 		"message": "您没有安装任何适用于本网站的样式",
-		"description": ""
+		"description": "Show on popup panel when no style is available"
 	},
 	"prefShowBadge": {
 		"message": "在工具栏按钮上显示对当前站点生效的样式数目",
@@ -360,15 +360,15 @@
 	},
 	"retrieveBckp": {
 		"message": "从备份文件导入",
-		"description": ""
+		"description": "Button to retrieve backup"
 	},
 	"save": {
 		"message": "保存",
-		"description": ""
+		"description": "Button to save a style"
 	},
 	"saveComplete": {
 		"message": "已保存",
-		"description": ""
+		"description": "Toast when saved a style"
 	},
 	"search": {
 		"message": "搜索",
@@ -396,7 +396,7 @@
 	},
 	"styleAuthor": {
 		"message": "作者",
-		"description": ""
+		"description": "Enter author when export a style"
 	},
 	"styleBadRegexp": {
 		"message": "正则表达式无效。",
@@ -421,10 +421,6 @@
 	"styleFromMozillaFormatPrompt": {
 		"message": "粘贴 Mozilla 格式代码",
 		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
-	},
-	"styleInactiveLabel": {
-		"message": "取消激活",
-		"description": ""
 	},
 	"styleInstall": {
 		"message": "要将“$stylename$”安装到 xStyle 中吗？",
@@ -455,10 +451,6 @@
 				"content": "$1"
 			}
 		}
-	},
-	"stylesLibLabel": {
-		"message": "样式列表",
-		"description": ""
 	},
 	"undo": {
 		"message": "撤销",
