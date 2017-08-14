@@ -19,11 +19,11 @@ foreach ($language_list as $v) {
 		mkdir(OUTPUT_DIR . $v);
 	}
 	echo "Downloading $v ... ";
+	$url = 'https://www.transifex.com/api/2/project/xstyle/resource/messages/translation/' . $v . '/';
+	if ($v !== 'en') {
+		$url .= '?mode=onlyreviewed';
+	}
 	do {
-		$url = 'https://www.transifex.com/api/2/project/xstyle/resource/messages/translation/' . $v . '/';
-		if ($v !== 'en') {
-			$url .= '?mode=onlyreviewed';
-		}
 		$language = json_decode(fetchUrl($url), 1);
 	} while (empty($language));
 	$content = json_decode($language['content'], 1);
@@ -32,7 +32,7 @@ foreach ($language_list as $v) {
 	foreach ($placeholders as $kk => $vv) {
 		$content[$kk]['placeholders'] = $vv;
 	}
-	file_put_contents(OUTPUT_DIR . $v . '/messages.json', str_replace('    ', "\t", json_encode($content, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)));
+	file_put_contents(OUTPUT_DIR . $v . '/messages.json', json_encode($content, JSON_UNESCAPED_UNICODE));
 	echo "ok\n";
 }
 echo "All ok\n";
