@@ -41,13 +41,13 @@
 			"matches": ["http://userstyles.org/*", "https://userstyles.org/*"],
 			"run_at": "document_end",
 			"all_frames": false,
-			"js": ["src/common.js", "src/inject/install.js", "src/inject/userstyles.org.js"]
+			"js": ["src/common.js", "src/userstyle.js", "src/inject/install.js", "src/inject/userstyles.org.js"]
 		},
 		{
 			"matches": ["http://*.firefoxcn.net/*", "https://*.firefoxcn.net/*", "https://*.github.io/*", "https://*.oschina.io/*"],
 			"run_at": "document_end",
 			"all_frames": false,
-			"js": ["src/common.js", "src/inject/install.js"]
+			"js": ["src/common.js", "src/userstyle.js", "src/inject/install.js"]
 		},
 		{
 			"matches": ["https://login.microsoftonline.com/*", "https://ext.firefoxcn.net/*"],
