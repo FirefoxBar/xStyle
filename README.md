@@ -3,7 +3,7 @@
 [![GitHub release](https://img.shields.io/github/release/FirefoxBar/xStyle.svg)](https://github.com/FirefoxBar/xStyle/releases)
 [![license](https://img.shields.io/github/license/FirefoxBar/xStyle.svg)](https://github.com/FirefoxBar/xStyle/blob/master/COPYING)
 
-A user style manager for Firefox and Chrome. Build on WebExtension. Lastest release is [1.4.2](https://github.com/FirefoxBar/xStyle/releases/tag/1.4.2)
+A user style manager for Firefox and Chrome. Build on WebExtension. Lastest release is [1.4.3](https://github.com/FirefoxBar/xStyle/releases/tag/1.4.3)
 
 You can aslo [get this extension from AMO (Firefox)](https://addons.mozilla.org/zh-CN/firefox/addon/xstyle/). But if you want to experience the latest version at the first time, you should [install our self-distribution version](https://github.com/FirefoxBar/xStyle/releases)
 
