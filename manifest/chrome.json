@@ -57,5 +57,9 @@
 		"default_title": "__MSG_extName__",
 		"default_popup": "popup.html"
 	},
+	"options_ui": {
+		"page": "manage.html",
+		"open_in_tab": true
+	},
 	"default_locale": "en"
 }
