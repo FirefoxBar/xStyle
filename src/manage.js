@@ -1,10 +1,6 @@
 var lastUpdatedStyleId = null;
 var installed;
 
-var appliesToExtraTemplate = document.createElement("span");
-appliesToExtraTemplate.className = "applies-to-extra";
-appliesToExtraTemplate.innerHTML = "";
-
 browser.runtime.sendMessage({method: "getStyles"}).then(showStyles);
 
 function showStyles(styles) {
@@ -73,19 +69,11 @@ function createStyleElement(style) {
 		appliesToToShow = appliesToToShow.concat(urlPrefixes.map(function(u) { return u + "*"; }));
 	if (regexps)
 		appliesToToShow = appliesToToShow.concat(regexps.map(function(u) { return "/" + u + "/"; }));
-	var appliesToString = "";
-	var showAppliesToExtra = false;
-	if (appliesToToShow.length == "")
-		appliesToString = t('appliesToEverything');
-	else if (appliesToToShow.length <= 10)
-		appliesToString = appliesToToShow.join(", ");
-	else {
-		appliesToString = appliesToToShow.slice(0, 10).join(", ");
-		showAppliesToExtra = true;
-	}
-	e.querySelector(".applies-to").appendChild(document.createTextNode(appliesToString));
-	if (showAppliesToExtra) {
-		e.querySelector(".applies-to").appendChild(appliesToExtraTemplate.cloneNode(true));
+	var appliesTo = e.querySelector(".applies-to");
+	for (let line of appliesToToShow) {
+		let a = document.createElement('code');
+		a.appendChild(document.createTextNode(line));
+		appliesTo.appendChild(a);
 	}
 	if (style.url) {
 		e.querySelector(".homepage").href = style.url;
