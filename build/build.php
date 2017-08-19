@@ -3,22 +3,10 @@ define('EXTENSION_DIR', realpath(__DIR__ . '/..'));
 require('config.php');
 require('CrxBuild.php');
 require('XpiBuild.php');
-// Get version from README.md
-preg_match('/releases\/tag\/(.*?)\)/', file_get_contents(EXTENSION_DIR . '/README.md'), $matches);
-$version = $matches[1];
-// Get firefox addon ID from manifest
-$manifest = json_decode(file_get_contents(EXTENSION_DIR . '/manifest/firefox.json'), 1);
-$gecko_id = $manifest['applications']['gecko']['id'];
 $exclude = ['.git', '.vscode', 'build', 'manifest', '.gitignore', 'README.md', 'manifest.json'];
-$crx = new CrxBuild([
-	'name' => 'xstyle',
-	'key_file' => __DIR__ . '/../../xstyle.pem',
-	'output_dir' => __DIR__ . '/output/chrome'
-]);
-$xpi = new XpiBuild([
-	'name' => 'xstyle',
-	'output_dir' => __DIR__ . '/output/firefox'
-]);
+
+// init file list
+$filelist = ['file' => [], 'dir' => []];
 $dh = opendir(EXTENSION_DIR);
 while ($f = readdir($dh)) {
 	if (in_array($f, $exclude, TRUE)) {
@@ -28,25 +16,74 @@ while ($f = readdir($dh)) {
 		continue;
 	}
 	if (is_dir(EXTENSION_DIR . '/' . $f)) {
-		$crx->addDir(EXTENSION_DIR . '/' . $f, $f);
-		$xpi->addDir(EXTENSION_DIR . '/' . $f, $f);
+		$filelist['dir'] = [EXTENSION_DIR . '/' . $f, $f];
 	}
 	if (is_file(EXTENSION_DIR . '/' . $f)) {
-		$crx->addFile(EXTENSION_DIR . '/' . $f, $f);
-		$xpi->addFile(EXTENSION_DIR . '/' . $f, $f);
+		$filelist['file'] = [EXTENSION_DIR . '/' . $f, $f];
 	}
 }
-$manifest = str_replace('__version__', $version, file_get_contents(EXTENSION_DIR . '/manifest/chrome.json'));
-$crx->addString('manifest.json', $manifest);
-$manifest = str_replace('__version__', $version, file_get_contents(EXTENSION_DIR . '/manifest/firefox.json'));
+
+// Build for firefox
+$xpi = new XpiBuild([
+	'name' => 'xstyle',
+	'output_dir' => __DIR__ . '/output/firefox'
+]);
+foreach ($filelist['dir'] as $v) {
+	$xpi->addDir($v[0], $v[1]);
+}
+foreach ($filelist['file'] as $v) {
+	$xpi->addFile($v[0], $v[1]);
+}
+$manifest = str_replace('__version__', EXT_VERSION, file_get_contents(EXTENSION_DIR . '/manifest/firefox.json'));
+$manifest = str_replace('__appid__', EXT_GECKO_ID, $manifest);
 $xpi->addString('manifest.json', $manifest);
-$crx->build();
-echo "Build chrome extension finished\n";
 $xpi->build();
 echo "Build firefox extension finished\n";
 $xpi->setApi(AMO_USER, AMO_SECRET);
 $hash = $xpi->sign();
 echo "Sign firefox extension finished\n";
+
+// Build AMO version
+$amo = new XpiBuild([
+	'name' => 'xstyle-amo',
+	'output_dir' => __DIR__ . '/output/firefox'
+]);
+foreach ($filelist['dir'] as $v) {
+	$amo->addDir($v[0], $v[1]);
+}
+foreach ($filelist['file'] as $v) {
+	$amo->addFile($v[0], $v[1]);
+}
+// replace version and appid
+$manifest = str_replace('__version__', EXT_VERSION, file_get_contents(EXTENSION_DIR . '/manifest/firefox.json'));
+$manifest = str_replace('__appid__', EXT_GECKO_AMO_ID, $manifest);
+// remove update
+$manifest = json_decode($manifest, 1);
+unset($manifest['applications']['gecko']['update_url']);
+$amo->addString('manifest.json', json_encode($manifest, JSON_UNESCAPED_UNICODE));
+$amo->build();
+echo "Build amo extension finished\n";
+$amo->setApi(AMO_USER, AMO_SECRET);
+$finish = $amo->sign();
+echo "Uploaded AMO version\n";
+
+// Build crx
+$crx = new CrxBuild([
+	'name' => 'xstyle',
+	'key_file' => __DIR__ . '/../../xstyle.pem',
+	'output_dir' => __DIR__ . '/output/chrome'
+]);
+foreach ($filelist['dir'] as $v) {
+	$crx->addDir($v[0], $v[1]);
+}
+foreach ($filelist['file'] as $v) {
+	$crx->addFile($v[0], $v[1]);
+}
+$manifest = str_replace('__version__', EXT_VERSION, file_get_contents(EXTENSION_DIR . '/manifest/chrome.json'));
+$crx->addString('manifest.json', $manifest);
+$crx->build();
+echo "Build chrome extension finished\n";
+
 //Add update files
 $fx_update = json_decode(file_get_contents('output/update.json'), 1);
 if (count($fx_update['addons'][$gecko_id]['updates']) > 2) {

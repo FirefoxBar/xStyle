@@ -146,6 +146,7 @@ class XpiBuild {
 		@curl_close($ch);
 		if ($version_info['automated_signing']) {
 			while (!$version_info['passed_review'] || !$version_info['processed'] || !$version_info['reviewed'] || !$version_info['valid']) {
+				sleep(0.5);
 				$ch = $this->getCurl(self::API_SERVER . 'addons/' . $this->ext_name . '/versions/' . $this->version . '/');
 				$version_info = json_decode(curl_exec($ch), 1);
 				@curl_close($ch);
@@ -162,6 +163,8 @@ class XpiBuild {
 			file_put_contents($this->options['output_dir'] . $this->_xpiName . '-signed.xpi', curl_exec($ch));
 			@curl_close($ch);
 			return $sign_file['hash'];
+		} else {
+			return 1;
 		}
 	}
 }

@@ -1,7 +1,7 @@
 {
 	"applications": {
 		"gecko": {
-			"id": "xstyle@addon.firefoxcn.net",
+			"id": "__appid__",
 			"update_url": "https://ext.firefoxcn.net/xstyle/install/update.json",
 			"strict_min_version": "49.0"
 		}
