@@ -1114,7 +1114,7 @@ function init() {
 function initWithStyle(style) {
 	document.getElementById("name").value = style.name;
 	document.getElementById("enabled").checked = style.enabled;
-	if (style.url) {
+	if (style.updateUrl) {
 		document.getElementById("autoUpdate").checked = typeof(style.autoUpdate) === 'undefined' ? false : style.autoUpdate;
 		if (typeof(componentHandler) !== 'undefined') {
 			document.getElementById("autoUpdate").parentElement.classList.add('mdl-js-ripple-effect');
