@@ -73,6 +73,9 @@ function canStyle(url) {
 	if ((url.indexOf("moz-extension") == 0 || url.indexOf("chrome-extension") == 0) && url.indexOf(browser.extension.getURL("")) != 0) {
 		return false;
 	}
+	if (isFirefox && url.indexOf('https://addons.mozilla.org') === 0) {
+		return false;
+	}
 	return true;
 }
 
