@@ -19,11 +19,7 @@ body {
 	cursor: pointer;
 }
 .mdl-layout__header .mdl-layout__header-row {
-	padding-right: 0;
-}
-.mdl-layout__header-row .mdl-navigation__link .mdl-button {
-	padding: 5px;
-	margin-left: 10px;
+	padding-right: 10px;
 }
 .mdl-layout__content {
 	padding-top: 64px;

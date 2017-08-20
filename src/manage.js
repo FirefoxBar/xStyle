@@ -318,6 +318,27 @@ function generateFileName(){
 	return DateFormat(XSTYLE_DUMP_FILE_NAME);
 }
 
+// Sort
+function sortStyles(method) {
+	let list = document.getElementById('installed');
+	let styles = Array.prototype.slice.call(list.querySelectorAll('.mdl-card'));
+	styles = method(styles);
+	for (let i = styles.length - 1; i >= 0; i--) {
+		list.insertBefore(styles[i], list.childNodes[0]);
+	}
+}
+function sortStylesByName(styles) {
+	return styles.sort((e1, e2) => {
+		let n1 = e1.querySelector('.style-name').innerHTML;
+		let n2 = e2.querySelector('.style-name').innerHTML;
+		return n1.localeCompare(n2);
+	});
+}
+function sortStylesById(styles) {
+	return styles.sort((e1, e2) => {
+		return parseInt(e1.getAttribute('style-id')) > parseInt(e2.getAttribute('style-id'));
+	});
+}
 
 // Cloud
 var cloudLoginTab = null;
