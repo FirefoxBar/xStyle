@@ -26,6 +26,8 @@
 	}
 	.page-content #installed .mdl-card .applies-to {
 		word-break: break-all;
+		max-height: 100px;
+		overflow: auto;
 	}
 	.page-content #installed .mdl-card .applies-to code {
 		display: inline-block;
@@ -113,6 +115,11 @@
 			<div id="menu-button" aria-expanded="false" role="button" tabindex="0" class="mdl-layout__drawer-button"><i class="material-icons">menu</i></div>
 			<span class="mdl-layout-title" i18n-text="manageHeading"></span>
 			<div class="mdl-layout-spacer"></div>
+			<button id="sort-options" class="mdl-button mdl-js-button mdl-button--icon"><i class="material-icons">sort</i></button>
+			<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="sort-options">
+				<li id="sort-id" class="mdl-menu__item">Sort by ID</li>
+				<li id="sort-name" class="mdl-menu__item">Sort by name</li>
+			</ul>
 		</div>
 	</header>
 	<div class="menu mdl-layout__drawer">

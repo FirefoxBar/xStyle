@@ -413,8 +413,7 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 		"popup.breadcrumbs.usePath": false,	 // use URL path for "this URL"
 		"popup.enabledFirst": true,			 // display enabled styles before disabled styles
 
-		"manage.onlyEnabled": false,			// display only enabled styles
-		"manage.onlyEdited": false,			 // display only styles created locally
+		"manage.sort": "id", //sort styles in management page
 
 		"editor.options": {},				   // CodeMirror.defaults.*
 		"editor.lineWrapping": true,			// word wrap

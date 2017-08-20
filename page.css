@@ -67,6 +67,10 @@ body {
 	height: 25px;
 	margin-left: 5px;
 }
+.mdl-menu .mdl-menu__item.active {
+	color: rgb(255, 64, 129);
+	font-weight: bold;
+}
 .page-content {
 	padding: 5px;
 }

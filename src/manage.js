@@ -1,20 +1,7 @@
 var lastUpdatedStyleId = null;
 var installed;
 
-browser.runtime.sendMessage({method: "getStyles"}).then(showStyles);
-
 function showStyles(styles) {
-	if (!styles) { // Chrome is starting up
-		browser.runtime.sendMessage({method: "getStyles"}).then(showStyles);
-		return;
-	}
-	if (!installed) {
-		// "getStyles" message callback is invoked before document is loaded,
-		// postpone the action until DOMContentLoaded is fired
-		document.xstyleStyles = styles;
-		return;
-	}
-	styles.sort(function(a, b) { return a.name.localeCompare(b.name)});
 	styles.map(createStyleElement).forEach(function(e) {
 		installed.appendChild(e);
 		recalculateStyleRight(e);
@@ -344,6 +331,19 @@ function sortStylesById(styles) {
 	});
 }
 
+function onSortIdClick() {
+	prefs.set('manage.sort', 'id');
+	this.parentElement.querySelector('.active').classList.remove('active');
+	this.classList.add('active');
+	sortStyles(sortStylesById);
+}
+function onSortNameClick() {
+	prefs.set('manage.sort', 'name');
+	this.parentElement.querySelector('.active').classList.remove('active');
+	this.classList.add('active');
+	sortStyles(sortStylesByName);
+}
+
 // Cloud
 var cloudLoginTab = null;
 function getCloud() {
@@ -479,10 +479,6 @@ function cloudTypeChange() {
 
 document.addEventListener("DOMContentLoaded", function() {
 	installed = document.getElementById("installed");
-	if (document.xstyleStyles) {
-		showStyles(document.xstyleStyles);
-		delete document.xstyleStyles;
-	}
 
 	document.getElementById("update-all-styles").addEventListener("click", updateAllStyles);
 	document.getElementById("install-from-file").addEventListener("click", onInstallFromFileClick);
@@ -515,5 +511,25 @@ document.addEventListener("DOMContentLoaded", function() {
 	document.getElementById('cloud_beforeload').style.display = 'table-row';
 	document.querySelectorAll('input[name="cloud-type"]').forEach(function(e) {
 		e.addEventListener('change', cloudTypeChange);
+	});
+
+	//sort
+	let sort = prefs.get('manage.sort');
+	document.getElementById('sort-id').addEventListener('click', onSortIdClick, false);
+	document.getElementById('sort-name').addEventListener('click', onSortNameClick, false);
+
+	browser.runtime.sendMessage({method: "getStyles"}).then(function onGetStyles(r) {
+		if (!r) { // Chrome is starting up
+			browser.runtime.sendMessage({method: "getStyles"}).then(onGetStyles);
+			return;
+		}
+		showStyles(r);
+		if (sort === 'id') {
+			sortStyles(sortStylesById);
+			document.getElementById('sort-id').classList.add('active');
+		} else {
+			sortStyles(sortStylesByName);
+			document.getElementById('sort-name').classList.add('active');
+		}
 	});
 });
