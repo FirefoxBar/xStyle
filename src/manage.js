@@ -518,6 +518,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	document.getElementById('sort-id').addEventListener('click', onSortIdClick, false);
 	document.getElementById('sort-name').addEventListener('click', onSortNameClick, false);
 
+	// init styles
 	browser.runtime.sendMessage({method: "getStyles"}).then(function onGetStyles(r) {
 		if (!r) { // Chrome is starting up
 			browser.runtime.sendMessage({method: "getStyles"}).then(onGetStyles);
