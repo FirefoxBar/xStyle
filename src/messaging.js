@@ -1,33 +1,31 @@
 function notifyAllTabs(request) {
 	return new Promise(function(resolve){
-		browser.tabs.getCurrent().then(function(selfTab) {
-			if (isMobile) {
-				browser.tabs.query({}).then(function(tabs) {
-					for (let tab of tabs) {
+		if (isMobile) {
+			browser.tabs.query({}).then(function(tabs) {
+				for (let tab of tabs) {
+					updateIcon(tab);
+					if (canStyle(tab.url)) {
+						browser.tabs.sendMessage(tab.id, request);
+					}
+				}
+				resolve();
+			});
+		} else {
+			browser.windows.getAll({populate: true}).then(function(windows) {
+				windows.forEach(function(win) {
+					win.tabs.forEach(function(tab) {
 						updateIcon(tab);
-						if (canStyle(tab.url) && (typeof(selfTab) !== 'undefined' && tab.id !== selfTab.id)) {
+						if (canStyle(tab.url)) {
 							browser.tabs.sendMessage(tab.id, request);
 						}
-					}
-					resolve();
-				});
-			} else {
-				browser.windows.getAll({populate: true}).then(function(windows) {
-					windows.forEach(function(win) {
-						win.tabs.forEach(function(tab) {
-							updateIcon(tab);
-							if (canStyle(tab.url) && (typeof(selfTab) !== 'undefined' && tab.id !== selfTab.id)) {
-								browser.tabs.sendMessage(tab.id, request);
-							}
-						});
 					});
-					resolve();
 				});
-			}
+				resolve();
+			});
 			// notify all open popups
 			var reqPopup = shallowMerge({}, request, {method: "updatePopup", reason: request.method});
 			browser.runtime.sendMessage(reqPopup);
-		});
+		}
 	});
 }
 function notifyBackground(request) {
