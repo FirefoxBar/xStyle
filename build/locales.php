@@ -40,7 +40,11 @@ foreach ($language_list as $v) {
 	}
 	// Add placeholders
 	foreach ($placeholders as $kk => $vv) {
-		$content[$kk]['placeholders'] = $vv;
+		if (isset($content[$kk])) {
+			$content[$kk]['placeholders'] = $vv;
+		} else {
+			echo "\n$kk not exists, please check it\n";
+		}
 	}
 	file_put_contents(OUTPUT_DIR . $v . '/messages.json', json_encode($content, JSON_UNESCAPED_UNICODE));
 	echo "ok\n";

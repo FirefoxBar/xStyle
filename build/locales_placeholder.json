@@ -18,10 +18,5 @@
 		"stylename": {
 			"content": "$1"
 		}
-	},
-	"styleUpdate": {
-		"stylename": {
-			"content": "$1"
-		}
 	}
 }
