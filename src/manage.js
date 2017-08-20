@@ -70,10 +70,14 @@ function createStyleElement(style) {
 	if (regexps)
 		appliesToToShow = appliesToToShow.concat(regexps.map(function(u) { return "/" + u + "/"; }));
 	var appliesTo = e.querySelector(".applies-to");
-	for (let line of appliesToToShow) {
-		let a = document.createElement('code');
-		a.appendChild(document.createTextNode(line));
-		appliesTo.appendChild(a);
+	if (appliesToToShow.length) {
+		for (let line of appliesToToShow) {
+			let a = document.createElement('code');
+			a.appendChild(document.createTextNode(line));
+			appliesTo.appendChild(a);
+		}
+	} else {
+		appliesTo.appendChild(document.createTextNode(t('appliesToEverything')));
 	}
 	if (style.url) {
 		e.querySelector(".homepage").href = style.url;
