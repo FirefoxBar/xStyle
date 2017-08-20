@@ -1,6 +1,6 @@
 // is mobile or not
-const isAndroid = navigator.userAgent.indexOf('Android') > 0;
-const isIOS = navigator.userAgent.indexOf('iOS') > 0;
+const isAndroid = navigator.userAgent.includes('Android');
+const isIOS = navigator.userAgent.includes('iOS');
 const isMobile = (isAndroid || isIOS);
 
 //export
@@ -70,7 +70,7 @@ function canStyle(url) {
 		return false;
 	}
 	// other extensions can't be styled
-	if ((url.indexOf("moz-extension") == 0 || url.indexOf("chrome-extension") == 0) && url.indexOf(browser.extension.getURL("")) != 0) {
+	if ((url.indexOf("moz-extension") === 0 || url.indexOf("chrome-extension") === 0) && url.indexOf(browser.extension.getURL("")) !== 0) {
 		return false;
 	}
 	if (isFirefox && url.indexOf('https://addons.mozilla.org') === 0) {

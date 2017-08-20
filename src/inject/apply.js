@@ -12,7 +12,7 @@ function requestStyles() {
 	// unless Chrome still starts up and the background page isn't fully loaded.
 	// (Note: in this case the function may be invoked again from applyStyles.)
 	var request = {method: "getStyles", matchUrl: location.href, enabled: true, asHash: true};
-	if (location.href.indexOf(browser.extension.getURL("")) == 0) {
+	if (location.href.indexOf(browser.extension.getURL("")) === 0) {
 		var bg = browser.extension.getBackgroundPage();
 		if (bg && bg.getStyles) {
 			// apply styles immediately, then proceed with a normal request that will update the icon
@@ -224,7 +224,7 @@ function iframeIsDynamic(f) {
 		// Cross-origin, so it's not a dynamic iframe
 		return false;
 	}
-	return href == document.location.href || href.indexOf("about:") == 0;
+	return href === document.location.href || href.indexOf("about:") === 0;
 }
 
 function iframeIsLoadingSrcDoc(f) {

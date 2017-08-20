@@ -42,7 +42,7 @@ function arraysAreEqual(a, b) {
 		return false;
 	}
 	return a.every(function(entry) {
-		return b.indexOf(entry) != -1;
+		return b.indexOf(entry) !== -1;
 	});
 }
 

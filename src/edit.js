@@ -119,8 +119,7 @@ function setCleanSection(section) {
 
 function initCodeMirror() {
 	var CM = CodeMirror;
-	var isWindowsOS = navigator.appVersion.indexOf("Windows") > 0;
-
+	var isWindowsOS = navigator.appVersion.includes("Windows");
 	// default option values
 	shallowMerge(CM.defaults, {
 		mode: 'css',
@@ -827,7 +826,7 @@ function nextPrevEditor(cm, direction) {
 function getEditorInSight(nearbyElement) {
 	// priority: 1. associated CM for applies-to element 2. last active if visible 3. first visible
 	var cm;
-	if (nearbyElement && nearbyElement.className.indexOf("applies-") >= 0) {
+	if (nearbyElement && nearbyElement.className.includes("applies-")) {
 		cm = getSectionForChild(nearbyElement).CodeMirror;
 	} else {
 		cm = editors.lastActive;
@@ -1327,7 +1326,7 @@ function saveComplete(style) {
 	setCleanGlobal();
 
 	// Go from new style URL to edit style URL
-	if (location.href.indexOf("id=") == -1) {
+	if (!location.href.includes("id=")) {
 		history.replaceState({}, document.title, "edit.html?id=" + style.id);
 		document.getElementById("contentHeading").innerHTML = t("editStyleHeading");
 		document.getElementById("heading").innerHTML = t("editStyleHeading");

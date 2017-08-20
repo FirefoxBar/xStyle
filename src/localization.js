@@ -35,7 +35,7 @@ function tNodeList(nodes) {
 		for (var a = node.attributes.length - 1; a >= 0; a--) {
 			var attr = node.attributes[a];
 			var name = attr.nodeName;
-			if (name.indexOf("i18n-") != 0) {
+			if (name.indexOf("i18n-") !== 0) {
 				continue;
 			}
 			name = name.substr(5); // "i18n-".length

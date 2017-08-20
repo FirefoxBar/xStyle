@@ -49,7 +49,7 @@ function createStyleElement(style) {
 		style.sections.forEach(function(section) {
 			if (section[property]) {
 				section[property].filter(function(value) {
-					return array.indexOf(value) == -1;
+					return array.indexOf(value) === -1;
 				}).forEach(function(value) {
 					array.push(value);
 				});;

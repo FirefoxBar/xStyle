@@ -159,11 +159,11 @@ browser.webRequest.onHeadersReceived.addListener(function(e) {
 	}
 	for (var k in e.responseHeaders) {
 		if (e.responseHeaders[k].name.toLowerCase() === 'content-security-policy') {
-			if (e.responseHeaders[k].value.indexOf('style-src') < 0) {
+			if (!e.responseHeaders[k].value.includes('style-src')) {
 				break;
 			}
 			var csp = e.responseHeaders[k].value.match(/style-src (.*?);/)[1];
-			if (csp.indexOf("'unsafe-inline'") >= 0) {
+			if (csp.includes("'unsafe-inline'")) {
 				break;
 			}
 			e.responseHeaders[k].value = e.responseHeaders[k].value.replace(/style-src (.*?);/, "style-src $1 'unsafe-inline';");
