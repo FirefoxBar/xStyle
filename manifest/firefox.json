@@ -26,7 +26,6 @@
 		"*://*/*",
 		"clipboardWrite"
 	],
-	"content_security_policy": "script-src 'self'; object-src 'self'",
 	"background": {
 		"scripts": ["src/common.js", "src/messaging.js", "src/storage.js", "src/background.js"]
 	},
