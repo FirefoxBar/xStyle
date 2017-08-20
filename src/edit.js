@@ -532,6 +532,9 @@ function removeSection(event) {
 	removeAreaAndSetDirty(section);
 	editors.splice(editors.indexOf(cm), 1);
 	renderLintReport();
+	if (getSections().length === 0) {
+		addSection(null, {"code": ""});
+	}
 }
 
 function removeAreaAndSetDirty(area) {
