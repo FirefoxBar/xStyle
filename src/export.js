@@ -101,5 +101,5 @@ function exportAsUsercss() {
 document.addEventListener("DOMContentLoaded", function() {
 	init();
 	document.getElementById('export-as-json').addEventListener('click', exportAsJson);
-	// document.getElementById('export-as-usercss').addEventListener('click', exportAsUsercss);
+	document.getElementById('export-as-usercss').addEventListener('click', exportAsUsercss);
 });
