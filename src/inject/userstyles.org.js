@@ -101,7 +101,8 @@ function getAdvanced() {
 		let inputs = {
 			"select": {},
 			"radio": {},
-			"text": {}
+			"text": {},
+			"css": document.getElementById('stylish-code').innerHTML
 		};
 		let r = '';
 		let file_count = 0;
