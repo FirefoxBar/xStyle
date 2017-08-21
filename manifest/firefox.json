@@ -65,6 +65,6 @@
 	"options_ui": {
 		"page": "manage.html",
 		"open_in_tab": true
-	},w
+	},
 	"default_locale": "en"
 }

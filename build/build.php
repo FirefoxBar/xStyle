@@ -16,10 +16,10 @@ while ($f = readdir($dh)) {
 		continue;
 	}
 	if (is_dir(EXTENSION_DIR . '/' . $f)) {
-		$filelist['dir'] = [EXTENSION_DIR . '/' . $f, $f];
+		$filelist['dir'][] = [EXTENSION_DIR . '/' . $f, $f];
 	}
 	if (is_file(EXTENSION_DIR . '/' . $f)) {
-		$filelist['file'] = [EXTENSION_DIR . '/' . $f, $f];
+		$filelist['file'][] = [EXTENSION_DIR . '/' . $f, $f];
 	}
 }
 
