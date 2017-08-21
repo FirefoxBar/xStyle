@@ -22,8 +22,7 @@ function tHTML(html) {
 }
 
 function tNodeList(nodes) {
-	for (var n = 0; n < nodes.length; n++) {
-		var node = nodes[n];
+	for (let node of nodes) {
 		if (node.nodeType != 1) { // not an ELEMENT_NODE
 			continue;
 		}
@@ -32,14 +31,13 @@ function tNodeList(nodes) {
 			template[node.dataset.id] = node.content.firstElementChild;
 			continue;
 		}
-		for (var a = node.attributes.length - 1; a >= 0; a--) {
-			var attr = node.attributes[a];
-			var name = attr.nodeName;
+		for (let attr of node.attributes) {
+			let name = attr.nodeName;
 			if (name.indexOf("i18n-") !== 0) {
 				continue;
 			}
 			name = name.substr(5); // "i18n-".length
-			var value = t(attr.value);
+			let value = t(attr.value);
 			switch (name) {
 				case "text":
 					node.insertBefore(document.createTextNode(value), node.firstChild);
