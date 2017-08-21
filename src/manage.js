@@ -287,21 +287,21 @@ function onInstallFromFileClick(){
 					let meta = trimNewLines(rawText.match(/\/\* ==UserStyle==([\s\S]+)==\/UserStyle== \*\//)[1]);
 					json = {};
 					meta.split("\n").forEach((one) => {
-						one = one.match(/@(\w+)([ \t]+)(.*)/);
-						if (typeof(json[one[1]]) === 'undefined') {
-							json[one[1]] = one[3];
+						t = one.match(/@(\w+)([ \t]+)(.*)/);
+						if (typeof(json[t[1]]) === 'undefined') {
+							json[t[1]] = t[3];
 						} else {
-							let tempVal = json[one[1]];
-							json[one[1]] = [];
-							json[one[1]].push(tempVal);
-							json[one[1]].push(one[3]);
+							let tempVal = json[t[1]];
+							json[t[1]] = [];
+							json[t[1]].push(tempVal);
+							json[t[1]].push(t[3]);
 						}
 					});
 					let body = trimNewLines(rawText.replace(/\/\* ==UserStyle==([\s\S]+)==\/UserStyle== \*\//, ''));
 					json.sections = parseMozillaFormat(body);
 				} else {
 					// is a normal css file
-					var styleName = filename.match(/^(.*?)\./)[1].replace(/([_\-])/g, ' ');
+					let styleName = filename.match(/^(.*?)\./)[1].replace(/([_\-])/g, ' ');
 					styleName = styleName[0].toUpperCase() + styleName.substr(1);
 					json = {
 						"name": styleName,
