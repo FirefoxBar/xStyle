@@ -1,11 +1,57 @@
 // parse mozilla format, return sections
 function parseMozillaFormat(css) {
-	var allSection = [];
-	var mozStyle = trimNewLines(css.replace(/@namespace url\((.*?)\);/g, ""));
+	let allSection = [{
+		"urls": [],
+		"urlPrefixes": [],
+		"domains": [],
+		"regexps": [],
+		"code": ""
+	}];
+	let mozStyle = trimNewLines(css.replace(/@namespace url\((.*?)\);/g, ""));
+	let currentIndex = 0;
+	let lastIndex = 0;
 	// split by @-moz-document
-	var sections = mozStyle.split('@-moz-document ');
-	for (let f of sections) {
-		var section = {
+	while (mozStyle.indexOf('@-moz-document ', currentIndex) >= 0) {
+		currentIndex = ignoreSomeCodes(mozStyle, currentIndex);
+		if (mozStyle.indexOf('@-moz-document ', currentIndex) === currentIndex) {
+			parseOneSection(mozStyle.substr(lastIndex, currentIndex - lastIndex));
+			lastIndex = currentIndex;
+		}
+		currentIndex++;
+	}
+	// remove global section if it is empty
+	allSection[0].code = trimNewLines(allSection[0].code);
+	if (allSection[0].code === '') {
+		allSection.splice(0, 1);
+	}
+	return allSection;
+	function ignoreSomeCodes(f, index) {
+		// ignore quotation marks
+		if (f[index] === '"') {
+			index++;
+			do {
+				index = f.indexOf('"', index);
+				index++;
+			} while (f[index - 2] === '\\');
+		}
+		if (f[index] === "'") {
+			index++;
+			do {
+				index = f.indexOf("'", index);
+				index++;
+			} while (f[index - 2] === '\\');
+		}
+		// ignore comments
+		if (f[index] === '/' && f[index + 1] === '*') {
+			index += 2;
+			index = f.indexOf('*/', index);
+			index ++;
+		}
+		return index;
+	}
+	function parseOneSection(f) {
+		f = f.replace('@-moz-document ', '');
+		let section = {
 			"urls": [],
 			"urlPrefixes": [],
 			"domains": [],
@@ -14,33 +60,25 @@ function parseMozillaFormat(css) {
 		};
 		while (true) {
 			f = trimNewLines(trimNewLines(f).replace(/^,/, ''));
-			var m = f.match(/^(url|url-prefix|domain|regexp)\((['"]?)(.+?)\2\)/);
+			let m = f.match(/^(url|url-prefix|domain|regexp)\((['"]?)(.+?)\2\)/);
 			if (!m) {
 				break;
 			}
 			f = f.replace(m[0], '');
-			var aType = CssToProperty[m[1]];
-			var aValue = aType != "regexps" ? m[3] : m[3].replace(/\\\\/g, "\\");
+			let aType = CssToProperty[m[1]];
+			let aValue = aType != "regexps" ? m[3] : m[3].replace(/\\\\/g, "\\");
 			if (section[aType].indexOf(aValue) < 0) {
 				section[aType].push(aValue);
 			}
 		}
 		// split this section
-		var index = 0;
-		var leftCount = 0;
-		while (index < f.length) {
-			// ignore comments
-			if (f[index] === '/' && f[index + 1] === '*') {
-				index += 2;
-				while (f[index] !== '*' || f[index + 1] !== '/') {
-					index++;
-				}
-				index += 2;
-			}
+		let index = 0;
+		let leftCount = 0;
+		while (true) {
+			index = ignoreSomeCodes(f, index);
 			if (f[index] === '{') {
 				leftCount++;
-			}
-			if (f[index] === '}') {
+			} else if (f[index] === '}') {
 				leftCount--;
 			}
 			index++;
@@ -51,26 +89,23 @@ function parseMozillaFormat(css) {
 		if (f[0] === '{') {
 			section.code = trimNewLines(f.substr(1, index - 2));
 			if (index < f.length) {
-				addSection({
-					"urls": [],
-					"urlPrefixes": [],
-					"domains": [],
-					"regexps": [],
-					"code": trimNewLines(f.substr(index))
-				});
+				allSection[0].code += "\n" + trimNewLines(f.substr(index));
 			}
 		} else {
 			section.code = trimNewLines(f);
 		}
 		addSection(section);
 	}
-	return allSection;
 	function addSection(section) {
 		// don't add empty sections
-		if (!section.code || (!section.urls && !section.urlPrefixes && !section.domains && !section.regexps)) {
+		if (!section.code) {
 			return;
 		}
-		allSection.push(section);
+		if (!section.urls.length && !section.urlPrefixes.length && !section.domains.length && !section.regexps.length) {
+			allSection[0].code += "\n" + section.code;
+		} else {
+			allSection.push(section);
+		}
 	}
 }
 
