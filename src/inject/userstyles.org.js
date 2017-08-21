@@ -54,17 +54,18 @@ function usoInstall () {
 	if (confirm(browser.i18n.getMessage('styleInstall', [styleName]))) {
 		if (hasAdvanced()) {
 			getAdvanced().then(function(advanced) {
-				var cssURL = 'https://userstyles.org/styles/' + style_id + '.css?' + advanced;
+				var cssURL = 'https://userstyles.org/styles/' + style_id + '.css?' + advanced.query;
 				var css = getURL(cssURL);
 				var md5 = getURL(getMd5Url());
 				Promise.all([css, md5]).then(function(results) {
 					var style = {
 						"name": styleName,
-						"updateUrl": 'https://userstyles.org/styles/' + style_id + '.css?' + advanced,
+						"updateUrl": 'https://userstyles.org/styles/' + style_id + '.css?' + advanced.query,
 						"md5Url": getMd5Url(),
 						"url": getIdUrl(),
 						"author": author,
 						"originalMd5": results[1],
+						"advanced": advanced.option,
 						"sections": parseMozillaFormat(results[0])
 					};
 					styleInstallByCode(style);
@@ -97,18 +98,26 @@ function readImage(file) {
 }
 function getAdvanced() {
 	return new Promise(function(resolve) {
-		var r = '';
-		var file_count = 0;
-		var area = document.getElementById('advancedsettings_area');
+		let inputs = {
+			"select": {},
+			"radio": {},
+			"text": {}
+		};
+		let r = '';
+		let file_count = 0;
+		let area = document.getElementById('advancedsettings_area');
 		//select
 		area.querySelectorAll('select').forEach(function(e) {
+			let options = {};
 			r += e.name + '=';
 			e.querySelectorAll('option').forEach(function(option) {
+				options[option.value] = option.innerHTML;
 				if (option.selected) {
 					r += encodeURIComponent(option.value);
 				}
 			});
 			r += '&';
+			inputs.select[e.name] = options;
 		});
 		//radio
 		area.querySelectorAll('input[type="radio"]:checked').forEach(function(e) {
@@ -117,7 +126,6 @@ function getAdvanced() {
 			} else if (e.value === 'user-upload') {
 				file_count++;
 				readImage(e.parentElement.querySelector('input[type="file"]').files[0]).then(function(dataURL) {
-					console.log(dataURL);
 					r += e.name + '=' + encodeURIComponent(dataURL) + '&';
 					file_count--;
 					checkEnd();
@@ -126,14 +134,31 @@ function getAdvanced() {
 				r += e.name + '=' + encodeURIComponent(e.value) + '&';
 			}
 		});
+		area.querySelectorAll('input[type="radio"]').forEach(function(e) {
+			if (e.value === 'user-url' || e.value === 'user-upload') {
+				return;
+			}
+			if (typeof(inputs.radio[e.name]) === 'undefined') {
+				inputs.radio[e.name] = [];
+			}
+			inputs.radio[e.name].push({
+				"name": e.nextElementSibling.childNodes[0].childNodes[1].textContent,
+				"url": e.parentElement.querySelector('.eye_image').getAttribute('data-tip').match(/src=(.*?) /)[1]
+			});
+		});
 		//text
 		area.querySelectorAll('input[type="text"]').forEach(function(e) {
 			r += e.name + '=' + encodeURIComponent(e.value) + '&';
+			let p = e.parentElement;
+			while (!p.classList.contains('setting_div') && p.parentElement) {
+				p = p.parentElement;
+			}
+			inputs.text[e.name] = p.querySelector('.title_setting').innerHTML;
 		});
 		//checkEnd
 		function checkEnd() {
 			if (file_count === 0) {
-				resolve(r.replace(/&$/, ''));
+				resolve({"option": inputs, "query": r.replace(/&$/, '')});
 			}
 		}
 		checkEnd();
