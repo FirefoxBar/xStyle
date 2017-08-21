@@ -49,11 +49,13 @@ function renderInstalledTab(styles){
 
 // render for a page with no style
 function renderPageForNoStyles(){
+	body.classList.remove(STYLES_CLASS);
 	body.classList.add(ZERO_INSTALLED_CLASS);
 }
 
 // render for a page with styles
 function renderPageWithStyles(styles){
+	body.classList.remove(ZERO_INSTALLED_CLASS);
 	body.classList.add(STYLES_CLASS);
 	styles.forEach(function(style){
 		addStyleToInstalled(style);
