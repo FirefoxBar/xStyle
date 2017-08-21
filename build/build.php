@@ -86,19 +86,19 @@ echo "Build chrome extension finished\n";
 
 //Add update files
 $fx_update = json_decode(file_get_contents('output/update.json'), 1);
-if (count($fx_update['addons'][$gecko_id]['updates']) > 2) {
-	array_splice($fx_update['addons'][$gecko_id]['updates'], 0, count($fx_update['addons'][$gecko_id]['updates']) - 2);
+if (count($fx_update['addons'][EXT_GECKO_ID]['updates']) > 2) {
+	array_splice($fx_update['addons'][EXT_GECKO_ID]['updates'], 0, count($fx_update['addons'][EXT_GECKO_ID]['updates']) - 2);
 }
-$fx_update['addons'][$gecko_id]['updates'][] = [
-	"version" => $version,
-	"update_link" => "https://github.com/FirefoxBar/xStyle/releases/download/$version/xstyle-$version-signed.xpi",
+$fx_update['addons'][EXT_GECKO_ID]['updates'][] = [
+	"version" => EXT_VERSION,
+	"update_link" => 'https://github.com/FirefoxBar/xStyle/releases/download/' . EXT_VERSION . '/xstyle-' . EXT_VERSION . '-signed.xpi',
 	"update_hash" => $hash
 ];
 file_put_contents('output/update.json', json_encode($fx_update));
 $cr_update = "<?xml version='1.0' encoding='UTF-8'?>
 <gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
   <app appid='dbbjndgnfkbjmciadekfomemdiledmam'>
-    <updatecheck codebase='https://github.com/FirefoxBar/xStyle/releases/download/$version/xstyle-$version.crx' version='$version' />
+    <updatecheck codebase='https://github.com/FirefoxBar/xStyle/releases/download/" . EXT_VERSION . "/xstyle-" . EXT_VERSION . ".crx' version='" . EXT_VERSION . "' />
   </app>
 </gupdate>";
 file_put_contents('output/update.xml', $cr_update);
