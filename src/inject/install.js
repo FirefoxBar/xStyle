@@ -64,11 +64,20 @@ function styleInstall () {
 }
 function styleInstallByCode(json) {
 	//Check whether the style has been installed
-	browser.runtime.sendMessage({method: "getStyles", url: json.url || getIdUrl() || location.href}).then(function(response) {
+	browser.runtime.sendMessage({method: "getStyles", url: json.url || getIdUrl() || location.href}).then((response) => {
 		json.method = "saveStyle";
 		if (response.length != 0) {
 			json.id = response[0].id;
 			delete json.name;
+		}
+		if (typeof(json.advanced) === 'undefined') {
+			json.advanced = {
+				"select": {},
+				"radio": {},
+				"text": {},
+				"saved": {},
+				"css": ''
+			};
 		}
 		browser.runtime.sendMessage(json).then(function(response) {
 			sendEvent("styleInstalled");

@@ -1,5 +1,5 @@
 function getDatabase(ready, error) {
-	var dbOpenRequest = window.indexedDB.open("xstyle", 1);
+	var dbOpenRequest = window.indexedDB.open("xstyle", 2);
 	dbOpenRequest.onsuccess = function(e) {
 		ready(e.target.result);
 	};
@@ -13,6 +13,9 @@ function getDatabase(ready, error) {
 		if (event.oldVersion == 0) {
 			// Installed
 			event.target.result.createObjectStore("styles", {keyPath: 'id', autoIncrement: true});
+		}
+		if (event.oldVersion < 2) {
+			upgradeTo2();
 		}
 	}
 };
@@ -657,4 +660,33 @@ function getSync() {
 	if ("local" in browser.storage) {
 		return browser.storage.local;
 	}
+}
+
+
+// Upgrade functions
+function upgradeTo2() {
+	getDatabase((db) => {
+		let tx = db.transaction(["styles"], "readwrite");
+		let os = tx.objectStore("styles");
+		os.openCursor().onsuccess = function(e) {
+			let cursor = e.target.result;
+			if (cursor) {
+				let s = cursor.value;
+				s.id = cursor.key;
+				if (s.updateUrl && s.updateUrl.includes('?')) {
+					s.advanced = {"saved": {}};
+					let params = s.updateUrl.substr(s.updateUrl.indexOf('?') + 1).split('&');
+					for (let oneParam of params) {
+						oneParam = oneParam.split('=');
+						s.advanced.saved[oneParam[0].replace(/^ik-/, '')] = decodeURIComponent(oneParam[1]);
+					}
+					s.updateUrl = s.updateUrl.substr(0, s.updateUrl.indexOf('?'));
+				} else {
+					s.advanced = null;
+				}
+				os.put(s);
+				cursor.continue();
+			}
+		};
+	});
 }

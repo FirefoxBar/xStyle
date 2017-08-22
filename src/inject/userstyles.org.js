@@ -58,19 +58,22 @@ function usoInstall () {
 	if (confirm(browser.i18n.getMessage('styleInstall', [styleName]))) {
 		if (hasAdvanced()) {
 			getAdvanced().then(function(advanced) {
-				console.log(advanced.option);
-				var cssURL = 'https://userstyles.org/styles/' + style_id + '.css?' + advanced.query;
+				let cssURL = 'https://userstyles.org/styles/' + style_id + '.css?';
+				for (let k in advanced.saved) {
+					cssURL += 'ik-' + k + '=' + encodeURIComponent(style.advanced.saved[k]) + '&';
+				}
+				cssURL = cssURL.substr(0, url.length - 1);
 				var css = getURL(cssURL);
 				var md5 = getURL(getMd5Url());
 				Promise.all([css, md5]).then(function(results) {
 					var style = {
 						"name": styleName,
-						"updateUrl": 'https://userstyles.org/styles/' + style_id + '.css?' + advanced.query,
+						"updateUrl": 'https://userstyles.org/styles/' + style_id + '.css',
 						"md5Url": getMd5Url(),
 						"url": getIdUrl(),
 						"author": author,
 						"originalMd5": results[1],
-						"advanced": advanced.option,
+						"advanced": advanced,
 						"sections": parseMozillaFormat(results[0])
 					};
 					styleInstallByCode(style);
@@ -103,68 +106,66 @@ function readImage(file) {
 }
 function getAdvanced() {
 	return new Promise(function(resolve) {
-		let inputs = {
+		let advanced = {
 			"select": {},
 			"radio": {},
 			"text": {},
+			"saved": {},
 			"css": parseMozillaFormat(document.getElementById('stylish-code').value)
 		};
-		let r = '';
 		let file_count = 0;
 		let area = document.getElementById('advancedsettings_area');
 		//select
 		area.querySelectorAll('select').forEach(function(e) {
 			let options = {};
-			r += e.name + '=';
 			e.querySelectorAll('option').forEach(function(option) {
 				options[option.value] = option.innerHTML;
 				if (option.selected) {
-					r += encodeURIComponent(option.value);
+					advanced.saved[e.name.replace(/^ik-/, '')] = option.value;
 				}
 			});
-			r += '&';
-			inputs.select[e.name.replace(/^ik-/, '')] = options;
+			advanced.select[e.name.replace(/^ik-/, '')] = options;
 		});
 		//radio
 		area.querySelectorAll('input[type="radio"]:checked').forEach(function(e) {
 			if (e.value === 'user-url') {
-				r += e.name + '=' + encodeURIComponent(e.nextElementSibling.value) + '&';
+				advanced.saved[e.name.replace(/^ik-/, '')] = e.nextElementSibling.value;
 			} else if (e.value === 'user-upload') {
 				file_count++;
 				readImage(e.parentElement.querySelector('input[type="file"]').files[0]).then(function(dataURL) {
-					r += e.name + '=' + encodeURIComponent(dataURL) + '&';
+					advanced.saved[e.name.replace(/^ik-/, '')] = dataURL;
 					file_count--;
 					checkEnd();
 				});
 			} else {
-				r += e.name + '=' + encodeURIComponent(e.value) + '&';
+				advanced.saved[e.name.replace(/^ik-/, '')] = e.value;
 			}
 		});
 		area.querySelectorAll('input[type="radio"]').forEach(function(e) {
 			if (e.value === 'user-url' || e.value === 'user-upload') {
 				return;
 			}
-			if (typeof(inputs.radio[e.name.replace(/^ik-/, '')]) === 'undefined') {
-				inputs.radio[e.name.replace(/^ik-/, '')] = [];
+			if (typeof(advanced.radio[e.name.replace(/^ik-/, '')]) === 'undefined') {
+				advanced.radio[e.name.replace(/^ik-/, '')] = [];
 			}
-			inputs.radio[e.name.replace(/^ik-/, '')].push({
+			advanced.radio[e.name.replace(/^ik-/, '')].push({
 				"name": e.nextElementSibling.childNodes[0].childNodes[1].textContent,
 				"url": e.parentElement.querySelector('.eye_image').getAttribute('data-tip').match(/src=(.*?) /)[1]
 			});
 		});
 		//text
 		area.querySelectorAll('input[type="text"]').forEach(function(e) {
-			r += e.name + '=' + encodeURIComponent(e.value) + '&';
+			advanced.saved[e.name.replace(/^ik-/, '')] = e.value;\
 			let p = e.parentElement;
 			while (!p.classList.contains('setting_div') && p.parentElement) {
 				p = p.parentElement;
 			}
-			inputs.text[e.name.replace(/^ik-/, '')] = p.querySelector('.title_setting').innerHTML;
+			advanced.text[e.name.replace(/^ik-/, '')] = p.querySelector('.title_setting').innerHTML;
 		});
 		//checkEnd
 		function checkEnd() {
 			if (file_count === 0) {
-				resolve({"option": inputs, "query": r.replace(/&$/, '')});
+				resolve(advanced);
 			}
 		}
 		checkEnd();

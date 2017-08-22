@@ -136,7 +136,15 @@ function updateStyleFullCode(style) {
 	if (!style.updateUrl) {
 		return;
 	}
-	getURL(style.updateUrl).then(function(responseText) {
+	let url = style.updateUrl;
+	if (style.advanced.saved && style.advanced.saved.length > 0) {
+		url += '?';
+		for (let k in style.advanced.saved) {
+			url += 'ik-' + k + '=' + encodeURIComponent(style.advanced.saved[k]) + '&';
+		}
+		url = url.substr(0, url.length - 1);
+	}
+	getURL(url).then(function(responseText) {
 		try {
 			var serverJson = JSON.parse(responseText);
 			update(style, serverJson);
