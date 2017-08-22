@@ -126,56 +126,85 @@ function checkStyleUpdateMd5(style) {
 
 // update a style
 function updateStyleFullCode(style) {
-	var update = function(style, serverJson) {
+	let update = (style, serverJson) => {
 		// update everything but name
 		delete serverJson.name;
 		serverJson.id = style.id;
 		serverJson.method = "saveStyle";
 		browser.runtime.sendMessage(serverJson);
 	};
+	let saveOneStyle = (style, rawCss, md5) => {
+		let toSave = {
+			"name": style.name,
+			"updateUrl": style.updateUrl,
+			"md5Url": style.md5Url || null,
+			"url": style.url || null,
+			"author": style.author || null,
+			"originalMd5": null,
+			"advanced": style.advanced,
+			"sections": applyAdvanced(rawCss, style.advanced.saved)
+		};
+		if (md5 !== null) {
+			toSave.originalMd5 = md5;
+		}
+		update(style, toSave);
+	};
 	if (!style.updateUrl) {
 		return;
 	}
-	let url = style.updateUrl;
-	if (style.advanced.saved && style.advanced.saved.length > 0) {
-		url += '?';
-		for (let k in style.advanced.saved) {
-			url += 'ik-' + k + '=' + encodeURIComponent(style.advanced.saved[k]) + '&';
-		}
-		url = url.substr(0, url.length - 1);
-	}
-	getURL(url).then(function(responseText) {
-		try {
-			var serverJson = JSON.parse(responseText);
-			update(style, serverJson);
-		} catch (e) {
-			var sections = parseMozillaFormat(responseText);
-			if (style.md5Url) {
-				getURL(style.md5Url).then(function(md5) {
-					update(style, {
-						"name": style.name,
-						"updateUrl": style.updateUrl,
-						"md5Url": style.md5Url || null,
-						"url": style.url || null,
-						"author": style.author || null,
-						"originalMd5": md5,
-						"sections": parseMozillaFormat(responseText)
+	let updateUrl = style.updateUrl;
+	// For uso
+	if (updateUrl.includes('userstyles.org') && Object.keys(style.advanced.saved).length > 0) {
+		let style_id = style.md5Url.match(/\/(\d+)\.md5/)[1];
+		getURL('https://userstyles.org/api/v1/styles/' + style_id).then(function(responseText) {
+			let serverJson = JSON.parse(responseText);
+			let rawCss = parseMozillaFormat(serverJson.css);
+			getURL(style.md5Url).then(function(md5) {
+				saveOneStyle(style, rawCss, md5);
+			});
+		});
+	} else {
+		// not uso
+		getURL(updateUrl).then(function(responseText) {
+			let serverJson = null;
+			try {
+				serverJson = JSON.parse(responseText);
+			} catch (e) {
+				// is mozilla format, not json
+				if (style.md5Url) {
+					getURL(style.md5Url).then(function(md5) {
+						saveOneStyle(style, responseText, md5);
 					});
-				});
-			} else {
-				update(style, {
-					"name": style.name,
-					"updateUrl": style.updateUrl,
-					"md5Url": style.md5Url || null,
-					"url": style.url || null,
-					"author": style.author || null,
-					"originalMd5": null,
-					"sections": parseMozillaFormat(responseText)
-				});
+				} else {
+					saveOneStyle(style, responseText, null);
+				}
+				return;
 			}
-		}
-	});
+			// if it is json, continue
+			if (typeof(serverJson.advanced) === 'undefined') {
+				serverJson.advanced = {"select": {}, "radio": {}, "text": {}, "saved": {}, "css": ''};
+			} else {
+				serverJson.advanced.saved = style.advanced.saved;
+			}
+			if (Object.keys(style.advanced.saved).length > 0) {
+				serverJson.sections = applyAdvanced(style.advanced.css, style.advanced.saved)
+			}
+			update(style, serverJson);
+		});
+	}
 };
+
+// Apply advanced to a style
+function applyAdvanced(css, advanced) {
+	let result = [];
+	for (let section of css) {
+		for (let k in advanced) {
+			section.code = section.code.replace(new RegExp('\\/\\*\\[\\[' + k + '\\]\\]\\*\\/', 'g'), advanced[k]);
+		}
+		result.push(section);
+	}
+	return result;
+}
 
 // two json is equal or not
 function jsonEquals(a, b, property) {

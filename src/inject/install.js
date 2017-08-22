@@ -71,13 +71,7 @@ function styleInstallByCode(json) {
 			delete json.name;
 		}
 		if (typeof(json.advanced) === 'undefined') {
-			json.advanced = {
-				"select": {},
-				"radio": {},
-				"text": {},
-				"saved": {},
-				"css": ''
-			};
+			json.advanced = {"select": {}, "radio": {}, "text": {}, "saved": {}, "css": ''};
 		}
 		browser.runtime.sendMessage(json).then(function(response) {
 			sendEvent("styleInstalled");
