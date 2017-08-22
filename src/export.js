@@ -6,7 +6,7 @@ function init() {
 	}
 	requestStyle();
 	function requestStyle() {
-		browser.runtime.sendMessage({method: "getStyles", id: params.id}).then(function(styles) {
+		browser.runtime.sendMessage({method: "getStyles", id: params.id}).then((styles) => {
 			if (!styles) { // Chrome is starting up and shows export.html
 				requestStyle();
 				return;
@@ -84,7 +84,7 @@ function exportAsUsercss() {
 	}
 	content += "@originalMD5 " + style.originalMd5 + "\n";
 	content += "==/UserStyle== */\n\n";
-	content += style.sections.map(function(section) {
+	content += style.sections.map((section) => {
 		var cssMds = [];
 		for (var i in propertyToCss) {
 			if (section[i]) {
@@ -98,7 +98,7 @@ function exportAsUsercss() {
 	saveAsFile(content.trim(), 'xstyle-' + style.originalMd5 + '.user.css');
 }
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", () => {
 	init();
 	document.getElementById('export-as-json').addEventListener('click', exportAsJson);
 	document.getElementById('export-as-usercss').addEventListener('click', exportAsUsercss);

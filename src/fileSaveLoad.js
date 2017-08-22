@@ -1,7 +1,7 @@
 function saveAsFile(text, fileName, dialog) {
 	fileName = fileName || XSTYLE_DEFAULT_SAVE_NAME;
 
-	return new Promise(function(resolve){
+	return new Promise((resolve) => {
 		var blob = new Blob([text]);
 		var fileUrl = URL.createObjectURL(blob);
 		var option = {filename: fileName, url: fileUrl};
@@ -22,7 +22,7 @@ function saveAsFile(text, fileName, dialog) {
  * gets content of it by ajax
  */
 function loadFromFile(formatToFilter){
-	return new Promise(function(resolve){
+	return new Promise((resolve) => {
 		var fileInput = document.createElement('input');
 		fileInput.style = "display: none;";
 		fileInput.type = "file";
@@ -37,7 +37,7 @@ function loadFromFile(formatToFilter){
 				var filename = fileInput.files[0].name;
 				var fReader = new FileReader();
 				fReader.readAsText(fileInput.files[0]);
-				fReader.onloadend = function(event){
+				fReader.onloadend = (event) => {
 					fileInput.removeEventListener('change', changeHandler);
 					fileInput.remove();
 					resolve([event.target.result, filename]);

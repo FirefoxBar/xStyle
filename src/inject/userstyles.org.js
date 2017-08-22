@@ -11,7 +11,7 @@ browser.runtime.sendMessage({method: "getStyles", url: getIdUrl() || location.hr
 	// maybe an update is needed
 	// use the md5 if available
 	if (getMd5Url() && installedStyle.md5Url && installedStyle.originalMd5) {
-		getURL(getMd5Url()).then(function(md5) {
+		getURL(getMd5Url()).then((md5) => {
 			if (md5 == installedStyle.originalMd5) {
 				sendEvent("styleAlreadyInstalled");
 				return;
@@ -21,7 +21,7 @@ browser.runtime.sendMessage({method: "getStyles", url: getIdUrl() || location.hr
 			}
 		});
 	} else {
-		getURL(getCodeUrl()).then(function(code) {
+		getURL(getCodeUrl()).then((code) => {
 			// this would indicate a failure (a style with settings?).
 			if (code == null) {
 				sendEvent("styleCanBeUpdated");
@@ -29,8 +29,8 @@ browser.runtime.sendMessage({method: "getStyles", url: getIdUrl() || location.hr
 			}
 			let json = JSON.parse(code);
 			if (json.sections.length == installedStyle.sections.length) {
-				if (json.sections.every(function(section) {
-					return installedStyle.sections.some(function(installedSection) {
+				if (json.sections.every((section) => {
+					return installedStyle.sections.some((installedSection) => {
 						return sectionsAreEqual(section, installedSection);
 					});
 				})) {
@@ -50,14 +50,14 @@ function usoInstall () {
 	var styleName = document.getElementById('stylish-description').innerHTML.trim();
 	// Get author
 	var author = null;
-	document.querySelectorAll('#left_information > div').forEach(function(e) {
+	document.querySelectorAll('#left_information > div').forEach((e) => {
 		if (e.children[0].innerHTML === 'Author') {
 			author = e.children[1].innerHTML;
 		}
 	});
 	if (confirm(browser.i18n.getMessage('styleInstall', [styleName]))) {
 		if (hasAdvanced()) {
-			getAdvanced().then(function(advanced) {
+			getAdvanced().then((advanced) => {
 				let cssURL = 'https://userstyles.org/styles/' + style_id + '.css?';
 				for (let k in advanced.saved) {
 					cssURL += 'ik-' + k + '=' + encodeURIComponent(style.advanced.saved[k]) + '&';
@@ -65,7 +65,7 @@ function usoInstall () {
 				cssURL = cssURL.substr(0, url.length - 1);
 				var css = getURL(cssURL);
 				var md5 = getURL(getMd5Url());
-				Promise.all([css, md5]).then(function(results) {
+				Promise.all([css, md5]).then((results) => {
 					var style = {
 						"name": styleName,
 						"updateUrl": 'https://userstyles.org/styles/' + style_id + '.css',
@@ -80,7 +80,7 @@ function usoInstall () {
 				});
 			});
 		} else {
-			getURL(getCodeUrl()).then(function(code) {
+			getURL(getCodeUrl()).then((code) => {
 				var style = JSON.parse(code);
 				style.author = author;
 				styleInstallByCode(style);
@@ -96,16 +96,16 @@ function hasAdvanced() {
 
 // Get all advanced
 function readImage(file) {
-	return new Promise(function(resolve) {
+	return new Promise((resolve) => {
         	var reader = new FileReader();
-        	reader.onload = function() {
+        	reader.onload = () => {
 				resolve(reader.result);
         	};
         	reader.readAsDataURL(file);
 	});
 }
 function getAdvanced() {
-	return new Promise(function(resolve) {
+	return new Promise((resolve) => {
 		let advanced = {
 			"select": {},
 			"radio": {},
@@ -116,9 +116,9 @@ function getAdvanced() {
 		let file_count = 0;
 		let area = document.getElementById('advancedsettings_area');
 		//select
-		area.querySelectorAll('select').forEach(function(e) {
+		area.querySelectorAll('select').forEach((e) => {
 			let options = {};
-			e.querySelectorAll('option').forEach(function(option) {
+			e.querySelectorAll('option').forEach((option) => {
 				options[option.value] = option.innerHTML;
 				if (option.selected) {
 					advanced.saved[e.name.replace(/^ik-/, '')] = option.value;
@@ -127,12 +127,12 @@ function getAdvanced() {
 			advanced.select[e.name.replace(/^ik-/, '')] = options;
 		});
 		//radio
-		area.querySelectorAll('input[type="radio"]:checked').forEach(function(e) {
+		area.querySelectorAll('input[type="radio"]:checked').forEach((e) => {
 			if (e.value === 'user-url') {
 				advanced.saved[e.name.replace(/^ik-/, '')] = e.nextElementSibling.value;
 			} else if (e.value === 'user-upload') {
 				file_count++;
-				readImage(e.parentElement.querySelector('input[type="file"]').files[0]).then(function(dataURL) {
+				readImage(e.parentElement.querySelector('input[type="file"]').files[0]).then((dataURL) => {
 					advanced.saved[e.name.replace(/^ik-/, '')] = dataURL;
 					file_count--;
 					checkEnd();
@@ -141,7 +141,7 @@ function getAdvanced() {
 				advanced.saved[e.name.replace(/^ik-/, '')] = e.value;
 			}
 		});
-		area.querySelectorAll('input[type="radio"]').forEach(function(e) {
+		area.querySelectorAll('input[type="radio"]').forEach((e) => {
 			if (e.value === 'user-url' || e.value === 'user-upload') {
 				return;
 			}
@@ -154,8 +154,8 @@ function getAdvanced() {
 			});
 		});
 		//text
-		area.querySelectorAll('input[type="text"]').forEach(function(e) {
-			advanced.saved[e.name.replace(/^ik-/, '')] = e.value;\
+		area.querySelectorAll('input[type="text"]').forEach((e) => {
+			advanced.saved[e.name.replace(/^ik-/, '')] = e.value;
 			let p = e.parentElement;
 			while (!p.classList.contains('setting_div') && p.parentElement) {
 				p = p.parentElement;

@@ -111,11 +111,11 @@ function parseMozillaFormat(css) {
 
 // check md5 for update
 function checkStyleUpdateMd5(style) {
-	return new Promise(function(resolve) {
+	return new Promise((resolve) => {
 		if (!style.md5Url || !style.originalMd5) {
 			resolve(false);
 		}
-		getURL(style.md5Url).then(function(responseText) {
+		getURL(style.md5Url).then((responseText) => {
 			if (responseText.length != 32) {
 				resolve(false);
 			}
@@ -156,23 +156,23 @@ function updateStyleFullCode(style) {
 	// For uso
 	if (updateUrl.includes('userstyles.org') && Object.keys(style.advanced.saved).length > 0) {
 		let style_id = style.md5Url.match(/\/(\d+)\.md5/)[1];
-		getURL('https://userstyles.org/api/v1/styles/' + style_id).then(function(responseText) {
+		getURL('https://userstyles.org/api/v1/styles/' + style_id).then((responseText) => {
 			let serverJson = JSON.parse(responseText);
 			let rawCss = parseMozillaFormat(serverJson.css);
-			getURL(style.md5Url).then(function(md5) {
+			getURL(style.md5Url).then((md5) => {
 				saveOneStyle(style, rawCss, md5);
 			});
 		});
 	} else {
 		// not uso
-		getURL(updateUrl).then(function(responseText) {
+		getURL(updateUrl).then((responseText) => {
 			let serverJson = null;
 			try {
 				serverJson = JSON.parse(responseText);
 			} catch (e) {
 				// is mozilla format, not json
 				if (style.md5Url) {
-					getURL(style.md5Url).then(function(md5) {
+					getURL(style.md5Url).then((md5) => {
 						saveOneStyle(style, responseText, md5);
 					});
 				} else {
@@ -192,7 +192,7 @@ function updateStyleFullCode(style) {
 			update(style, serverJson);
 		});
 	}
-};
+}
 
 // Apply advanced to a style
 function applyAdvanced(css, advanced) {
@@ -243,7 +243,7 @@ function codeIsEqual(a, b) {
 	for (var i = 0; i < a.length; i++) {
 		var found = false;
 		for (var j = 0; j < b.length; j++) {
-			var allEquals = properties.every(function(property) {
+			var allEquals = properties.every((property) => {
 				return jsonEquals(a[i], b[j], property);
 			});
 			if (allEquals) {

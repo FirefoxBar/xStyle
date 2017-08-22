@@ -22,7 +22,7 @@ function requestStyles() {
 	browser.runtime.sendMessage(request).then(applyStyles);
 }
 
-browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	// Also handle special request just for the pop-up
 	switch (request.method == "updatePopup" ? request.reason : request.method) {
 		case "styleDeleted":
@@ -69,12 +69,12 @@ function disableAll(disable) {
 	}
 
 	function disableSheets(disable, doc) {
-		Array.prototype.forEach.call(doc.styleSheets, function(stylesheet) {
+		Array.prototype.forEach.call(doc.styleSheets, (stylesheet) => {
 			if (stylesheet.ownerNode.classList.contains("xstyle")) {
 				stylesheet.disabled = disable;
 			}
 		});
-		getDynamicIFrames(doc).forEach(function(iframe) {
+		getDynamicIFrames(doc).forEach((iframe) => {
 			if (!disable) {
 				// update the IFRAME if it was created while the observer was disconnected
 				addDocumentStylesToIFrame(iframe);
@@ -93,7 +93,7 @@ function removeStyle(id, doc) {
 	if (doc == document && Object.keys(g_styleElements).length == 0) {
 		iframeObserver.disconnect();
 	}
-	getDynamicIFrames(doc).forEach(function(iframe) {
+	getDynamicIFrames(doc).forEach((iframe) => {
 		removeStyle(id, iframe.contentDocument);
 	});
 }
@@ -114,7 +114,7 @@ function retireStyle(id, doc) {
 	if (e) {
 		e.id = "xstyle-" + deadID;
 	}
-	getDynamicIFrames(doc).forEach(function(iframe) {
+	getDynamicIFrames(doc).forEach((iframe) => {
 		retireStyle(id, iframe.contentDocument);
 	});
 }
@@ -142,14 +142,14 @@ function applyStyles(styleHash) {
 				document.head.appendChild(document.getElementById(id));
 			}
 		}
-		document.addEventListener("DOMContentLoaded", function() {
+		document.addEventListener("DOMContentLoaded", () => {
 			addDocumentStylesToAllIFrames();
 			iframeObserver.start();
 		});
 	}
 
 	if (retiredStyleIds.length) {
-		setTimeout(function() {
+		setTimeout(() => {
 			while (retiredStyleIds.length) {
 				removeStyle(retiredStyleIds.shift(), document);
 			}
@@ -173,7 +173,7 @@ function applySections(styleId, sections) {
 	styleElement.setAttribute("id", "xstyle-" + styleId);
 	styleElement.setAttribute("class", "xstyle");
 	styleElement.setAttribute("type", "text/css");
-	styleElement.appendChild(document.createTextNode(sections.map(function(section) {
+	styleElement.appendChild(document.createTextNode(sections.map((section) => {
 		return section.code;
 	}).join("\n")));
 	addStyleElement(styleElement, document);
@@ -186,7 +186,7 @@ function addStyleElement(styleElement, doc) {
 	}
 	doc.documentElement.appendChild(doc.importNode(styleElement, true))
 	  .disabled = g_disableAll;
-	getDynamicIFrames(doc).forEach(function(iframe) {
+	getDynamicIFrames(doc).forEach((iframe) => {
 		if (iframeIsLoadingSrcDoc(iframe)) {
 			addStyleToIFrameSrcDoc(iframe, styleElement);
 		} else {
@@ -244,9 +244,11 @@ function addStyleToIFrameSrcDoc(iframe, styleElement) {
 function replaceAll(newStyles, doc, pass2) {
 	var oldStyles = [].slice.call(doc.querySelectorAll("STYLE.xstyle" + (pass2 ? "[id$='-ghost']" : "")));
 	if (!pass2) {
-		oldStyles.forEach(function(style) { style.id += "-ghost"; });
+		oldStyles.forEach((style) => {
+			style.id += "-ghost";
+		});
 	}
-	getDynamicIFrames(doc).forEach(function(iframe) {
+	getDynamicIFrames(doc).forEach((iframe) => {
 		replaceAll(newStyles, iframe.contentDocument, pass2);
 	});
 	if (doc == document && !pass2) {
@@ -255,13 +257,15 @@ function replaceAll(newStyles, doc, pass2) {
 		replaceAll(newStyles, doc, true);
 	}
 	if (pass2) {
-		oldStyles.forEach(function(style) { style.remove(); });
+		oldStyles.forEach((style) => {
+			style.remove();
+		});
 	}
 }
 
 // Observe dynamic IFRAMEs being added
 function initObserver() {
-	iframeObserver = new MutationObserver(function(mutations) {
+	iframeObserver = new MutationObserver((mutations) => {
 		if (mutations.length > 1000) {
 			// use a much faster method for very complex pages with 100,000 mutations
 			// (observer usually receives 1k-10k mutations per call)
@@ -288,7 +292,7 @@ function initObserver() {
 		}
 	}
 
-	iframeObserver.start = function() {
+	iframeObserver.start = () => {
 		// will be ignored by browser if already observing
 		iframeObserver.observe(document, {childList: true, subtree: true});
 	}

@@ -57,7 +57,7 @@ function renderPageForNoStyles(){
 function renderPageWithStyles(styles){
 	body.classList.remove(ZERO_INSTALLED_CLASS);
 	body.classList.add(STYLES_CLASS);
-	styles.forEach(function(style){
+	styles.forEach((style)=> {
 		addStyleToInstalled(style);
 	});
 }
@@ -108,13 +108,13 @@ function onDisableAllCheckboxChange(){
 	var disable = !this.checked;
 	prefs.set("disableAll", disable);
 	renderAllSwitch();
-	notifyBackground({method: "styleDisableAll", disableAll: value}).then(function() {
+	notifyBackground({method: "styleDisableAll", disableAll: value}).then(() => {
 		notifyAllTabs({method: "styleDisableAll", disableAll: value});
 	});
 }
 
 function onActivateChange(style){
-	return function(e){
+	return (e) => {
 		e.preventDefault();
 		e.stopImmediatePropagation();
 		enableStyle(style.id, e.target.checked).then(onActivationStatusChanged(style.id, e.target.checked));
@@ -122,7 +122,7 @@ function onActivateChange(style){
 }
 
 function onDeleteStyleClick(style){
-	return function(e){
+	return (e) => {
 		e.preventDefault();
 		e.stopImmediatePropagation();
 		deleteStyle(style.id).then(onStyleDeleted(style));
@@ -130,7 +130,7 @@ function onDeleteStyleClick(style){
 }
 
 function onStyleDeleted(style){
-	return function(){
+	return () => {
 		var old = document.getElementById("installed-style-"+style.id);
 		var parent = old.parentNode;
 		parent.removeChild(old);
@@ -141,7 +141,7 @@ function onStyleDeleted(style){
 }
 
 function onActivationStatusChanged(styleId, enabled){
-	return function(){
+	return () => {
 		var old = document.getElementById("installed-style-"+styleId);
 		old.classList.remove(ENABLED_CLASS);
 		old.classList.remove(DISABLED_CLASS);
@@ -200,7 +200,7 @@ function handleUpdate(style) {
 		installed.removeChild(styleElement);
 		addStyleToInstalled(style);
 	} else {
-		getActiveTabRealURL(function(url) {
+		getActiveTabRealURL((url) => {
 			if (browser.extension.getBackgroundPage().getApplicableSections(style, url).length) {
 				installed.appendChild(installedStyleToElement(style));
 			}
@@ -215,7 +215,7 @@ function handleDelete(id) {
 	}
 }
 
-browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.method == "updatePopup") {
 		switch (request.reason) {
 			case "styleAdded":
@@ -229,7 +229,7 @@ browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	}
 });
 
-getActiveTab(function(tab) {
+getActiveTab((tab) => {
 	updatePopUp(tab);
 	if (canStyle(tab.url)) {
 		getInstalledStyleForDomain(tab.url).then(renderInstalledTab);
@@ -238,7 +238,7 @@ getActiveTab(function(tab) {
 	}
 });
 
-document.querySelectorAll(".open-manage-link").forEach(function(el) {
+document.querySelectorAll(".open-manage-link").forEach((el) => {
 	el.addEventListener("click", openLink, false);
 });
 document.getElementById('getFromUserstyle').addEventListener("click", openLink, false);

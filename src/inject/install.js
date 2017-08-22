@@ -15,7 +15,7 @@ if (typeof(getParams) !== 'function') {
 		if (urlParts.length == 1) {
 			return params;
 		}
-		urlParts[1].split("&").forEach(function(keyValue) {
+		urlParts[1].split("&").forEach((keyValue) => {
 			var splitKeyValue = keyValue.split("=", 2);
 			params[decodeURIComponent(splitKeyValue[0])] = decodeURIComponent(splitKeyValue[1]);
 		});
@@ -27,7 +27,7 @@ function sectionsAreEqual(a, b) {
 	if (a.code != b.code) {
 		return false;
 	}
-	return ["urls", "urlPrefixes", "domains", "regexps"].every(function(attribute) {
+	return ["urls", "urlPrefixes", "domains", "regexps"].every((attribute) => {
 		return arraysAreEqual(a[attribute], b[attribute]);
 	});
 }
@@ -41,7 +41,7 @@ function arraysAreEqual(a, b) {
 	if (a.length != b.length) {
 		return false;
 	}
-	return a.every(function(entry) {
+	return a.every((entry) => {
 		return b.indexOf(entry) !== -1;
 	});
 }
@@ -57,7 +57,7 @@ function sendEvent(type, data) {
 function styleInstall () {
 	var styleName = getMeta('xstyle-name');
 	if (confirm(browser.i18n.getMessage('styleInstall', [styleName]))) {
-		getResource(getCodeUrl(), function(code) {
+		getResource(getCodeUrl(), (code) => {
 			styleInstallByCode(JSON.parse(code));
 		});
 	}
@@ -73,7 +73,7 @@ function styleInstallByCode(json) {
 		if (typeof(json.advanced) === 'undefined') {
 			json.advanced = {"select": {}, "radio": {}, "text": {}, "saved": {}, "css": ''};
 		}
-		browser.runtime.sendMessage(json).then(function(response) {
+		browser.runtime.sendMessage(json).then((response) => {
 			sendEvent("styleInstalled");
 		});
 	});
@@ -84,7 +84,7 @@ document.addEventListener("xstyleInstall", styleInstall, false);
 if (window.location.href.indexOf('https://ext.firefoxcn.net/xstyle/install/open.html') === 0) {
 	var params = getParams();
 	if (params.code) {
-		getURL(params.code).then(function(code) {
+		getURL(params.code).then((code) => {
 			var json = JSON.parse(code);
 			if (confirm(browser.i18n.getMessage('styleInstall', [json.name]))) {
 				styleInstallByCode(json);

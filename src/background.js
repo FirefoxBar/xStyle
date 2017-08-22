@@ -3,7 +3,7 @@ var autoUpdateTimer = null;
 
 function appId() {
 	function genRand(){
-		var r = "xxxxxxxx-xxxx-8xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(a){
+		var r = "xxxxxxxx-xxxx-8xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (a) => {
 			var c = 16 * Math.random() | 0;
 			return ("x" == a ? c : 3 & c | 8).toString(16)
 		});
@@ -12,8 +12,8 @@ function appId() {
 	return localStorage.getItem("appUniqueId") || genRand();
 }
 
-runTryCatch(function() {
-	browser.tabs.sendMessage(0, {}, {frameId: 0}).then(function() {
+runTryCatch(() => {
+	browser.tabs.sendMessage(0, {}, {frameId: 0}).then(() => {
 		frameIdMessageable = true;
 	});
 });
@@ -35,7 +35,7 @@ function webNavigationListener(method, data) {
 	if (data.frameId != 0 && !frameIdMessageable) {
 		return;
 	}
-	getStyles({matchUrl: data.url, enabled: true, asHash: true}, function(styleHash) {
+	getStyles({matchUrl: data.url, enabled: true, asHash: true}, (styleHash) => {
 		if (method) {
 			browser.tabs.sendMessage(data.tabId, {method: method, styles: styleHash}, frameIdMessageable ? {frameId: data.frameId} : undefined);
 		}
@@ -45,7 +45,7 @@ function webNavigationListener(method, data) {
 	});
 }
 
-browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.method === 'notifyBackground') {
 		request.method = request.reason;
 	}
@@ -68,7 +68,7 @@ browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			}
 			break;
 		case "healthCheck":
-			getDatabase(function() { sendResponse(true); }, function() { sendResponse(false); });
+			getDatabase(() => { sendResponse(true); }, () => { sendResponse(false); });
 			return true;
 		case "openURL":
 			openURL(request, sendResponse);
@@ -90,28 +90,28 @@ browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 
 if (isMobile) {
-	browser.browserAction.onClicked.addListener(function() {
+	browser.browserAction.onClicked.addListener(() => {
 		openURL({url: browser.extension.getURL('manage.html')});
 	});
 } else {
 	// contextMenus API is present in ancient Chrome but it throws an exception
 	// upon encountering the unsupported parameter value "browser_action", so we have to catch it.
-	runTryCatch(function() {
+	runTryCatch(() => {
 		browser.contextMenus.create({
 			id: "openManage", title: browser.i18n.getMessage("openManage"),
 			type: "normal", contexts: ["browser_action"]
-		}, function() { var clearError = browser.runtime.lastError });
+		}, () => { var clearError = browser.runtime.lastError });
 		browser.contextMenus.create({
 			id: "show-badge", title: browser.i18n.getMessage("menuShowBadge"),
 			type: "checkbox", contexts: ["browser_action"], checked: prefs.get("show-badge")
-		}, function() { var clearError = browser.runtime.lastError });
+		}, () => { var clearError = browser.runtime.lastError });
 		browser.contextMenus.create({
 			id: "disableAll", title: browser.i18n.getMessage("disableAllStyles"),
 			type: "checkbox", contexts: ["browser_action"], checked: prefs.get("disableAll")
-		}, function() { var clearError = browser.runtime.lastError });
+		}, () => { var clearError = browser.runtime.lastError });
 	});
 
-	browser.contextMenus.onClicked.addListener(function(info, tab) {
+	browser.contextMenus.onClicked.addListener((info, tab) => {
 		if (info.menuItemId === 'openManage') {
 			openURL({"url": browser.extension.getURL("manage.html")});
 		} else if (info.menuItemId === "disableAll") {
@@ -122,7 +122,7 @@ if (isMobile) {
 	});
 }
 
-browser.tabs.onUpdated.addListener(function(tabId, info, tab) {
+browser.tabs.onUpdated.addListener((tabId, info, tab) => {
 	if (info.status == "loading" && info.url) {
 		if (canStyle(info.url)) {
 			webNavigationListener("styleReplaceAll", {tabId: tabId, frameId: 0, url: info.url});
@@ -132,13 +132,13 @@ browser.tabs.onUpdated.addListener(function(tabId, info, tab) {
 	}
 });
 
-browser.tabs.onReplaced.addListener(function (addedTabId, removedTabId) {
-	browser.tabs.get(addedTabId).then(function(tab) {
+browser.tabs.onReplaced.addListener((addedTabId, removedTabId) => {
+	browser.tabs.get(addedTabId).then((tab) => {
 		webNavigationListener("getStyles", {tabId: addedTabId, frameId: 0, url: tab.url});
 	});
 });
 
-browser.tabs.onCreated.addListener(function (tab) {
+browser.tabs.onCreated.addListener((tab) => {
 	updateIcon(tab);
 });
 
@@ -150,10 +150,10 @@ function disableAllStylesToggle(newState) {
 }
 
 // Get the DB so that any first run actions will be performed immediately when the background page loads.
-getDatabase(function() {}, reportError);
+getDatabase(() => {}, reportError);
 
 // Modify CSP
-browser.webRequest.onHeadersReceived.addListener(function(e) {
+browser.webRequest.onHeadersReceived.addListener((e) => {
 	if (!prefs.get("modify-csp")) {
 		return {"responseHeaders": e.responseHeaders};
 	}
@@ -185,14 +185,14 @@ function toggleAutoUpdate(e) {
 	}
 }
 function autoUpdateStyles() {
-	getStyles({}, function(styles) {
+	getStyles({}, (styles) => {
 		for (let style of styles) {
 			if (!style.url || !style.autoUpdate) {
 				continue;
 			} else if (!style.md5Url || !style.originalMd5) {
 				updateStyleFullCode(style);
 			} else {
-				checkStyleUpdateMd5(style).then(function(needsUpdate) {
+				checkStyleUpdateMd5(style).then((needsUpdate) => {
 					if (needsUpdate) {
 						updateStyleFullCode(style);
 					}
@@ -205,7 +205,7 @@ toggleAutoUpdate(prefs.get('auto-update'));
 
 function openURL(options, sendResponse) {
 	delete options.method;
-	getActiveTab(function(tab) {
+	getActiveTab((tab) => {
 		// re-use an active new tab page
 		// Firefox may have more than 1 newtab url, so check all
 		var isNewTab = false;

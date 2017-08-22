@@ -29,7 +29,7 @@ if (/Chrome\/(\d+)\.(\d+)/.test(navigator.userAgent)) {
 }
 
 // make querySelectorAll enumeration code readable
-["forEach", "some", "indexOf", "map"].forEach(function(method) {
+["forEach", "some", "indexOf", "map"].forEach((method) => {
 	if (typeof(NodeList.prototype[method]) === 'undefined') {
 		NodeList.prototype[method]= Array.prototype[method];
 	}
@@ -56,7 +56,7 @@ function getParams() {
 	if (urlParts.length == 1) {
 		return params;
 	}
-	urlParts[1].split("&").forEach(function(keyValue) {
+	urlParts[1].split("&").forEach((keyValue) => {
 		var splitKeyValue = keyValue.split("=", 2);
 		params[decodeURIComponent(splitKeyValue[0])] = decodeURIComponent(splitKeyValue[1]);
 	});
@@ -81,7 +81,7 @@ function canStyle(url) {
 
 // Get Active Tab
 function getActiveTab(callback) {
-	browser.tabs.query({currentWindow: true, active: true}).then(function(tabs) {
+	browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
 		callback(tabs[0]);
 	});
 }
@@ -91,9 +91,9 @@ function trimNewLines(s) {
 }
 
 function getURL(url, isPost) {
-	return new Promise(function(resolve, fail) {
+	return new Promise((resolve, fail) => {
 		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function() {
+		xhr.onreadystatechange = () => {
 			if (xhr.readyState == 4) {
 				if (xhr.status >= 400) {
 					fail();

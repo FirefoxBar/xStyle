@@ -58,13 +58,13 @@ function tDocLoader() {
 	tNodeList(document.querySelectorAll("*"));
 
 	// localize BODY
-	var observer = new MutationObserver(function(mutations) {
+	var observer = new MutationObserver((mutations) => {
 		for (var m = 0; m < mutations.length; m++) {
 			tNodeList(mutations[m].addedNodes);
 		}
 	});
 	observer.observe(document, {subtree: true, childList: true});
-	document.addEventListener("DOMContentLoaded", function() {
+	document.addEventListener("DOMContentLoaded", () => {
 		observer.disconnect();
 		tNodeList(document.querySelectorAll("*"));
 	});

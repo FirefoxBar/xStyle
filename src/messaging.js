@@ -1,7 +1,7 @@
 function notifyAllTabs(request) {
-	return new Promise(function(resolve){
+	return new Promise((resolve) => {
 		if (isMobile) {
-			browser.tabs.query({}).then(function(tabs) {
+			browser.tabs.query({}).then((tabs) => {
 				for (let tab of tabs) {
 					updateIcon(tab);
 					if (canStyle(tab.url)) {
@@ -11,9 +11,9 @@ function notifyAllTabs(request) {
 				resolve();
 			});
 		} else {
-			browser.windows.getAll({populate: true}).then(function(windows) {
-				windows.forEach(function(win) {
-					win.tabs.forEach(function(tab) {
+			browser.windows.getAll({populate: true}).then((windows) => {
+				windows.forEach((win) => {
+					win.tabs.forEach((tab) => {
 						updateIcon(tab);
 						if (canStyle(tab.url)) {
 							browser.tabs.sendMessage(tab.id, request);
@@ -29,7 +29,7 @@ function notifyAllTabs(request) {
 	});
 }
 function notifyBackground(request) {
-	return new Promise(function(resolve) {
+	return new Promise((resolve) => {
 		browser.runtime.sendMessage(shallowMerge({}, request, {method: "notifyBackground", reason: request.method}));
 	});
 }
@@ -60,7 +60,7 @@ function updateIcon(tab, styles) {
 	}
 	if (styles) {
 		// check for not-yet-existing tabs e.g. omnibox instant search
-		browser.tabs.get(tab.id).then(function() {
+		browser.tabs.get(tab.id).then(() => {
 			// for 'styles' asHash:true fake the length by counting numeric ids manually
 			if (styles.length === undefined) {
 				styles.length = 0;
@@ -72,7 +72,7 @@ function updateIcon(tab, styles) {
 		});
 		return;
 	}
-	getTabRealURL(tab, function(url) {
+	getTabRealURL(tab, (url) => {
 		// if we have access to this, call directly. a page sending a message to itself doesn't seem to work right.
 		if (typeof getStyles != "undefined") {
 			getStyles({matchUrl: url, enabled: true}, stylesReceived);
@@ -96,7 +96,7 @@ function updateIcon(tab, styles) {
 					128: icon
 				},
 				tabId: tab.id
-			}).then(function() {
+			}).then(() => {
 				// if the tab was just closed an error may occur,
 				if (prefs.get("show-badge")) {
 					var t = styles.length ? styles.length.toString() : "";
@@ -117,7 +117,7 @@ function getDomainName(href){
 }
 
 function getActiveTabRealURL(callback) {
-	getActiveTab(function(tab) {
+	getActiveTab((tab) => {
 		getTabRealURL(tab, callback);
 	});
 }
@@ -125,7 +125,7 @@ function getActiveTabRealURL(callback) {
 function isRealUrlAddress(url) {
 	return (
 		url.indexOf("http") === 0 &&
-			["://localhost", "chrome/newtab", "chrome://"].every(function(v) {
+			["://localhost", "chrome/newtab", "chrome://"].every((v) => {
 				return url.indexOf(v) === -1;
 			})
 	) ? url : null;
@@ -135,7 +135,7 @@ function getTabRealURL(tab, callback) {
 	if (tab.url != "chrome://newtab/") {
 		callback(tab.url);
 	} else {
-		browser.webNavigation.getFrame({tabId: tab.id, frameId: 0, processId: -1}).then(function(frame) {
+		browser.webNavigation.getFrame({tabId: tab.id, frameId: 0, processId: -1}).then((frame) => {
 			frame && callback(frame.url);
 		});
 	}
