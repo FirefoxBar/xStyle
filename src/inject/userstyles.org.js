@@ -1,42 +1,46 @@
-browser.runtime.sendMessage({method: "getStyles", url: getIdUrl() || location.href}).then(function(response) {
+browser.runtime.sendMessage({method: "getStyles", url: getIdUrl() || location.href}).then((response) => {
 	if (response.length == 0) {
 		sendEvent("styleCanBeInstalled");
+		return;
+	}
+	let installedStyle = response[0];
+	if (installedStyle.updateUrl !== null && installedStyle.updateUrl.includes('?')) {
+		sendEvent("styleCanBeUpdated");
+		return;
+	}
+	// maybe an update is needed
+	// use the md5 if available
+	if (getMd5Url() && installedStyle.md5Url && installedStyle.originalMd5) {
+		getURL(getMd5Url()).then(function(md5) {
+			if (md5 == installedStyle.originalMd5) {
+				sendEvent("styleAlreadyInstalled");
+				return;
+			} else {
+				sendEvent("styleCanBeUpdated");
+				return;
+			}
+		});
 	} else {
-		var installedStyle = response[0];
-		if (installedStyle.updateUrl !== null && installedStyle.updateUrl.includes('?')) {
-			sendEvent("styleCanBeUpdated", {updateUrl: installedStyle.updateUrl});
-		}
-		// maybe an update is needed
-		// use the md5 if available
-		if (getMd5Url() && installedStyle.md5Url && installedStyle.originalMd5) {
-			getURL(getMd5Url()).then(function(md5) {
-				if (md5 == installedStyle.originalMd5) {
-					sendEvent("styleAlreadyInstalled", {updateUrl: installedStyle.updateUrl});
-				} else {
-					sendEvent("styleCanBeUpdated", {updateUrl: installedStyle.updateUrl});
-				}
-			});
-		} else {
-			getURL(getCodeUrl()).then(function(code) {
-				// this would indicate a failure (a style with settings?).
-				if (code == null) {
-					sendEvent("styleCanBeUpdated", {updateUrl: installedStyle.updateUrl});
-				}
-				var json = JSON.parse(code);
-				if (json.sections.length == installedStyle.sections.length) {
-					if (json.sections.every(function(section) {
-						return installedStyle.sections.some(function(installedSection) {
-							return sectionsAreEqual(section, installedSection);
-						});
-					})) {
-						// everything's the same
-						sendEvent("styleAlreadyInstalled", {updateUrl: installedStyle.updateUrl});
-						return;
-					};
-				}
-				sendEvent("styleCanBeUpdated", {updateUrl: installedStyle.updateUrl});
-			});
-		}
+		getURL(getCodeUrl()).then(function(code) {
+			// this would indicate a failure (a style with settings?).
+			if (code == null) {
+				sendEvent("styleCanBeUpdated");
+				return;
+			}
+			let json = JSON.parse(code);
+			if (json.sections.length == installedStyle.sections.length) {
+				if (json.sections.every(function(section) {
+					return installedStyle.sections.some(function(installedSection) {
+						return sectionsAreEqual(section, installedSection);
+					});
+				})) {
+					// everything's the same
+					sendEvent("styleAlreadyInstalled");
+					return;
+				};
+			}
+			sendEvent("styleCanBeInstalled");
+		});
 	}
 });
 
@@ -54,6 +58,7 @@ function usoInstall () {
 	if (confirm(browser.i18n.getMessage('styleInstall', [styleName]))) {
 		if (hasAdvanced()) {
 			getAdvanced().then(function(advanced) {
+				console.log(advanced.option);
 				var cssURL = 'https://userstyles.org/styles/' + style_id + '.css?' + advanced.query;
 				var css = getURL(cssURL);
 				var md5 = getURL(getMd5Url());
@@ -102,7 +107,7 @@ function getAdvanced() {
 			"select": {},
 			"radio": {},
 			"text": {},
-			"css": document.getElementById('stylish-code').innerHTML
+			"css": parseMozillaFormat(document.getElementById('stylish-code').value)
 		};
 		let r = '';
 		let file_count = 0;
@@ -118,7 +123,7 @@ function getAdvanced() {
 				}
 			});
 			r += '&';
-			inputs.select[e.name] = options;
+			inputs.select[e.name.replace(/^ik-/, '')] = options;
 		});
 		//radio
 		area.querySelectorAll('input[type="radio"]:checked').forEach(function(e) {
@@ -139,10 +144,10 @@ function getAdvanced() {
 			if (e.value === 'user-url' || e.value === 'user-upload') {
 				return;
 			}
-			if (typeof(inputs.radio[e.name]) === 'undefined') {
-				inputs.radio[e.name] = [];
+			if (typeof(inputs.radio[e.name.replace(/^ik-/, '')]) === 'undefined') {
+				inputs.radio[e.name.replace(/^ik-/, '')] = [];
 			}
-			inputs.radio[e.name].push({
+			inputs.radio[e.name.replace(/^ik-/, '')].push({
 				"name": e.nextElementSibling.childNodes[0].childNodes[1].textContent,
 				"url": e.parentElement.querySelector('.eye_image').getAttribute('data-tip').match(/src=(.*?) /)[1]
 			});
@@ -154,7 +159,7 @@ function getAdvanced() {
 			while (!p.classList.contains('setting_div') && p.parentElement) {
 				p = p.parentElement;
 			}
-			inputs.text[e.name] = p.querySelector('.title_setting').innerHTML;
+			inputs.text[e.name.replace(/^ik-/, '')] = p.querySelector('.title_setting').innerHTML;
 		});
 		//checkEnd
 		function checkEnd() {
