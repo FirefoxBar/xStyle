@@ -4,14 +4,15 @@ browser.runtime.sendMessage({method: "getStyles", url: getIdUrl() || location.hr
 		return;
 	}
 	let installedStyle = response[0];
-	if (installedStyle.updateUrl !== null && installedStyle.updateUrl.includes('?')) {
+	if (Object.keys(installedStyle.advanced.saved).length > 0) {
 		sendEvent("styleCanBeUpdated");
 		return;
 	}
 	// maybe an update is needed
 	// use the md5 if available
-	if (getMd5Url() && installedStyle.md5Url && installedStyle.originalMd5) {
-		getURL(getMd5Url()).then((md5) => {
+	let md5_url = getMd5Url();
+	if (md5_url && installedStyle.md5Url && installedStyle.originalMd5) {
+		getURL(md5_url).then((md5) => {
 			if (md5 == installedStyle.originalMd5) {
 				sendEvent("styleAlreadyInstalled");
 				return;
@@ -21,26 +22,8 @@ browser.runtime.sendMessage({method: "getStyles", url: getIdUrl() || location.hr
 			}
 		});
 	} else {
-		getURL(getCodeUrl()).then((code) => {
-			// this would indicate a failure (a style with settings?).
-			if (code == null) {
-				sendEvent("styleCanBeUpdated");
-				return;
-			}
-			let json = JSON.parse(code);
-			if (json.sections.length == installedStyle.sections.length) {
-				if (json.sections.every((section) => {
-					return installedStyle.sections.some((installedSection) => {
-						return sectionsAreEqual(section, installedSection);
-					});
-				})) {
-					// everything's the same
-					sendEvent("styleAlreadyInstalled");
-					return;
-				};
-			}
-			sendEvent("styleCanBeInstalled");
-		});
+		sendEvent("styleCanBeInstalled");
+		return;
 	}
 });
 
@@ -57,27 +40,42 @@ function usoInstall () {
 	});
 	if (confirm(browser.i18n.getMessage('styleInstall', [styleName]))) {
 		if (hasAdvanced()) {
-			getAdvanced().then((advanced) => {
-				let cssURL = 'https://userstyles.org/styles/' + style_id + '.css?';
-				for (let k in advanced.saved) {
-					cssURL += 'ik-' + k + '=' + encodeURIComponent(advanced.saved[k]) + '&';
+			Promise.all([getURL('https://userstyles.org/api/v1/styles/' + style_id), getURL(md5_url), getAdvanced()]).then((results) => {
+				let serverJson = JSON.parse(results[0]);
+				let md5 = results[1];
+				let advanced = results[2];
+				let rawCss = parseMozillaFormat(serverJson.css);
+				// Parse advanced
+				for (let i of serverJson.style_settings) {
+					advanced.item[i.install_key] = {"type": i.setting_type, "title": i.label};
+					switch (i.setting_type) {
+						case 'dropdown':
+						case 'image':
+							advanced.item[i.install_key].option = {};
+							for (let oneOption of i.style_setting_options) {
+								advanced.item[i.install_key].option[oneOption.install_key] = {
+									"title": oneOption.label,
+									"value": oneOption.value
+								};
+							}
+							break;
+						case 'color':
+						case 'text':
+							advanced.item[i.install_key].default = i.style_setting_options[0].value;
+							break;
+					}
 				}
-				cssURL = cssURL.substr(0, url.length - 1);
-				var css = getURL(cssURL);
-				var md5 = getURL(getMd5Url());
-				Promise.all([css, md5]).then((results) => {
-					var style = {
-						"name": styleName,
-						"updateUrl": 'https://userstyles.org/styles/' + style_id + '.css',
-						"md5Url": getMd5Url(),
-						"url": getIdUrl(),
-						"author": author,
-						"originalMd5": results[1],
-						"advanced": advanced,
-						"sections": parseMozillaFormat(results[0])
-					};
-					styleInstallByCode(style);
-				});
+				let style = {
+					"name": styleName,
+					"updateUrl": 'https://userstyles.org/styles/' + style_id + '.css',
+					"md5Url": md5_url,
+					"url": getIdUrl(),
+					"author": author,
+					"originalMd5": md5,
+					"advanced": advanced,
+					"sections": parseMozillaFormat(results[0])
+				};
+				styleInstallByCode(style);
 			});
 		} else {
 			getURL(getCodeUrl()).then((code) => {
@@ -105,55 +103,49 @@ function readImage(file) {
 	});
 }
 function getAdvanced() {
+	let getParent = (e) => {
+		let p = e.parentElement;
+		while (!p.classList.contains('setting_div') && p.parentElement) {
+			p = p.parentElement;
+		}
+		return p;
+	};
+	let getTitle = (e) => {
+		return getParent(e).querySelector('.title_setting').innerHTML;
+	};
+	let removePrefix = (v) => {
+		return v.replace(/^ik-/, '');
+	};
 	return new Promise((resolve) => {
 		let advanced = {"item": {}, "saved": {}, "css": parseMozillaFormat(document.getElementById('stylish-code').value)};
 		let file_count = 0;
 		let area = document.getElementById('advancedsettings_area');
 		//select
 		area.querySelectorAll('select').forEach((e) => {
-			let options = {};
 			e.querySelectorAll('option').forEach((option) => {
-				options[option.value] = option.innerHTML;
 				if (option.selected) {
-					advanced.saved[e.name.replace(/^ik-/, '')] = option.value;
+					advanced.saved[removePrefix(e.name)] = removePrefix(option.value);
 				}
 			});
-			advanced.item[e.name.replace(/^ik-/, '')] = {"type": "select", "option": options};
 		});
 		//radio
 		area.querySelectorAll('input[type="radio"]:checked').forEach((e) => {
 			if (e.value === 'user-url') {
-				advanced.saved[e.name.replace(/^ik-/, '')] = e.nextElementSibling.value;
+				advanced.saved[removePrefix(e.name)] = e.nextElementSibling.value;
 			} else if (e.value === 'user-upload') {
 				file_count++;
 				readImage(e.parentElement.querySelector('input[type="file"]').files[0]).then((dataURL) => {
-					advanced.saved[e.name.replace(/^ik-/, '')] = dataURL;
+					advanced.saved[removePrefix(e.name)] = dataURL;
 					file_count--;
 					checkEnd();
 				});
 			} else {
-				advanced.saved[e.name.replace(/^ik-/, '')] = e.value;
+				advanced.saved[removePrefix(e.name)] = e.value;
 			}
-		});
-		area.querySelectorAll('input[type="radio"]').forEach((e) => {
-			if (e.value === 'user-url' || e.value === 'user-upload') {
-				return;
-			}
-			if (typeof(advanced.item[e.name.replace(/^ik-/, '')]) === 'undefined') {
-				advanced.item[e.name.replace(/^ik-/, '')] = {"type": "radio", "option": {}};
-			}
-			let name = e.nextElementSibling.childNodes[0].childNodes[1].textContent;
-			let value = e.parentElement.querySelector('.eye_image').getAttribute('data-tip').match(/src=(.*?) /)[1];
-			advanced.item[e.name.replace(/^ik-/, '')].option[name] = value;
 		});
 		//text
 		area.querySelectorAll('input[type="text"]').forEach((e) => {
-			advanced.item[e.name.replace(/^ik-/, '')] = e.value;
-			let p = e.parentElement;
-			while (!p.classList.contains('setting_div') && p.parentElement) {
-				p = p.parentElement;
-			}
-			advanced.item[e.name.replace(/^ik-/, '')] = p.querySelector('.title_setting').innerHTML;
+			advanced.saved[removePrefix(e.name)] = e.value;
 		});
 		//checkEnd
 		function checkEnd() {

@@ -8,44 +8,6 @@ function getIdUrl() {
 	return getMeta("xstyle-id-url") || getMeta("stylish-id-url");
 }
 
-if (typeof(getParams) !== 'function') {
-	function getParams() {
-		var params = {};
-		var urlParts = location.href.split("?", 2);
-		if (urlParts.length == 1) {
-			return params;
-		}
-		urlParts[1].split("&").forEach((keyValue) => {
-			var splitKeyValue = keyValue.split("=", 2);
-			params[decodeURIComponent(splitKeyValue[0])] = decodeURIComponent(splitKeyValue[1]);
-		});
-		return params;
-	}
-}
-
-function sectionsAreEqual(a, b) {
-	if (a.code != b.code) {
-		return false;
-	}
-	return ["urls", "urlPrefixes", "domains", "regexps"].every((attribute) => {
-		return arraysAreEqual(a[attribute], b[attribute]);
-	});
-}
-
-function arraysAreEqual(a, b) {
-	// treat empty array and undefined as equivalent
-	if (typeof a == "undefined")
-		return (typeof b == "undefined") || (b.length == 0);
-	if (typeof b == "undefined")
-		return (typeof a == "undefined") || (a.length == 0);
-	if (a.length != b.length) {
-		return false;
-	}
-	return a.every((entry) => {
-		return b.indexOf(entry) !== -1;
-	});
-}
-
 function sendEvent(type, data) {
 	if (typeof data == "undefined") {
 		data = null;
