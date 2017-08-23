@@ -65,6 +65,8 @@ function usoInstall () {
 							break;
 					}
 				}
+				// Parse raw css
+				advanced.css = parseMozillaFormat(serverJson.css);
 				let style = {
 					"name": styleName,
 					"updateUrl": 'https://userstyles.org/styles/' + style_id + '.css',
@@ -73,7 +75,7 @@ function usoInstall () {
 					"author": author,
 					"originalMd5": md5,
 					"advanced": advanced,
-					"sections": parseMozillaFormat(results[0])
+					"sections": applyAdvanced(advanced.css, advanced.item, advanced.saved)
 				};
 				styleInstallByCode(style);
 			});
@@ -103,21 +105,11 @@ function readImage(file) {
 	});
 }
 function getAdvanced() {
-	let getParent = (e) => {
-		let p = e.parentElement;
-		while (!p.classList.contains('setting_div') && p.parentElement) {
-			p = p.parentElement;
-		}
-		return p;
-	};
-	let getTitle = (e) => {
-		return getParent(e).querySelector('.title_setting').innerHTML;
-	};
 	let removePrefix = (v) => {
 		return v.replace(/^ik-/, '');
 	};
 	return new Promise((resolve) => {
-		let advanced = {"item": {}, "saved": {}, "css": parseMozillaFormat(document.getElementById('stylish-code').value)};
+		let advanced = {"item": {}, "saved": {}, "css": ''};
 		let file_count = 0;
 		let area = document.getElementById('advancedsettings_area');
 		//select

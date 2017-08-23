@@ -142,7 +142,7 @@ function updateStyleFullCode(style) {
 			"author": style.author || null,
 			"originalMd5": null,
 			"advanced": style.advanced,
-			"sections": applyAdvanced(rawCss, style.advanced.saved)
+			"sections": applyAdvanced(rawCss, style.advanced.item, style.advanced.saved)
 		};
 		if (md5 !== null) {
 			toSave.originalMd5 = md5;
@@ -185,7 +185,7 @@ function updateStyleFullCode(style) {
 				serverJson.advanced.saved = style.advanced.saved;
 			}
 			if (Object.keys(style.advanced.saved).length > 0) {
-				serverJson.sections = applyAdvanced(style.advanced.css, style.advanced.saved)
+				serverJson.sections = applyAdvanced(style.advanced.css, style.advanced.item, style.advanced.saved);
 			}
 			update(style, serverJson);
 		});
@@ -200,11 +200,12 @@ function applyAdvanced(css, item, saved) {
 		}
 		switch (item[k].type) {
 			case 'text':
+			case 'color':
 				return v;
-			case 'select':
-				return item[k].option[v];
-			case 'radio':
-				return typeof(item[k].option[v]) === 'undefined' ? v : item[k].option[v];
+			case 'dropdown':
+				return item[k].option[v].value;
+			case 'image':
+				return typeof(item[k].option[v]) === 'undefined' ? v : item[k].option[v].value;
 		}
 	};
 	let result = [];
