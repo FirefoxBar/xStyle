@@ -60,7 +60,7 @@ function usoInstall () {
 			getAdvanced().then((advanced) => {
 				let cssURL = 'https://userstyles.org/styles/' + style_id + '.css?';
 				for (let k in advanced.saved) {
-					cssURL += 'ik-' + k + '=' + encodeURIComponent(style.advanced.saved[k]) + '&';
+					cssURL += 'ik-' + k + '=' + encodeURIComponent(advanced.saved[k]) + '&';
 				}
 				cssURL = cssURL.substr(0, url.length - 1);
 				var css = getURL(cssURL);
@@ -106,13 +106,7 @@ function readImage(file) {
 }
 function getAdvanced() {
 	return new Promise((resolve) => {
-		let advanced = {
-			"select": {},
-			"radio": {},
-			"text": {},
-			"saved": {},
-			"css": parseMozillaFormat(document.getElementById('stylish-code').value)
-		};
+		let advanced = {"item": {}, "saved": {}, "css": parseMozillaFormat(document.getElementById('stylish-code').value)};
 		let file_count = 0;
 		let area = document.getElementById('advancedsettings_area');
 		//select
@@ -124,7 +118,7 @@ function getAdvanced() {
 					advanced.saved[e.name.replace(/^ik-/, '')] = option.value;
 				}
 			});
-			advanced.select[e.name.replace(/^ik-/, '')] = options;
+			advanced.item[e.name.replace(/^ik-/, '')] = {"type": "select", "option": options};
 		});
 		//radio
 		area.querySelectorAll('input[type="radio"]:checked').forEach((e) => {
@@ -145,22 +139,21 @@ function getAdvanced() {
 			if (e.value === 'user-url' || e.value === 'user-upload') {
 				return;
 			}
-			if (typeof(advanced.radio[e.name.replace(/^ik-/, '')]) === 'undefined') {
-				advanced.radio[e.name.replace(/^ik-/, '')] = [];
+			if (typeof(advanced.item[e.name.replace(/^ik-/, '')]) === 'undefined') {
+				advanced.item[e.name.replace(/^ik-/, '')] = {"type": "radio", "option": {}};
 			}
-			advanced.radio[e.name.replace(/^ik-/, '')].push({
-				"name": e.nextElementSibling.childNodes[0].childNodes[1].textContent,
-				"url": e.parentElement.querySelector('.eye_image').getAttribute('data-tip').match(/src=(.*?) /)[1]
-			});
+			let name = e.nextElementSibling.childNodes[0].childNodes[1].textContent;
+			let value = e.parentElement.querySelector('.eye_image').getAttribute('data-tip').match(/src=(.*?) /)[1];
+			advanced.item[e.name.replace(/^ik-/, '')].option[name] = value;
 		});
 		//text
 		area.querySelectorAll('input[type="text"]').forEach((e) => {
-			advanced.saved[e.name.replace(/^ik-/, '')] = e.value;
+			advanced.item[e.name.replace(/^ik-/, '')] = e.value;
 			let p = e.parentElement;
 			while (!p.classList.contains('setting_div') && p.parentElement) {
 				p = p.parentElement;
 			}
-			advanced.text[e.name.replace(/^ik-/, '')] = p.querySelector('.title_setting').innerHTML;
+			advanced.item[e.name.replace(/^ik-/, '')] = p.querySelector('.title_setting').innerHTML;
 		});
 		//checkEnd
 		function checkEnd() {

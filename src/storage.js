@@ -102,6 +102,9 @@ function filterStyles(styles, options) {
 
 function saveStyle(o, callback) {
 	delete o["method"];
+	if (typeof(o.advanced) === 'undefined') {
+		o.advanced = {"item": {}, "saved": {}, "css": ''};
+	}
 	getDatabase(function(db) {
 		var tx = db.transaction(["styles"], "readwrite");
 		var os = tx.objectStore("styles");
@@ -674,7 +677,7 @@ function upgradeTo2() {
 				let s = cursor.value;
 				s.id = cursor.key;
 				if (!s.advanced) {
-					s.advanced = {"select": {}, "radio": {}, "text": {}, "saved": {}, "css": ''};
+					s.advanced = {"item": {}, "saved": {}, "css": ''};
 				}
 				if (s.updateUrl && s.updateUrl.includes('?')) {
 					let params = s.updateUrl.substr(s.updateUrl.indexOf('?') + 1).split('&');

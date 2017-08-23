@@ -70,9 +70,6 @@ function styleInstallByCode(json) {
 			json.id = response[0].id;
 			delete json.name;
 		}
-		if (typeof(json.advanced) === 'undefined') {
-			json.advanced = {"select": {}, "radio": {}, "text": {}, "saved": {}, "css": ''};
-		}
 		browser.runtime.sendMessage(json).then((response) => {
 			sendEvent("styleInstalled");
 		});

@@ -181,9 +181,7 @@ function updateStyleFullCode(style) {
 				return;
 			}
 			// if it is json, continue
-			if (typeof(serverJson.advanced) === 'undefined') {
-				serverJson.advanced = {"select": {}, "radio": {}, "text": {}, "saved": {}, "css": ''};
-			} else {
+			if (typeof(serverJson.advanced) !== 'undefined') {
 				serverJson.advanced.saved = style.advanced.saved;
 			}
 			if (Object.keys(style.advanced.saved).length > 0) {
@@ -195,11 +193,24 @@ function updateStyleFullCode(style) {
 }
 
 // Apply advanced to a style
-function applyAdvanced(css, advanced) {
+function applyAdvanced(css, item, saved) {
+	let getValue = (k, v) => {
+		if (typeof(item[k]) === 'undefined') {
+			return null;
+		}
+		switch (item[k].type) {
+			case 'text':
+				return v;
+			case 'select':
+				return item[k].option[v];
+			case 'radio':
+				return typeof(item[k].option[v]) === 'undefined' ? v : item[k].option[v];
+		}
+	};
 	let result = [];
 	for (let section of css) {
-		for (let k in advanced) {
-			section.code = section.code.replace(new RegExp('\\/\\*\\[\\[' + k + '\\]\\]\\*\\/', 'g'), advanced[k]);
+		for (let k in saved) {
+			section.code = section.code.replace(new RegExp('\\/\\*\\[\\[' + k + '\\]\\]\\*\\/', 'g'), getValue(k, saved[k]));
 		}
 		result.push(section);
 	}
