@@ -19,7 +19,7 @@ function sendEvent(type, data) {
 function styleInstall () {
 	var styleName = getMeta('xstyle-name');
 	if (confirm(browser.i18n.getMessage('styleInstall', [styleName]))) {
-		getResource(getCodeUrl(), (code) => {
+		getURL(getCodeUrl()).then((code) => {
 			styleInstallByCode(JSON.parse(code));
 		});
 	}
