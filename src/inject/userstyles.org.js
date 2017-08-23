@@ -109,7 +109,7 @@ function getAdvanced() {
 		return v.replace(/^ik-/, '');
 	};
 	return new Promise((resolve) => {
-		let advanced = {"item": {}, "saved": {}, "css": ''};
+		let advanced = {"item": {}, "saved": {}, "css": []};
 		let file_count = 0;
 		let area = document.getElementById('advancedsettings_area');
 		//select
