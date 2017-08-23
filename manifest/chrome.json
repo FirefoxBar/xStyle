@@ -20,32 +20,32 @@
 		"clipboardWrite"
 	],
 	"background": {
-		"scripts": ["src/browser-polyfill.js", "src/common.js", "src/messaging.js", "src/storage.js", "src/background.js"]
+		"scripts": ["scripts/browser-polyfill.js", "scripts/common.js", "scripts/messaging.js", "scripts/storage.js", "scripts/background.js"]
 	},
 	"content_scripts": [
 		{
 			"matches": ["<all_urls>"],
 			"run_at": "document_start",
 			"all_frames": true,
-			"js": ["src/browser-polyfill.js", "src/inject/apply.js"]
+			"js": ["scripts/browser-polyfill.js", "scripts/inject/apply.js"]
 		},
 		{
 			"matches": ["http://userstyles.org/*", "https://userstyles.org/*"],
 			"run_at": "document_end",
 			"all_frames": false,
-			"js": ["src/browser-polyfill.js", "src/common.js", "src/userstyle.js", "src/inject/install.js", "src/inject/userstyles.org.js"]
+			"js": ["scripts/browser-polyfill.js", "scripts/common.js", "scripts/userstyle.js", "scripts/inject/install.js", "scripts/inject/userstyles.org.js"]
 		},
 		{
 			"matches": ["http://*.firefoxcn.net/*", "https://*.firefoxcn.net/*", "https://*.github.io/*", "https://*.oschina.io/*"],
 			"run_at": "document_end",
 			"all_frames": false,
-			"js": ["src/browser-polyfill.js", "src/common.js", "src/userstyle.js", "src/inject/install.js"]
+			"js": ["scripts/browser-polyfill.js", "scripts/common.js", "scripts/userstyle.js", "scripts/inject/install.js"]
 		},
 		{
 			"matches": ["https://login.microsoftonline.com/*", "https://ext.firefoxcn.net/*"],
 			"run_at": "document_start",
 			"all_frames": false,
-			"js": ["src/browser-polyfill.js", "src/inject/cloud.js"]
+			"js": ["scripts/browser-polyfill.js", "scripts/inject/cloud.js"]
 		}
 	],
 	"update_url": "https://ext.firefoxcn.net/xstyle/install/update.xml",

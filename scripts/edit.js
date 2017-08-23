@@ -1149,8 +1149,9 @@ function initWithStyle(style) {
 	getSections().forEach((div) => {
 		div.remove();
 	});
-	var queue = style.sections.length ? style.sections : [{code: ""}];
-	var queueStart = new Date().getTime();
+	let sections = style.advanced.css.length ? style.advanced.css : style.sections;
+	let queue = sections.length ? sections : [{code: ""}];
+	let queueStart = new Date().getTime();
 	// after 100ms the sections will be added asynchronously
 	while (new Date().getTime() - queueStart <= 100 && queue.length) {
 		add();
