@@ -18,7 +18,7 @@ Element.prototype.closest = Element.prototype.closest || function(selector) {
 	return e;
 };
 
-Array.prototype.rotate = (amount) => { // negative amount == rotate left
+Array.prototype.rotate = function(amount) { // negative amount == rotate left
 	var r = this.slice(-amount, this.length);
 	Array.prototype.push.apply(r, this.slice(0, this.length - r.length));
 	return r;
@@ -215,7 +215,7 @@ function initCodeMirror() {
 		});
 	};
 
-	CM.prototype.getSection = () => {
+	CM.prototype.getSection = function() {
 		return this.display.wrapper.parentNode;
 	};
 
