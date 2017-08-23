@@ -2,7 +2,7 @@ var lastUpdatedStyleId = null;
 var installed;
 
 function showStyles(styles) {
-	styles.map(createStyleElement).forEach(function(e) {
+	styles.map(createStyleElement).forEach((e) => {
 		installed.appendChild(e);
 		recalculateStyleRight(e);
 	});
@@ -33,11 +33,11 @@ function createStyleElement(style) {
 	var urlPrefixes = [];
 	var regexps = [];
 	function add(array, property) {
-		style.sections.forEach(function(section) {
+		style.sections.forEach((section) => {
 			if (section[property]) {
-				section[property].filter(function(value) {
+				section[property].filter((value) => {
 					return array.indexOf(value) === -1;
-				}).forEach(function(value) {
+				}).forEach((value) => {
 					array.push(value);
 				});;
 			}
@@ -53,9 +53,13 @@ function createStyleElement(style) {
 	if (urls)
 		appliesToToShow = appliesToToShow.concat(urls);
 	if (urlPrefixes)
-		appliesToToShow = appliesToToShow.concat(urlPrefixes.map(function(u) { return u + "*"; }));
+		appliesToToShow = appliesToToShow.concat(urlPrefixes.map((u) => {
+			return u + "*";
+		}));
 	if (regexps)
-		appliesToToShow = appliesToToShow.concat(regexps.map(function(u) { return "/" + u + "/"; }));
+		appliesToToShow = appliesToToShow.concat(regexps.map((u) => {
+			return "/" + u + "/";
+		}));
 	var appliesTo = e.querySelector(".applies-to");
 	if (appliesToToShow.length) {
 		for (let line of appliesToToShow) {
@@ -74,8 +78,12 @@ function createStyleElement(style) {
 	editLink.setAttribute("href", editLink.getAttribute("href") + style.id);
 	var exportLink = e.querySelector(".style-export-link");
 	exportLink.setAttribute("href", exportLink.getAttribute("href") + style.id);
-	e.querySelector(".enable").addEventListener("click", function(event) { enable(event, true); }, false);
-	e.querySelector(".disable").addEventListener("click", function(event) { enable(event, false); }, false);
+	e.querySelector(".enable").addEventListener("click", (event) => {
+		enable(event, true);
+	}, false);
+	e.querySelector(".disable").addEventListener("click", (event) => {
+		enable(event, false);
+	}, false);
 	if (style.updateUrl) {
 		e.querySelector(".update").addEventListener("click", doUpdate, false);
 		e.querySelector(".update").classList.remove('hidden');
@@ -134,7 +142,7 @@ function getStyleElement(event) {
 	return null;
 }
 
-browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	switch (request.method) {
 		case "styleUpdated":
 			handleUpdate(request.style);
@@ -179,8 +187,8 @@ function updateAllStyles() {
 	var elements = document.querySelectorAll("[style-update-url]");
 	var toCheckCount = elements.length;
 	var updatableCount = 0;
-	elements.forEach(function(element) {
-		checkUpdate(element, function(success) {
+	elements.forEach((element) => {
+		checkUpdate(element, (success) => {
 			if (success) {
 				++updatableCount;
 			}
@@ -195,7 +203,7 @@ function checkUpdate(element, callback, isNoToast) {
 	element.querySelector(".update .loading").style.display = "inline-block";
 	var id = element.getAttribute("style-id");
 
-	browser.runtime.sendMessage({method: "getStyles", "id": id}).then(function(response) {
+	browser.runtime.sendMessage({method: "getStyles", "id": id}).then((response) => {
 		var style = response[0];
 		if (!style.md5Url || !style.originalMd5) {
 			updateStyleFullCode(style);
@@ -203,7 +211,7 @@ function checkUpdate(element, callback, isNoToast) {
 				callback(true);
 			}
 		} else {
-			checkStyleUpdateMd5(style).then(function(needsUpdate) {
+			checkStyleUpdateMd5(style).then((needsUpdate) => {
 				if (needsUpdate) {
 					updateStyleFullCode(style);
 					if (callback) {
@@ -233,14 +241,14 @@ function showToast(message) {
 
 // import and export
 function onSaveToFileClick(){
-	getStyles({}, function(styles){
+	getStyles({}, (styles) => {
 		var text = JSON.stringify(styles);
 		saveAsFile(text, generateFileName());
 	});
 }
 
 function onLoadFromFileClick(){
-	loadFromFile(XSTYLE_DUMP_FILE_EXT).then(function(result){
+	loadFromFile(XSTYLE_DUMP_FILE_EXT).then((result) => {
 		var json = JSON.parse(result[0]);
 
 		var i = 0, nextStyle;
@@ -264,7 +272,7 @@ function onLoadFromFileClick(){
 }
 
 function onInstallFromFileClick(){
-	loadFromFile('.json,.css').then(function(result) {
+	loadFromFile('.json,.css').then((result) => {
 		var filename = result[1];
 		var rawText = result[0];
 		// Detect file type
@@ -318,7 +326,7 @@ function onInstallFromFileClick(){
 				showToast(t('fileTypeUnknown'));
 				return;
 		}
-		saveStyle(json, function() {
+		saveStyle(json, () => {
 			window.location.reload();
 		});
 	});
@@ -377,7 +385,7 @@ function getCloud() {
 function cloudLoginCallback(type, code) {
 	var cloud = getCloud();
 	if (cloudLoginTab !== null) {
-		browser.tabs.remove(cloudLoginTab.id).then(function() {
+		browser.tabs.remove(cloudLoginTab.id).then(() => {
 			cloudLoginTab = null;
 		});
 	}
@@ -389,25 +397,25 @@ function cloudLoadList() {
 	document.getElementById('cloud_loaded').style.display = 'none';
 	document.getElementById('cloud_beforeload').style.display = 'none';
 	document.getElementById('cloud_loading').style.display = 'table-row';
-	document.getElementById('cloud_filelist').querySelectorAll('tr').forEach(function(el) {
+	document.getElementById('cloud_filelist').querySelectorAll('tr').forEach((el) => {
 		if (!el.classList.contains('special')) {
 			el.remove();
 		}
 	});
-	cloud.getUser().then(function(r) {
+	cloud.getUser().then((r) => {
 		if (r === null) {
 			browser.runtime.sendMessage({
 				"method": "openURL",
 				"url": cloud.getLoginUrl(),
 				"active": true
-			}).then(function(tab) {
+			}).then((tab) => {
 				cloudLoginTab = tab;
 			});
 		} else {
-			cloud.getFileList().then(function(result) {
+			cloud.getFileList().then((result) => {
 				var p = document.getElementById('cloud_filelist');
 				var template = p.querySelector('.template');
-				result.forEach(function(v) {
+				result.forEach((v) => {
 					var newElement = template.cloneNode(true);
 					newElement.className = '';
 					newElement.querySelector('.name').innerHTML = v.name;
@@ -416,7 +424,7 @@ function cloudLoadList() {
 						newElement.setAttribute('data-cloud', v.data);
 					}
 					if (typeof(componentHandler) !== 'undefined') {
-						newElement.querySelectorAll('.mdl-button').forEach(function(btn) {
+						newElement.querySelectorAll('.mdl-button').forEach((btn) => {
 							componentHandler.upgradeElement(btn, 'MaterialButton');
 						});
 					}
@@ -438,7 +446,7 @@ function cloudExport() {
 		document.getElementById('cloud_beforeload').style.display = 'none';
 		document.getElementById('cloud_loading').style.display = 'table-row';
 		var cloud = getCloud();
-		getStyles({}, function(styles){
+		getStyles({}, (styles) => {
 			cloud.uploadFile(name, JSON.stringify(styles)).then(cloudLoadList);
 		});
 	}
@@ -450,7 +458,7 @@ function cloudImport() {
 	if (confirm(t('cloudImportConfirm', [filename]))) {
 		this.querySelector('.mdl-spinner').style.display = 'inline-block';
 		var cloud = getCloud();
-		cloud.getFile(filename, tr.getAttribute('data-cloud')).then(function(content) {
+		cloud.getFile(filename, tr.getAttribute('data-cloud')).then((content) => {
 			if (typeof(content) === 'string') {
 				content = JSON.parse(content);
 			}
@@ -478,14 +486,14 @@ function cloudDelete() {
 	if (confirm(t('cloudDeleteConfirm', [filename]))) {
 		this.querySelector('.mdl-spinner').style.display = 'inline-block';
 		var cloud = getCloud();
-		cloud.delete(filename, tr.getAttribute('data-cloud')).then(function() {
+		cloud.delete(filename, tr.getAttribute('data-cloud')).then(() => {
 			tr.remove();
 		});
 	}
 }
 
 function cloudTypeChange() {
-	document.getElementById('cloud_filelist').querySelectorAll('tr').forEach(function(el) {
+	document.getElementById('cloud_filelist').querySelectorAll('tr').forEach((el) => {
 		if (!el.classList.contains('special')) {
 			el.remove();
 		}
@@ -496,7 +504,7 @@ function cloudTypeChange() {
 }
 
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", () => {
 	installed = document.getElementById("installed");
 
 	document.getElementById("update-all-styles").addEventListener("click", updateAllStyles);
@@ -511,7 +519,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	]);
 	
 	//menu
-	var toggleMenu = function() {
+	var toggleMenu = () => {
 		if (document.querySelector('.mdl-layout__drawer').classList.contains('is-visible')) {
 			document.querySelector('.mdl-layout__obfuscator').classList.remove('is-visible');
 			document.querySelector('.mdl-layout__drawer').classList.remove('is-visible');
@@ -528,7 +536,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	document.getElementById('cloud_reload_list').addEventListener('click', cloudLoadList);
 	document.getElementById('cloud_export').addEventListener('click', cloudExport);
 	document.getElementById('cloud_beforeload').style.display = 'table-row';
-	document.querySelectorAll('input[name="cloud-type"]').forEach(function(e) {
+	document.querySelectorAll('input[name="cloud-type"]').forEach((e) => {
 		e.addEventListener('change', cloudTypeChange);
 	});
 
