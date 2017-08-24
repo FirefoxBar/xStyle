@@ -2,6 +2,8 @@
 
 var appliesToId = 999; // use of template
 
+let advanceBox = null;
+let advancedId = 0;
 var styleId = null;
 var dirty = {}; // only the actually dirty items here
 var editors = []; // array of all CodeMirror instances
@@ -245,7 +247,7 @@ function initCodeMirror() {
 		);
 		updateFontStyle();
 		if (typeof(componentHandler) !== 'undefined') {
-			Array.prototype.forEach.call(document.querySelectorAll('#options input[type="checkbox"'), (el) => {
+			document.querySelectorAll('#options input[type="checkbox"').forEach((el) => {
 				componentHandler.upgradeElement(el.parentElement, 'MaterialCheckbox');
 			});
 		}
@@ -1080,8 +1082,6 @@ function beautify(event) {
 	}
 }
 
-window.addEventListener("load", init, false);
-
 function init() {
 	var params = getParams();
 	if (!params.id) { // match should be 2 - one for the whole thing, one for the parentheses
@@ -1149,26 +1149,60 @@ function initWithStyle(style) {
 	getSections().forEach((div) => {
 		div.remove();
 	});
-	let sections = style.advanced.css.length ? style.advanced.css : style.sections;
+	let sections = style.advanced.css.length > 0 ? style.advanced.css : style.sections;
 	let queue = sections.length ? sections : [{code: ""}];
 	let queueStart = new Date().getTime();
 	// after 100ms the sections will be added asynchronously
 	while (new Date().getTime() - queueStart <= 100 && queue.length) {
-		add();
+		processQueue();
 	}
-	(function processQueue() {
+	function processQueue() {
 		if (queue.length) {
 			add();
 			setTimeout(processQueue, 0);
 		}
-	})();
-	initHooks();
-
+	};
 	function add() {
 		var sectionDiv = addSection(null, queue.shift());
 		maximizeCodeHeight(sectionDiv, !queue.length);
 		updateLintReport(sectionDiv.CodeMirror, prefs.get("editor.lintDelay"));
 	}
+
+	if (style.advanced.css.length > 0) {
+		let advancedItems = style.advanced.item;
+		let advancedQueue = Object.keys(advancedItems);
+		let advancedQueueStart = new Date().getTime();
+		// after 200ms the advanced will be added asynchronously
+		while (new Date().getTime() - advancedQueueStart <= 200 && advancedQueue.length) {
+			processAdvancedQueue();
+		}
+		function processAdvancedQueue() {
+			if (advancedQueue.length) {
+				addAdvanced();
+				setTimeout(processAdvancedQueue, 0);
+			}
+		};
+		function addAdvanced() {
+			let k = advancedQueue.shift();
+			switch (advancedItems[k].type) {
+				case 'dropdown':
+					createAdvancedDropdown(k, advancedItems[k].title, advancedItems[k].option);
+					break;
+				case 'text':
+					createAdvancedText(k, advancedItems[k].title, advancedItems[k].default);
+					break;
+				case 'image':
+					createAdvancedImage(k, advancedItems[k].title, advancedItems[k].option);
+					break;
+				case 'color':
+					createAdvancedColor(k, advancedItems[k].title, advancedItems[k].default);
+					break;
+			}
+			delete advancedItems[k];
+		}
+	}
+
+	initHooks();
 }
 
 function initHooks() {
@@ -1196,6 +1230,99 @@ function initHooks() {
 	setCleanGlobal();
 	updateTitle();
 }
+
+function createAdvancedText(k, title, value) {
+	let n = template.advancedText.cloneNode(true);
+	if (k) {
+		n.querySelector('.key').value = k;
+	}
+	if (title) {
+		n.querySelector('.title').value = title;
+	}
+	if (value) {
+		n.querySelector('.default').value = value;
+	}
+	n.querySelectorAll('.mdl-textfield').forEach((e) => {
+		e.querySelector('input').id = "advanced-" + advancedId;
+		e.querySelector('label').setAttribute('for', "advanced-" + advancedId);componentHandler.upgradeElement(e, 'MaterialTextfield');
+		advancedId++;
+	});
+	advanceBox.appendChild(n);
+}
+function createAdvancedColor(k, title, value) {
+	let n = template.advancedColor.cloneNode(true);
+	if (k) {
+		n.querySelector('.key').value = k;
+	}
+	if (title) {
+		n.querySelector('.title').value = title;
+	}
+	if (value) {
+		n.querySelector('.default').value = value;
+	}
+	n.querySelectorAll('.mdl-textfield').forEach((e) => {
+		e.querySelector('input').id = "advanced-" + advancedId;
+		e.querySelector('label').setAttribute('for', "advanced-" + advancedId);componentHandler.upgradeElement(e, 'MaterialTextfield');
+		advancedId++;
+	});
+	advanceBox.appendChild(n);
+}
+function createAdvancedDropdown(key, title, items) {
+	let n = template.advancedDropdown.cloneNode(true);
+	let options = n.querySelector('.options');
+	if (key) {
+		n.querySelector('.key').value = key;
+	}
+	if (title) {
+		n.querySelector('.title').value = title;
+	}
+	if (items) {
+		for (let k in items) {
+			let m = template.advancedDropdownItem.cloneNode(true);
+			m.querySelector('.item-key').value = k;
+			m.querySelector('.item-title').value = items[k].title;
+			m.querySelector('textarea').value = items[k].value;
+			options.appendChild(m);
+			m.CodeMirror = setupCodeMirror(m.querySelector('textarea'));
+			setCleanSection(m);
+		}
+	}
+	n.querySelectorAll('.mdl-textfield').forEach((e) => {
+		e.querySelector('input').id = "advanced-" + advancedId;
+		e.querySelector('label').setAttribute('for', "advanced-" + advancedId);componentHandler.upgradeElement(e, 'MaterialTextfield');
+		advancedId++;
+	});
+	advanceBox.appendChild(n);
+}
+function createAdvancedImage(key, title, items) {
+	let n = template.advancedImage.cloneNode(true);
+	let options = n.querySelector('.options');
+	if (key) {
+		n.querySelector('.key').value = key;
+	}
+	if (title) {
+		n.querySelector('.title').value = title;
+	}
+	if (items) {
+		for (let k in items) {
+			let m = template.advancedImageItem.cloneNode(true);
+			m.querySelector('.item-key').value = k;
+			m.querySelector('.item-title').value = items[k].title;
+			m.querySelector('.item-value').value = items[k].value;
+			m.querySelector('.remove').addEventListener('click', () => {
+				m.remove();
+			});
+			options.appendChild(m);
+		}
+	}
+	n.querySelectorAll('.mdl-textfield').forEach((e) => {
+		e.querySelector('input').id = "advanced-" + advancedId;
+		e.querySelector('label').setAttribute('for', "advanced-" + advancedId);componentHandler.upgradeElement(e, 'MaterialTextfield');
+		advancedId++;
+	});
+	advanceBox.appendChild(n);
+}
+
 
 function maximizeCodeHeight(sectionDiv, isLast) {
 	var cm = sectionDiv.CodeMirror;
@@ -1297,17 +1424,23 @@ function save() {
 		alert(error);
 		return;
 	}
-	var name = document.getElementById("name").value;
-	var enabled = document.getElementById("enabled").checked;
-	var autoUpdate = document.getElementById("autoUpdate").checked;
-	var request = {
+	let name = document.getElementById("name").value;
+	let enabled = document.getElementById("enabled").checked;
+	let autoUpdate = document.getElementById("autoUpdate").checked;
+	let sections = getSectionsHashes();
+	let request = {
 		method: "saveStyle",
 		id: styleId,
 		name: name,
 		enabled: enabled,
-		autoUpdate: autoUpdate,
-		sections: getSectionsHashes()
+		autoUpdate: autoUpdate
 	};
+	let advanced = readAdvanced();
+	if (advanced) {
+		request.sections = applyAdvanced(sections, styleAdvanced.item, styleAdvanced.saved);
+	} else {
+		request.sections = sections;
+	}
 	browser.runtime.sendMessage(request).then(saveComplete);
 }
 
@@ -1615,6 +1748,8 @@ function getComputedHeight(el) {
 
 
 document.addEventListener("DOMContentLoaded", () => {
+	advanceBox = document.getElementById('advanced');
+	init();
 	//menu
 	var toggleMenu = () => {
 		if (document.querySelector('.mdl-layout__drawer').classList.contains('is-visible')) {
@@ -1625,6 +1760,37 @@ document.addEventListener("DOMContentLoaded", () => {
 			document.querySelector('.mdl-layout__drawer').classList.add('is-visible');
 		}
 	};
+	// toggle advanced
+	document.getElementById('toggle-advanced').addEventListener('click', () => {
+		let box = document.getElementById('advanced-box');
+		if (box.classList.contains('close')) {
+			box.classList.remove('close');
+			let list = Array.prototype.slice.call(box.querySelectorAll('.dropdown-item'));
+			let queueStart = new Date().getTime();
+			// after 100ms the advanced will be updated asynchronously
+			while (new Date().getTime() - queueStart <= 100 && list.length) {
+				processQueue();
+			}
+			function processQueue() {
+				if (list.length) {
+					updateAdvanced();
+					setTimeout(processQueue, 0);
+				}
+			};
+			function updateAdvanced() {
+				let e = list.shift();
+				if (e.CodeMirror === undefined) {
+					e.CodeMirror = setupCodeMirror(e.querySelector('textarea'));
+					setCleanSection(e);
+				} else {
+					e.CodeMirror.refresh();
+				}
+			}
+		} else {
+			box.classList.add('close');
+		}
+	});
+
 	document.getElementById('menu-button').addEventListener('click', toggleMenu);
 	document.querySelector('.mdl-layout__obfuscator').addEventListener('click', toggleMenu);
 });
