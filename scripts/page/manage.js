@@ -78,6 +78,11 @@ function createStyleElement(style) {
 	editLink.setAttribute("href", editLink.getAttribute("href") + style.id);
 	var exportLink = e.querySelector(".style-export-link");
 	exportLink.setAttribute("href", exportLink.getAttribute("href") + style.id);
+	let advancedLink = e.querySelector(".style-advanced-link");
+	if (Object.keys(style.advanced.item).length > 0) {
+		advancedLink.setAttribute("href", advancedLink.getAttribute("href") + style.id);
+		advancedLink.classList.remove('hidden');
+	}
 	e.querySelector(".enable").addEventListener("click", (event) => {
 		enable(event, true);
 	}, false);
@@ -414,9 +419,9 @@ function cloudLoadList() {
 		} else {
 			cloud.getFileList().then((result) => {
 				var p = document.getElementById('cloud_filelist');
-				var template = p.querySelector('.template');
+				var tpl = p.querySelector('.template');
 				result.forEach((v) => {
-					var newElement = template.cloneNode(true);
+					var newElement = tpl.cloneNode(true);
 					newElement.className = '';
 					newElement.querySelector('.name').innerHTML = v.name;
 					newElement.querySelector('.size').innerHTML = Math.round(v.size / 1000).toString() + 'kb';

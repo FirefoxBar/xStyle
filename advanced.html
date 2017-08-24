@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Advanced</title>
+	<link rel="stylesheet" href="third-party/material-design-icons/material-icons.min.css"/>
+	<link rel="stylesheet" href="third-party/mdl/material.min.css"/>
+	<link rel="stylesheet" href="page.css"/>
+	<script src="scripts/browser-polyfill.js"></script>
+	<script src="scripts/common.js"></script>
+	<script src="scripts/localization.js"></script>
+	<script src="scripts/storage.js"></script>
+	<script src="scripts/messaging.js"></script>
+	<script src="scripts/userstyle.js"></script>
+	<script src="scripts/inject/apply.js"></script>
+	<script src="scripts/page/advanced.js"></script>
+
+	<style>
+	#setting-list .image {
+		display: inline-block;
+		box-sizing: border-box;
+		width: 120px;
+		padding: 10px;
+	}
+	#setting-list .image img {
+		display: block;
+		width: 100px;
+		height: 100px;
+		margin: 0 auto;
+	}
+	#setting-list .image .title {
+		margin-top: 5px;
+		display: block;
+		width: 100%;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		box-sizing: border-box;
+		text-align: center;
+	}
+	#setting-list input[type="color"] {
+		border: none;
+		background-color: transparent;
+		padding: 0;
+		cursor: pointer;
+		height: 25px;
+		width: 50px;
+		margin-top: 5px;
+	}
+	#setting-list select {
+		margin-top: 5px;
+		min-width: 100px;
+		height: 28px;
+	}
+	</style>
+	<template data-id="dropdown">
+		<div class="mdl-cell mdl-cell--4-col">
+			<span class="title"></span><br><select class="options"></select>
+		</div>
+	</template>
+	<template data-id="text">
+		<div class="mdl-textfield mdl-textfield--floating-label mdl-cell mdl-cell--4-col">
+			<input class="mdl-textfield__input" type="text" id="name">
+			<label class="mdl-textfield__label title" for="name"></label>
+		</div>
+	</template>
+	<template data-id="image">
+		<div class="mdl-textfield mdl-textfield--floating-label mdl-cell mdl-cell--12-col"><p class="title"></p></div>
+	</template>
+	<template data-id="image_item">
+		<label class="image">
+			<img>
+			<div class="title"><input type="radio"></div>
+		</label>
+	</template>
+	<template data-id="color">
+		<div class="mdl-cell mdl-cell--4-col">
+			<label><span class="title"></span><br><input type="color"></label>
+		</div>
+	</template>
+	
+</head>
+<body id="xstyle-advanced">
+<div class="mdl-layout mdl-layout--fixed-drawer">
+	<div class="mdl-layout__obfuscator"></div>
+	<header class="mdl-layout__header">
+		<div class="mdl-layout__header-row">
+			<div id="menu-button" aria-expanded="false" role="button" tabindex="0" class="mdl-layout__drawer-button"><i class="material-icons">menu</i></div>
+			<span class="mdl-layout-title">Advanced</span>
+			<div class="mdl-layout-spacer"></div>
+		</div>
+	</header>
+	<div class="menu mdl-layout__drawer">
+		<span class="mdl-layout-title"><p><img src="images/128.png"></p><p>xStyle</p></span>
+		<nav class="mdl-navigation">
+			<a class="mdl-navigation__link style-edit-link" i18n-text="editStyleLabel" href="edit.html?id="></a>
+			<a class="mdl-navigation__link" i18n-text="styleCancelEditLabel" href="manage.html"></a>
+		</nav>
+	</div>
+	<main class="mdl-layout__content">
+		<div class="page-content">
+			<div class="mdl-card mdl-shadow--2dp">
+				<div class="mdl-card__title mdl-card--expand">
+					<h2 class="mdl-card__title-text">Advanced</h2>
+				</div>
+				<div id="setting-list" class="mdl-card__supporting-text mdl-grid"></div>
+				<div class="mdl-card__actions mdl-card--border">
+					<button id="save" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Save</button>
+				</div>
+			</div>
+		</div>
+	</main>
+</div>
+<div id="toast" class="mdl-js-snackbar mdl-snackbar">
+	<div class="mdl-snackbar__text"></div>
+	<button class="mdl-snackbar__action" type="button"></button>
+</div>
+<script src="third-party/mdl/material.min.js"></script>
+<script src="scripts/md5.min.js"></script>
+</body>
+</html>

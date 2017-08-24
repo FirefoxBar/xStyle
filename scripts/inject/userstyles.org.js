@@ -44,7 +44,7 @@ function usoInstall () {
 				let serverJson = JSON.parse(results[0]);
 				let md5 = results[1];
 				let advanced = results[2];
-				let rawCss = parseMozillaFormat(serverJson.css);
+				advanced.css = parseMozillaFormat(serverJson.css);
 				// Parse advanced
 				for (let i of serverJson.style_settings) {
 					advanced.item[i.install_key] = {"type": i.setting_type, "title": i.label};
@@ -65,8 +65,6 @@ function usoInstall () {
 							break;
 					}
 				}
-				// Parse raw css
-				advanced.css = parseMozillaFormat(serverJson.css);
 				let style = {
 					"name": styleName,
 					"updateUrl": 'https://userstyles.org/styles/' + style_id + '.css',
@@ -113,12 +111,8 @@ function getAdvanced() {
 		let file_count = 0;
 		let area = document.getElementById('advancedsettings_area');
 		//select
-		area.querySelectorAll('select').forEach((e) => {
-			e.querySelectorAll('option').forEach((option) => {
-				if (option.selected) {
-					advanced.saved[removePrefix(e.name)] = removePrefix(option.value);
-				}
-			});
+		area.querySelectorAll('option:checked').forEach((e) => {
+			advanced.saved[removePrefix(e.parentElement.name)] = removePrefix(e.value);
 		});
 		//radio
 		area.querySelectorAll('input[type="radio"]:checked').forEach((e) => {
@@ -132,7 +126,7 @@ function getAdvanced() {
 					checkEnd();
 				});
 			} else {
-				advanced.saved[removePrefix(e.name)] = e.value;
+				advanced.saved[removePrefix(e.name)] = removePrefix(e.value);
 			}
 		});
 		//text

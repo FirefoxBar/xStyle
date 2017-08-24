@@ -1,8 +1,8 @@
-var propertyToCss = {urls: "url", urlPrefixes: "url-prefix", domains: "domain", regexps: "regexp"};
-
 function init() {
 	var params = getParams();
 	if (!params.id) { // match should be 2 - one for the whole thing, one for the parentheses
+		window.location.href = 'manage.html';
+		return;
 	}
 	requestStyle();
 	function requestStyle() {
@@ -12,7 +12,6 @@ function init() {
 				return;
 			}
 			var style = styles[0];
-			styleId = style.id;
 			initWithStyle(style);
 		});
 	}
@@ -45,6 +44,7 @@ function doExport() {
 		"originalMd5": document.getElementById("originalMd5").value || null,
 		"url": document.getElementById("url").value || null,
 		"author": document.getElementById("author").value || null,
+		"advanced": window.style.advanced || {"item": {}, "saved": {}, "css": []},
 		"sections": window.style.sections
 	};
 	// Copy md5 to clipboard

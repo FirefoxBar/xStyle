@@ -24,7 +24,7 @@ Array.prototype.rotate = function(amount) { // negative amount == rotate left
 	return r;
 }
 
-Object.defineProperty(Array.prototype, "last", {get: () => { return this[this.length - 1]; }});
+Object.defineProperty(Array.prototype, "last", {get: function() { return this[this.length - 1]; }});
 
 // reroute handling to nearest editor when keypress resolves to one of these commands
 var hotkeyRerouter = {
@@ -459,7 +459,7 @@ function addAppliesTo(list, name, value) {
 	} else {
 		e = template.appliesToEverything.cloneNode(true);
 	}
-	e.querySelector(".add-applies-to").addEventListener("click", () => {
+	e.querySelector(".add-applies-to").addEventListener("click", function() {
 		addAppliesTo(this.parentNode.parentNode);
 	}, false);
 	if (e.querySelector(".mdl-textfield") && typeof(componentHandler) !== 'undefined') {

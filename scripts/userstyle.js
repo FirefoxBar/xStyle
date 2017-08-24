@@ -210,10 +210,18 @@ function applyAdvanced(css, item, saved) {
 	};
 	let result = [];
 	for (let section of css) {
+		let code = section.code;
 		for (let k in saved) {
-			section.code = section.code.replace(new RegExp('\\/\\*\\[\\[' + k + '\\]\\]\\*\\/', 'g'), getValue(k, saved[k]));
+			code = code.replace(new RegExp('\\/\\*\\[\\[' + k + '\\]\\]\\*\\/', 'g'), getValue(k, saved[k]));
 		}
-		result.push(section);
+		// Copy a object
+		result.push({
+			"urls": section.urls,
+			"urlPrefixes": section.urlPrefixes,
+			"domains": section.domains,
+			"regexps": section.regexps,
+			"code": code
+		});
 	}
 	return result;
 }
