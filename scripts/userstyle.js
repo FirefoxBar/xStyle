@@ -8,8 +8,11 @@ function parseMozillaFormat(css) {
 		"code": ""
 	}];
 	let mozStyle = trimNewLines(css.replace(/@namespace url\((.*?)\);/g, ""));
-	let currentIndex = 0;
+	let currentIndex = mozStyle.indexOf('@-moz-document ');
 	let lastIndex = 0;
+	if (currentIndex > 0) {
+		allSection[0].code += "\n" + trimNewLines(mozStyle.substr(0, currentIndex - 1));
+	}
 	// split by @-moz-document
 	while (mozStyle.indexOf('@-moz-document ', currentIndex) >= 0) {
 		currentIndex = ignoreSomeCodes(mozStyle, currentIndex);
@@ -51,6 +54,9 @@ function parseMozillaFormat(css) {
 	}
 	function parseOneSection(f) {
 		f = f.replace('@-moz-document ', '');
+		if (f === '') {
+			return;
+		}
 		let section = {
 			"urls": [],
 			"urlPrefixes": [],
@@ -59,7 +65,9 @@ function parseMozillaFormat(css) {
 			"code": ""
 		};
 		while (true) {
-			f = trimNewLines(trimNewLines(f).replace(/^,/, ''));
+			do {
+				f = trimNewLines(f).replace(/^,/, '').replace(/^\/\*(.*?)\*\//, '');
+			} while (!/^(url|url-prefix|domain|regexp)\((['"]?)(.+?)\2\)/.test(f) && f[0] !== '{');
 			let m = f.match(/^(url|url-prefix|domain|regexp)\((['"]?)(.+?)\2\)/);
 			if (!m) {
 				break;
@@ -74,7 +82,7 @@ function parseMozillaFormat(css) {
 		// split this section
 		let index = 0;
 		let leftCount = 0;
-		while (true) {
+		while (index < f.length - 1) {
 			index = ignoreSomeCodes(f, index);
 			if (f[index] === '{') {
 				leftCount++;
