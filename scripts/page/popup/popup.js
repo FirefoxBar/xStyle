@@ -104,8 +104,8 @@ function onDisableAllCheckboxChange(){
 	var disable = !this.checked;
 	prefs.set("disableAll", disable);
 	renderAllSwitch();
-	notifyBackground({method: "styleDisableAll", disableAll: value}).then(() => {
-		notifyAllTabs({method: "styleDisableAll", disableAll: value});
+	notifyBackground({method: "styleDisableAll", disableAll: disable}).then(() => {
+		notifyAllTabs({method: "styleDisableAll", disableAll: disable});
 	});
 }
 
