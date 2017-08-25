@@ -157,12 +157,12 @@ browser.webRequest.onHeadersReceived.addListener((e) => {
 	if (!prefs.get("modify-csp")) {
 		return {"responseHeaders": e.responseHeaders};
 	}
-	for (var k in e.responseHeaders) {
+	for (let k in e.responseHeaders) {
 		if (e.responseHeaders[k].name.toLowerCase() === 'content-security-policy') {
 			if (!e.responseHeaders[k].value.includes('style-src')) {
 				break;
 			}
-			var csp = e.responseHeaders[k].value.match(/style-src (.*?);/)[1];
+			let csp = /style-src (.*?);/.test(e.responseHeaders[k].value) ? e.responseHeaders[k].value.match(/style-src (.*?);/)[1] : e.responseHeaders[k].value.match(/style-src (.*?)$/)[1];
 			if (csp.includes("'unsafe-inline'")) {
 				break;
 			}
