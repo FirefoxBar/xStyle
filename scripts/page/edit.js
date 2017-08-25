@@ -1242,12 +1242,16 @@ function createAdvancedText(k, title, value) {
 	if (value) {
 		n.querySelector('.default').value = value;
 	}
+	n.querySelector('.remove-top').addEventListener('click', () => {
+		n.remove();
+	});
 	n.querySelectorAll('.mdl-textfield').forEach((e) => {
 		e.querySelector('input').id = "advanced-" + advancedId;
 		e.querySelector('label').setAttribute('for', "advanced-" + advancedId);componentHandler.upgradeElement(e, 'MaterialTextfield');
 		advancedId++;
 	});
 	advanceBox.appendChild(n);
+	return n;
 }
 function createAdvancedColor(k, title, value) {
 	let n = template.advancedColor.cloneNode(true);
@@ -1260,12 +1264,16 @@ function createAdvancedColor(k, title, value) {
 	if (value) {
 		n.querySelector('.default').value = value;
 	}
+	n.querySelector('.remove-top').addEventListener('click', () => {
+		n.remove();
+	});
 	n.querySelectorAll('.mdl-textfield').forEach((e) => {
 		e.querySelector('input').id = "advanced-" + advancedId;
 		e.querySelector('label').setAttribute('for', "advanced-" + advancedId);componentHandler.upgradeElement(e, 'MaterialTextfield');
 		advancedId++;
 	});
 	advanceBox.appendChild(n);
+	return n;
 }
 function createAdvancedDropdown(key, title, items) {
 	let n = template.advancedDropdown.cloneNode(true);
@@ -1276,12 +1284,32 @@ function createAdvancedDropdown(key, title, items) {
 	if (title) {
 		n.querySelector('.title').value = title;
 	}
+	n.querySelector('.remove-top').addEventListener('click', () => {
+		n.remove();
+	});
+	n.querySelector('.add').addEventListener('click', () => {
+		let m = template.advancedDropdownItem.cloneNode(true);
+		m.querySelector('.remove').addEventListener('click', () => {
+			m.remove();
+		});
+		m.querySelectorAll('.mdl-textfield').forEach((e) => {
+			e.querySelector('input').id = "advanced-" + advancedId;
+			e.querySelector('label').setAttribute('for', "advanced-" + advancedId);componentHandler.upgradeElement(e, 'MaterialTextfield');
+			advancedId++;
+		});
+		options.appendChild(m);
+		m.CodeMirror = setupCodeMirror(m.querySelector('textarea'));
+		setCleanSection(m);
+	});
 	if (items) {
 		for (let k in items) {
 			let m = template.advancedDropdownItem.cloneNode(true);
 			m.querySelector('.item-key').value = k;
 			m.querySelector('.item-title').value = items[k].title;
 			m.querySelector('textarea').value = items[k].value;
+			m.querySelector('.remove').addEventListener('click', () => {
+				m.remove();
+			});
 			options.appendChild(m);
 			m.CodeMirror = setupCodeMirror(m.querySelector('textarea'));
 			setCleanSection(m);
@@ -1293,6 +1321,7 @@ function createAdvancedDropdown(key, title, items) {
 		advancedId++;
 	});
 	advanceBox.appendChild(n);
+	return n;
 }
 function createAdvancedImage(key, title, items) {
 	let n = template.advancedImage.cloneNode(true);
@@ -1303,6 +1332,21 @@ function createAdvancedImage(key, title, items) {
 	if (title) {
 		n.querySelector('.title').value = title;
 	}
+	n.querySelector('.remove-top').addEventListener('click', () => {
+		n.remove();
+	});
+	n.querySelector('.add').addEventListener('click', () => {
+		let m = template.advancedImageItem.cloneNode(true);
+		m.querySelector('.remove').addEventListener('click', () => {
+			m.remove();
+		});
+		m.querySelectorAll('.mdl-textfield').forEach((e) => {
+			e.querySelector('input').id = "advanced-" + advancedId;
+			e.querySelector('label').setAttribute('for', "advanced-" + advancedId);componentHandler.upgradeElement(e, 'MaterialTextfield');
+			advancedId++;
+		});
+		options.appendChild(m);
+	});
 	if (items) {
 		for (let k in items) {
 			let m = template.advancedImageItem.cloneNode(true);
@@ -1321,6 +1365,7 @@ function createAdvancedImage(key, title, items) {
 		advancedId++;
 	});
 	advanceBox.appendChild(n);
+	return n;
 }
 
 
@@ -1779,16 +1824,32 @@ document.addEventListener("DOMContentLoaded", () => {
 			};
 			function updateAdvanced() {
 				let e = list.shift();
-				if (e.CodeMirror === undefined) {
-					e.CodeMirror = setupCodeMirror(e.querySelector('textarea'));
-					setCleanSection(e);
-				} else {
-					e.CodeMirror.refresh();
-				}
+				e.CodeMirror.refresh();
 			}
 		} else {
 			box.classList.add('close');
 		}
+	});
+	// Advanced add
+	document.querySelector('.advanced-add-dropdown').addEventListener('click', () => {
+		let n = createAdvancedDropdown();
+		let evt = document.createEvent("MouseEvents");
+		evt.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+		evt.initEvent("click", false, false);
+		n.querySelector('.add').dispatchEvent(evt);
+	});
+	document.querySelector('.advanced-add-image').addEventListener('click', () => {
+		let n = createAdvancedImage();
+		let evt = document.createEvent("MouseEvents");
+		evt.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+		evt.initEvent("click", false, false);
+		n.querySelector('.add').dispatchEvent(evt);
+	});
+	document.querySelector('.advanced-add-text').addEventListener('click', () => {
+		createAdvancedText();
+	});
+	document.querySelector('.advanced-add-color').addEventListener('click', () => {
+		createAdvancedColor();
 	});
 
 	document.getElementById('menu-button').addEventListener('click', toggleMenu);
