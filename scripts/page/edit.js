@@ -1492,9 +1492,10 @@ function save() {
 			// 1. if the original style is set, the original setting is used
 			// 2. if the type of this one is text or color, the default is used
 			// 3. if the type of this one is dropdown or image, the first option is used
-			request.advanced.saved[k] = typeof(advancedSaved[k]) === 'undefined' ? advancedSaved[k] : (typeof(advanced[k].default) === 'undefined' ? Object.keys(advanced[k].option)[0] : advanced[k].default);
+			request.advanced.saved[k] = typeof(advancedSaved[k]) !== 'undefined' ? advancedSaved[k] : (typeof(advanced[k].default) === 'undefined' ? Object.keys(advanced[k].option)[0] : advanced[k].default);
 		}
-		console.log(sections, advanced, request.advanced.saved);
+		// merge the global variable
+		advancedSaved = deepCopy(request.advanced.saved);
 		request.sections = applyAdvanced(sections, advanced, request.advanced.saved);
 	} else {
 		request.sections = sections;
