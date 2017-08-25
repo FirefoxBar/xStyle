@@ -75,9 +75,7 @@ function addStyleToInstalled(style){
 	el.querySelector(".delete").addEventListener('click', onDeleteStyleClick(style));
 	//material
 	if (typeof(componentHandler) !== 'undefined') {
-		var switcher = el.querySelector(".mdl-switch");
-		componentHandler.upgradeElement(switcher, 'MaterialSwitch');
-		componentHandler.upgradeElement(switcher.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
+		componentHandler.upgradeElement(el.querySelector(".mdl-switch"), 'MaterialSwitch');
 	}
 	installed.appendChild(el);
 	return el;
@@ -98,9 +96,7 @@ function renderAllSwitch(isFirst){
 	}
 	//material
 	if (typeof(componentHandler) !== 'undefined' && isFirst) {
-		disableAllCheckbox.parentElement.classList.add('mdl-js-ripple-effect');
 		componentHandler.upgradeElement(disableAllCheckbox.parentElement, 'MaterialSwitch');
-		componentHandler.upgradeElement(disableAllCheckbox.parentElement.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
 	}
 }
 
