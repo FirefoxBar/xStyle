@@ -678,16 +678,8 @@ function upgradeTo2() {
 				s.id = cursor.key;
 				if (!s.advanced) {
 					s.advanced = {"item": {}, "saved": {}, "css": []};
+					os.put(s);
 				}
-				if (s.updateUrl && s.updateUrl.includes('?')) {
-					let params = s.updateUrl.substr(s.updateUrl.indexOf('?') + 1).split('&');
-					for (let oneParam of params) {
-						oneParam = oneParam.split('=');
-						s.advanced.saved[oneParam[0].replace(/^ik-/, '')] = decodeURIComponent(oneParam[1]);
-					}
-					s.updateUrl = s.updateUrl.substr(0, s.updateUrl.indexOf('?'));
-				}
-				os.put(s);
 				cursor.continue();
 			}
 		};
