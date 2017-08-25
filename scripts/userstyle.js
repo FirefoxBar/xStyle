@@ -15,12 +15,23 @@ function parseMozillaFormat(css) {
 	}
 	// split by @-moz-document
 	while (mozStyle.indexOf('@-moz-document ', currentIndex) >= 0) {
+		// Jump to next
+		let nextMoz = mozStyle.indexOf('@-moz-document ', currentIndex);
+		let nextComment = mozStyle.indexOf('/*', currentIndex);
+		if (nextComment === -1){
+			nextComment = nextMoz;
+		}
+		let nextQuote = mozStyle.indexOf('"', currentIndex);
+		if (nextQuote === -1){
+			nextQuote = nextMoz;
+		}
+		currentIndex = Math.min(nextMoz, nextComment, nextQuote);
 		currentIndex = ignoreSomeCodes(mozStyle, currentIndex);
 		if (mozStyle.indexOf('@-moz-document ', currentIndex) === currentIndex) {
 			parseOneSection(mozStyle.substr(lastIndex, currentIndex - lastIndex));
 			lastIndex = currentIndex;
+			currentIndex++;
 		}
-		currentIndex++;
 	}
 	// remove global section if it is empty
 	allSection[0].code = trimNewLines(allSection[0].code);
@@ -216,22 +227,21 @@ function applyAdvanced(css, item, saved) {
 				return typeof(item[k].option[v]) === 'undefined' ? v : item[k].option[v].value;
 		}
 	};
-	let result = [];
-	for (let section of css) {
-		let code = section.code;
-		for (let k in saved) {
-			code = code.replace(new RegExp('\\/\\*\\[\\[' + k + '\\]\\]\\*\\/', 'g'), getValue(k, saved[k]));
+	let content = css.map((section) => {
+		var cssMds = [];
+		for (var i in propertyToCss) {
+			if (section[i]) {
+				cssMds = cssMds.concat(section[i].map(function (v){
+					return propertyToCss[i] + "(\"" + v.replace(/\\/g, "\\\\") + "\")";
+				}));
+			}
 		}
-		// Copy a object
-		result.push({
-			"urls": section.urls,
-			"urlPrefixes": section.urlPrefixes,
-			"domains": section.domains,
-			"regexps": section.regexps,
-			"code": code
-		});
+		return cssMds.length ? "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}" : section.code;
+	}).join("\n\n");
+	for (let k in saved) {
+		content = content.replace(new RegExp('\\/\\*\\[\\[' + k + '\\]\\]\\*\\/', 'g'), getValue(k, saved[k]));
 	}
-	return result;
+	return parseMozillaFormat(content);
 }
 
 // two json is equal or not
