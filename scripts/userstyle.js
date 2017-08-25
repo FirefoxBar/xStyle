@@ -96,7 +96,7 @@ function parseMozillaFormat(css) {
 		}
 		if (f[0] === '{') {
 			section.code = trimNewLines(f.substr(1, index - 2));
-			if (index < f.length) {
+			if (index < f.length - 1) {
 				allSection[0].code += "\n" + trimNewLines(f.substr(index));
 			}
 		} else {
