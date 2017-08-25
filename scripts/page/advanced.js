@@ -102,10 +102,10 @@ function createImage(key, item, val) {
 	let user_type = template.image_item.cloneNode(true);
 	user_type.querySelector('input').name = key;
 	user_type.querySelector('input').value = 'user-url';
-	user_type.querySelector('.title').appendChild(document.createTextNode('Enter URL'));
+	user_type.querySelector('.title').appendChild(document.createTextNode(t('advancedEnterURL')));
 	user_type.querySelector('img').src = 'images/input.png';
 	user_type.addEventListener('click', (event) => {
-		let url = window.prompt('Enter a URL', user_type.querySelector('img').src.indexOf('moz-extension') === 0 ? '' : user_type.querySelector('img').src);
+		let url = window.prompt(t('advancedEnterURL'), user_type.querySelector('img').src.indexOf('moz-extension') === 0 ? '' : user_type.querySelector('img').src);
 		if (url) {
 			user_type.querySelector('img').src = url;
 		}
@@ -117,7 +117,7 @@ function createImage(key, item, val) {
 	let file = template.image_item.cloneNode(true);
 	file.querySelector('input').name = key;
 	file.querySelector('input').value = 'user-upload';
-	file.querySelector('.title').appendChild(document.createTextNode('Select a file'));
+	file.querySelector('.title').appendChild(document.createTextNode(t('advancedSelectFile')));
 	file.querySelector('img').src = 'images/file.png';
 	file.addEventListener('click', (event) => {
 		var fileInput = document.createElement('input');
@@ -188,7 +188,7 @@ function onSaveClick() {
 	style.sections = applyAdvanced(style.advanced.css, style.advanced.item, settings);
 	style.method = "saveStyle";
 	browser.runtime.sendMessage(style);
-	showToast('Saved');
+	showToast(t('saveComplete'));
 }
 
 function showToast(message) {
