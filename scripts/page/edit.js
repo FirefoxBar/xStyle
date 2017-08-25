@@ -4,6 +4,7 @@ var appliesToId = 999; // use of template
 
 let advanceBox = null;
 let advancedId = 0;
+let advancedSaved = {};
 var styleId = null;
 var dirty = {}; // only the actually dirty items here
 var editors = []; // array of all CodeMirror instances
@@ -1169,6 +1170,7 @@ function initWithStyle(style) {
 	}
 
 	if (style.advanced.css.length > 0) {
+		advancedSaved = style.advanced.saved;
 		let advancedItems = style.advanced.item;
 		let advancedQueue = Object.keys(advancedItems);
 		let advancedQueueStart = new Date().getTime();
@@ -1478,11 +1480,22 @@ function save() {
 		id: styleId,
 		name: name,
 		enabled: enabled,
+		advanced: {"item": {}, "saved": {}, "css": []},
 		autoUpdate: autoUpdate
 	};
-	let advanced = readAdvanced();
+	let advanced = getPageAdvanced();
 	if (advanced) {
-		request.sections = applyAdvanced(sections, styleAdvanced.item, styleAdvanced.saved);
+		request.advanced.item = advanced;
+		request.advanced.css = sections;
+		for (let k in advanced) {
+			// init saved
+			// 1. if the original style is set, the original setting is used
+			// 2. if the type of this one is text or color, the default is used
+			// 3. if the type of this one is dropdown or image, the first option is used
+			request.advanced.saved[k] = typeof(advancedSaved[k]) === 'undefined' ? advancedSaved[k] : (typeof(advanced[k].default) === 'undefined' ? Object.keys(advanced[k].option)[0] : advanced[k].default);
+		}
+		console.log(sections, advanced, request.advanced.saved);
+		request.sections = applyAdvanced(sections, advanced, request.advanced.saved);
 	} else {
 		request.sections = sections;
 	}
@@ -1502,6 +1515,61 @@ function getSectionsHashes() {
 	});
 	return sections;
 }
+function getPageAdvanced() {
+	if (advanceBox.childNodes.length === 0) {
+		return null;
+	}
+	let items = {};
+	advanceBox.childNodes.forEach((e) => {
+		let type = e.getAttribute('data-advanced');
+		let key = e.querySelector('.key').value;
+		let title = e.querySelector('.title').value;
+		switch (type) {
+			case 'text':
+				items[key] = {
+					"type": type,
+					"title": title,
+					"default": e.querySelector('.default').value
+				};
+				break;
+			case 'color':
+				items[key] = {
+					"type": type,
+					"title": title,
+					"default": e.querySelector('.default').value
+				};
+				break;
+			case 'dropdown':
+				items[key] = {
+					"type": type,
+					"title": title,
+					"option": {}
+				};
+				e.querySelectorAll('.dropdown-item').forEach((n) => {
+					items[key].option[n.querySelector('.item-key').value] = {
+						"title": n.querySelector('.item-title').value,
+						"value": n.querySelector('textarea').value
+					};
+				});
+				break;
+			case 'image':
+				items[key] = {
+					"type": type,
+					"title": title,
+					"option": {}
+				};
+				e.querySelectorAll('.image-item').forEach((n) => {
+					items[key].option[n.querySelector('.item-key').value] = {
+						"title": n.querySelector('.item-title').value,
+						"value": n.querySelector('.item-value').value
+					};
+				});
+				break;
+		}
+	});
+	return items;
+}
+
 
 function getMeta(e) {
 	var meta = {urls: [], urlPrefixes: [], domains: [], regexps: []};
