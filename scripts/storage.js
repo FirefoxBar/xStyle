@@ -13,9 +13,10 @@ function getDatabase(ready, error) {
 		if (event.oldVersion == 0) {
 			// Installed
 			event.target.result.createObjectStore("styles", {keyPath: 'id', autoIncrement: true});
-		}
-		if (event.oldVersion < 2) {
-			upgradeTo2();
+		} else {
+			if (event.oldVersion < 2) {
+				upgradeTo2();
+			}
 		}
 	}
 };
