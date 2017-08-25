@@ -277,7 +277,7 @@ function acmeEventListener(event) {
 			return;
 		case "theme":
 			// use non-localized "default" internally
-			if (!value || value == "default" || value == t("defaultTheme")) {
+			if (!value || value == "default") {
 				value = "default";
 				break;
 			}
