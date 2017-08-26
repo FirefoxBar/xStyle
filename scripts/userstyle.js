@@ -9,12 +9,13 @@ function parseMozillaFormat(css) {
 	}];
 	let mozStyle = trimNewLines(css.replace(/@namespace url\((.*?)\);/g, ""));
 	let currentIndex = mozStyle.indexOf('@-moz-document ');
-	let lastIndex = 0;
+	let lastIndex = currentIndex;
 	if (currentIndex > 0) {
 		allSection[0].code += "\n" + trimNewLines(mozStyle.substr(0, currentIndex - 1));
 	}
 	// split by @-moz-document
 	while (mozStyle.indexOf('@-moz-document ', currentIndex) >= 0) {
+		currentIndex++;
 		// Jump to next
 		let nextMoz = mozStyle.indexOf('@-moz-document ', currentIndex);
 		let nextComment = mozStyle.indexOf('/*', currentIndex);
@@ -26,11 +27,16 @@ function parseMozillaFormat(css) {
 			nextQuote = nextMoz;
 		}
 		currentIndex = Math.min(nextMoz, nextComment, nextQuote);
+		if (currentIndex < 0) {
+			currentIndex = mozStyle.length - 1;
+			console.log(currentIndex);
+			parseOneSection(mozStyle.substr(lastIndex, currentIndex));
+			break;
+		}
 		currentIndex = ignoreSomeCodes(mozStyle, currentIndex);
 		if (mozStyle.indexOf('@-moz-document ', currentIndex) === currentIndex) {
 			parseOneSection(mozStyle.substr(lastIndex, currentIndex - lastIndex));
 			lastIndex = currentIndex;
-			currentIndex++;
 		}
 	}
 	// remove global section if it is empty
@@ -121,6 +127,7 @@ function parseMozillaFormat(css) {
 		addSection(section);
 	}
 	function addSection(section) {
+		console.log(section);
 		// don't add empty sections
 		if (!section.code) {
 			return;
