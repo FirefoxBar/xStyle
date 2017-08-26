@@ -307,7 +307,7 @@ function onInstallFromFileClick(){
 						"author": meta.author || null,
 						"originalMd5": meta.originalMd5 || null
 					};
-					if (Object.keys(meta.advanced) > 0) {
+					if (Object.keys(meta.advanced).length > 0) {
 						let saved = {};
 						for (let k in meta.advanced) {
 							saved[k] = typeof(meta.advanced[k].default) === 'undefined' ? Object.keys(meta.advanced[k].option)[0] : meta.advanced[k].default;

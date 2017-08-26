@@ -29,7 +29,6 @@ function parseMozillaFormat(css) {
 		currentIndex = Math.min(nextMoz, nextComment, nextQuote);
 		if (currentIndex < 0) {
 			currentIndex = mozStyle.length - 1;
-			console.log(currentIndex);
 			parseOneSection(mozStyle.substr(lastIndex, currentIndex));
 			break;
 		}
@@ -127,7 +126,6 @@ function parseMozillaFormat(css) {
 		addSection(section);
 	}
 	function addSection(section) {
-		console.log(section);
 		// don't add empty sections
 		if (!section.code) {
 			return;
