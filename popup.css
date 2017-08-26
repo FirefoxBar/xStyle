@@ -4,7 +4,6 @@ body {
 	margin:0px;
 	overflow-x: hidden;
 }
-
 .hide{
 	display:none;
 }
@@ -16,7 +15,7 @@ a, a:visited {
 }
 .tabs-container > section {
 	display: none;
-	height: 460px;
+	height: 420px;
 	box-sizing: border-box;
 }
 body.unavailable #unavailable {
@@ -28,50 +27,10 @@ body.zerostyles #zerostyles {
 body.have-styles #styles {
 	display: block;	
 }
-#installed {
-	background-color: #fcfcfc;
-	margin-top: 0;
-	margin-bottom: 0;
-	padding-top: 0;
-	overflow-y: auto;
-	overflow-x: hidden;
-	height: calc(100% - 60px);
-}
-#installed .mdl-list__item {
-	padding: 8px;
-}
-#installed .mdl-list__item-primary-content {
-	width: calc(100% - 50px);
-}
-#installed .mdl-list__item-avatar {
-	height: 45px;
-	width: 45px;
-	line-height: 45px;
-	font-size: 25px;
-	text-align: center;
-}
-#installed .style-name {
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	width: calc(100% - 65px);
-	display: inline-block;
-}
-#installed .style-author {
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	max-width: calc(100% - 145px);
-	display: inline-block;
-}
-#installed .mdl-list__item-secondary-action {
-	padding-right: 10px;
-}
 body.all-off #installed {
 	opacity: 0.6;
 	pointer-events: none;
 }
-
 #zerostyles, #unavailable {
 	font-size: 16px;
 	font-weight: 500;
@@ -83,15 +42,15 @@ body.all-off #installed {
 }
 
 #sitename{
-	height:42px;
-	padding-left: 10px;
+	height: 52px;
+	padding-left: 12px;
 	padding-right: 40px;
 	font-size: 16px;
 	font-weight: bold;
 	font-style: normal;
 	font-stretch: normal;
 	color: #2c3e50;
-	line-height:42px;
+	line-height: 52px;
 	border-bottom: 1px solid #d7d7d7;
 	overflow: hidden;
 	white-space: nowrap;
@@ -99,94 +58,25 @@ body.all-off #installed {
 	width: 100%;
 	box-sizing: border-box;
 }
-
-.bottom_controls {
-	z-index: 99;
-	position: relative;
-}
-.bottom_controls .manage_styles, .bottom_controls .add_style {
-	display:block;
-	width: 50%;
-	height: 43.6px;
-	background-color: #3498db;
-	float:right;
-	text-align:center;
-	color:#ffffff;
-	line-height: 42px;
-	font-size: 14px;
-	text-decoration: none;
-}
-.bottom_controls .add_style {
-	background-color: #95a5a6;
-	float: left;
-}
-.bottom_controls::after {
-	display: table;
-	content: "";
-	clear: both;
-}
-
-.tabs-container .notification{
+#getFromUserstyle{
+	background-image:url(images/u.png);
+	height: 22px;
+	width: 22px;
 	position: absolute;
-	z-index: 1;
-	padding: 10px;
-	padding-top: 20px;
-	box-sizing: border-box;
-	width: 252.7px;
-	height: 87px;
-	border-radius: 5px;
-	background-color: #4990e2;
-	box-shadow: 0 6px 17px 0 rgba(0, 0, 0, 0.46);
-	border: solid 1px #3365a6;
-	line-height: 16px;
-}
-.tabs-container .notification:before{
-	content: "";
-	position: absolute;
-	top: -7px;
-	width: 15px;
-	border: solid 1px #3365a6;
-	margin-left: -20px;
-	transform: rotate(45deg);
-}
-.tabs-container .notification:after{
-	content: "";
-	position: absolute;
-	top: 0px;
-	width: 50px;
-	background-color: #4990e2;
-	margin-left: -25px;
-}
-.tabs-container .notification:before,
-.tabs-container .notification:after{
-	left: 82%;
-	height: 15px;
-	background-color: #4990e2;
-}
-.notification header{
-	font-weight: bold;
-}
-.notification{
-	font-size: 12px;
-	color: #ffffff;
-}
-.tabs-container .styles-off-notification{
-	left: 9px;
-	top: 80px;
-}
-.tabs-container .styles-off-notification:not(.animated){
-	visibility: hidden;
+	top: 15px;
+	right: 10px
 }
 
 #tab-item-installed.zero-installed #disable-all-container,
 #tab-item-installed.unavailable #disable-all-container {
 	visibility: hidden;
 }
+
 #disable-all-container{
 	width: 100%;
-	background-color: #ecf0f1;
+	background-color: rgb(239, 239, 239);
 	box-shadow: 0 1px 0 0 #cfd6d9;
-	padding: 14px 22px;
+	padding: 10px 20px 10px 10px;
 	box-sizing: border-box;
 	display: flex;
 	flex-direction: row;
@@ -194,7 +84,6 @@ body.all-off #installed {
 	justify-content: space-between;
 	overflow: visible;
 }
-
 #disable-all-container .disable-all-lable{
 	font-size: 13px;
 	font-weight: bold;
@@ -202,27 +91,85 @@ body.all-off #installed {
 	font-stretch: normal;
 	color: #2c3e50;
 }
-
 #disable-all-container .mdl-switch {
 	width: auto;
 }
 
-#create_style {
-	position:absolute;
-	left:67px;
-	font-size: 14px;
-	font-weight: normal;
-	font-style: normal;
-	font-stretch: normal;
-	line-height: 1.29;
-	color: #95a5a6;
-	text-align:left;
+#installed {
+	background-color: #ffffff;
+	margin-top: 0;
+	margin-bottom: 0;
+	padding-top: 0;
+	overflow-y: auto;
+	overflow-x: hidden;
+	height: calc(100% - 50px);
 }
-#getFromUserstyle{
-	background-image:url(images/u.png);
-	height: 22px;
-	width: 22px;
-	position: absolute;
-	top: 10px;
-	right: 10px
+#installed .mdl-list__item {
+	padding: 8px;
+}
+#installed .mdl-list__item-primary-content {
+	width: calc(100% - 50px);
+	height: auto;
+	line-height: normal;
+}
+#installed .mdl-list__item-avatar {
+	height: 50px;
+	width: 50px;
+	line-height: 50px;
+	font-size: 26px;
+	text-align: center;
+	margin-right: 10px;
+}
+#installed .style-name {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	width: calc(100% - 60px);
+	display: inline-block;
+}
+#installed .style-author {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	max-width: calc(100% - 140px);
+	display: inline-block;
+}
+#installed .mdl-list__item-secondary-action {
+	padding-right: 10px;
+}
+
+.bottom_controls {
+	z-index: 99;
+	position: relative;
+}
+
+.bottom_controls .manage_styles,
+.bottom_controls .add_style {
+	display: block;
+	width: 50%;
+	height: 43.6px;
+	text-align:center;
+	color:#757575;
+	line-height: 42px;
+	font-size: 14px;
+	text-decoration: none;
+	float: left;
+	background-color: rgb(238, 238, 238);
+	transition: background-color .2s cubic-bezier(.4,0,.2,1);
+}
+.bottom_controls .manage_styles:hover,
+.bottom_controls .add_style:hover {
+	background-color: rgb(224, 224, 224);
+}
+/*
+.bottom_controls .manage_styles {
+	background-color: rgb(63, 81, 181);
+}
+.bottom_controls .add_style {
+	background-color: rgb(63, 81, 181);
+}*/
+.bottom_controls::after {
+	display: table;
+	content: "";
+	clear: both;
 }
