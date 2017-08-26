@@ -64,6 +64,9 @@ function exportAsJson() {
 	if (!style) {
 		return;
 	}
+	if (Object.keys(style.advanced.item).length > 0) {
+		delete style.sections;
+	}
 	saveAsFile(JSON.stringify(style), 'xstyle-' + style.originalMd5 + '.json');
 }
 function exportAsUsercss() {
@@ -83,8 +86,41 @@ function exportAsUsercss() {
 		content += "@md5URL " + style.md5Url + "\n";
 	}
 	content += "@originalMD5 " + style.originalMd5 + "\n";
+	let sections = null;
+	if (Object.keys(style.advanced.item).length > 0) {
+		sections = style.advanced.css;
+		for (let k in style.advanced.item) {
+			let item = style.advanced.item[k];
+			content += "@advanced " + item.type + ' ' + k + ' "' + item.title.replace(/"/g, '%22') + '" ';
+			switch (item.type) {
+				case 'text':
+					content += '"' + item.default.replace(/"/g, '%22') + '"';
+					break;
+				case 'color':
+					content += item.default;
+					break;
+				case 'image':
+					content += "{\n";
+					for (let kk in item.option) {
+						content += "\t" + kk + ' "' + item.option[kk].title.replace(/"/g, '%22') + '" "' + item.option[kk].value + "\"\n";
+					}
+					content += "}";
+					break;
+				case 'dropdown':
+					content += "{\n";
+					for (let kk in item.option) {
+						content += "\t" + kk + ' "' + item.option[kk].title.replace(/"/g, '%22') + '" <<<EOT' + "\n" + item.option[kk].value.replace(/\*\//g, '*\\/') + " EOT;\n";
+					}
+					content += "}";
+					break;
+			}
+			content += "\n";
+		}
+	} else {
+		sections = style.sections;
+	}
 	content += "==/UserStyle== */\n\n";
-	content += style.sections.map((section) => {
+	content += sections.map((section) => {
 		var cssMds = [];
 		for (var i in propertyToCss) {
 			if (section[i]) {

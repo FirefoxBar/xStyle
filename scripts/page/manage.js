@@ -297,21 +297,27 @@ function onInstallFromFileClick(){
 			case 'css':
 				if (trimNewLines(rawText).indexOf('/* ==UserStyle==') === 0) {
 					// is .user.css
-					let meta = trimNewLines(rawText.match(/\/\* ==UserStyle==([\s\S]+)==\/UserStyle== \*\//)[1]);
-					json = {};
-					meta.split("\n").forEach((one) => {
-						t = one.match(/@(\w+)([ \t]+)(.*)/);
-						if (typeof(json[t[1]]) === 'undefined') {
-							json[t[1]] = t[3];
-						} else {
-							let tempVal = json[t[1]];
-							json[t[1]] = [];
-							json[t[1]].push(tempVal);
-							json[t[1]].push(t[3]);
-						}
-					});
+					let meta = parseUCMeta(trimNewLines(rawText.match(/\/\* ==UserStyle==([\s\S]+)==\/UserStyle== \*\//)[1]));
 					let body = trimNewLines(rawText.replace(/\/\* ==UserStyle==([\s\S]+)==\/UserStyle== \*\//, ''));
-					json.sections = parseMozillaFormat(body);
+					json = {
+						"name": meta.name,
+						"updateUrl": meta.updateUrl || null,
+						"md5Url": meta.md5Url || null,
+						"url": meta.url || null,
+						"author": meta.author || null,
+						"originalMd5": meta.originalMd5 || null
+					};
+					if (meta.advanced) {
+						let saved = {};
+						for (let k in meta.advanced) {
+							saved[k] = typeof(meta.advanced[k].default) === 'undefined' ? Object.keys(meta.advanced[k].option)[0] : meta.advanced[k].default;
+						}
+						json.advanced = {"item": meta.advanced, "saved": saved, "css": parseMozillaFormat(body)};
+						json.sections = applyAdvanced(json.advanced.css, json.advanced.item, json.advanced.saved);
+					} else {
+						json.advanced = {"item": {}, "saved": {}, "css": []};
+						json.sections = parseMozillaFormat(body);
+					}
 				} else {
 					// is a normal css file
 					let styleName = filename.match(/^(.*?)\./)[1].replace(/([_\-])/g, ' ');
