@@ -86,6 +86,9 @@ function exportAsUsercss() {
 		content += "@md5URL " + style.md5Url + "\n";
 	}
 	content += "@originalMD5 " + style.originalMd5 + "\n";
+	if (style.author) {
+		content += "@author " + style.author + "\n";
+	}
 	let sections = null;
 	if (Object.keys(style.advanced.item).length > 0) {
 		sections = style.advanced.css;

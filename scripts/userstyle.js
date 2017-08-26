@@ -135,7 +135,8 @@ function parseMozillaFormat(css) {
 
 // Parse meta information of .user.css format
 function parseUCMeta(f) {
-	let oneRegexp = /@(name|homepageURL|updateURL|md5URL|originalMD5|advanced)([ \t]+)(.*?)\n/;
+	let alias = {"updateURL": "updateUrl", "md5URL": "md5Url", "homepageURL": "url", "originalMD5": "originalMd5"};
+	let oneRegexp = /@(name|homepageURL|updateURL|md5URL|originalMD5|author|advanced)([ \t]+)(.*?)\n/;
 	let advancedRegexp = /^(text|color|image|dropdown)([ \t]+)(.*?)([ \t]+)"(.*?)"([ \t]+)(.*)/;
 	let imageItemRegexp = /([a-zA-Z0-9\-_]+)([ \t]+)"(.*?)"([ \t]+)"(.*?)"/;
 	let dropdownItemRegexp = /([a-zA-Z0-9\-_]+)([ \t]+)"(.*?)"([ \t]+)<<<EOT([\s\S]+?)EOT;/;
@@ -193,6 +194,9 @@ function parseUCMeta(f) {
 					}
 				}
 			} else {
+				if (typeof(alias[k]) !== 'undefined') {
+					k = alias[k];
+				}
 				result[k] = trimNewLines(t[3]);
 			}
 		}
