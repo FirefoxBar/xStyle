@@ -28,7 +28,7 @@ function parseMozillaFormat(css) {
 		}
 		currentIndex = Math.min(nextMoz, nextComment, nextQuote);
 		if (currentIndex < 0) {
-			currentIndex = mozStyle.length - 1;
+			currentIndex = mozStyle.length;
 			parseOneSection(mozStyle.substr(lastIndex, currentIndex));
 			break;
 		}
