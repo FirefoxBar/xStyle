@@ -103,9 +103,6 @@ function filterStyles(styles, options) {
 
 function saveStyle(o, callback) {
 	delete o["method"];
-	if (typeof(o.advanced) === 'undefined') {
-		o.advanced = {"item": {}, "saved": {}, "css": []};
-	}
 	getDatabase(function(db) {
 		var tx = db.transaction(["styles"], "readwrite");
 		var os = tx.objectStore("styles");
@@ -120,6 +117,9 @@ function saveStyle(o, callback) {
 						continue;
 					}
 					style[prop] = o[prop];
+				}
+				if (typeof(style.advanced) === 'undefined') {
+					style.advanced = {"item": {}, "saved": {}, "css": []};
 				}
 				request = os.put(style);
 				request.onsuccess = function(event) {
@@ -140,6 +140,9 @@ function saveStyle(o, callback) {
 		}).forEach(function(att) {
 			o[att] = null;
 		});
+		if (typeof(o.advanced) === 'undefined') {
+			o.advanced = {"item": {}, "saved": {}, "css": []};
+		}
 		// Set other optional things to empty array if they're undefined
 		o.sections.forEach(function(section) {
 			["urls", "urlPrefixes", "domains", "regexps"].forEach(function(property) {
