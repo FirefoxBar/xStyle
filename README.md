@@ -23,11 +23,19 @@ Then, allow Chrome to install local plugins, add the ID of this extension(`dbbjn
 
 For more information, see [kafan](http://bbs.kafan.cn/thread-1689765-1-1.html) and [tieba](http://tieba.baidu.com/p/3091171066)
 
-## For contributors
+## Contribution
 
 You can contribute codes by [submit a pull request](https://github.com/FirefoxBar/xStyle/compare).
 
 You can help us to translate this extension on [transifex](https://www.transifex.com/sytec/xstyle/).
+
+## Translator
+
+* en: [ShuangYa](https://github.com/sylingd)
+
+* zh-CN: [ShuangYa](https://github.com/sylingd)
+
+* zh-TW: [shyangs](https://github.com/shyangs) [zhtw2013](https://github.com/zhtw2013)
 
 ## Licenses
 
