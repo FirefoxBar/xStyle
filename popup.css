@@ -156,18 +156,12 @@ body.all-off #installed {
 	float: left;
 	background-color: rgb(238, 238, 238);
 	transition: background-color .2s cubic-bezier(.4,0,.2,1);
+	border-top: 1px solid rgb(224, 224, 224);
 }
 .bottom_controls .manage_styles:hover,
 .bottom_controls .add_style:hover {
 	background-color: rgb(224, 224, 224);
 }
-/*
-.bottom_controls .manage_styles {
-	background-color: rgb(63, 81, 181);
-}
-.bottom_controls .add_style {
-	background-color: rgb(63, 81, 181);
-}*/
 .bottom_controls::after {
 	display: table;
 	content: "";
