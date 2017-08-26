@@ -337,8 +337,12 @@ function onInstallFromFileClick(){
 				showToast(t('fileTypeUnknown'));
 				return;
 		}
-		saveStyle(json, () => {
-			window.location.reload();
+		saveStyle(json, (style) => {
+			if (Object.keys(style.advanced.item).length > 0) {
+				window.location.href = 'advanced.html?id=' + style.id;
+			} else {
+				window.location.reload();
+			}
 		});
 	});
 }
