@@ -75,7 +75,7 @@ function updateIcon(tab, styles) {
 	getTabRealURL(tab, (url) => {
 		// if we have access to this, call directly. a page sending a message to itself doesn't seem to work right.
 		if (typeof getStyles != "undefined") {
-			getStyles({matchUrl: url, enabled: true}, stylesReceived);
+			getStyles({matchUrl: url, enabled: true}).then(stylesReceived);
 		} else {
 			browser.runtime.sendMessage({method: "getStyles", matchUrl: url, enabled: true}).then(stylesReceived);
 		}

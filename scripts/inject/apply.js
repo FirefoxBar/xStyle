@@ -16,7 +16,8 @@ function requestStyles() {
 		var bg = browser.extension.getBackgroundPage();
 		if (bg && bg.getStyles) {
 			// apply styles immediately, then proceed with a normal request that will update the icon
-			bg.getStyles(request, applyStyles);
+			bg.getStyles(request).then(applyStyles);
+			return;
 		}
 	}
 	browser.runtime.sendMessage(request).then(applyStyles);

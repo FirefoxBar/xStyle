@@ -1,49 +1,51 @@
-function getDatabase(ready, error) {
-	var dbOpenRequest = window.indexedDB.open("xstyle", 2);
-	dbOpenRequest.onsuccess = function(e) {
-		ready(e.target.result);
-	};
-	dbOpenRequest.onerror = function(event) {
-		console.log(event);
-		if (error) {
-			error(event);
-		}
-	};
-	dbOpenRequest.onupgradeneeded = function(event) {
-		if (event.oldVersion == 0) {
-			// Installed
-			event.target.result.createObjectStore("styles", {keyPath: 'id', autoIncrement: true});
-		} else {
-			if (event.oldVersion < 2) {
-				upgradeTo2();
-			}
-		}
-	}
-};
-
-var cachedStyles = null;
-function getStyles(options, callback) {
-	if (cachedStyles != null) {
-		callback(filterStyles(cachedStyles, options));
-		return;
-	}
-	getDatabase(function(db) {
-		var tx = db.transaction(["styles"], "readonly");
-		var os = tx.objectStore("styles");
-		var all = [];
-		os.openCursor().onsuccess = function(event) {
-			var cursor = event.target.result;
-			if (cursor) {
-				var s = cursor.value;
-				s.id = cursor.key;
-				all.push(cursor.value);
-				cursor.continue();
+function getDatabase() {
+	return new Promise((resolve, reject) => {
+		let dbOpenRequest = window.indexedDB.open("xstyle", 2);
+		dbOpenRequest.onsuccess = function(e) {
+			resolve(e.target.result);
+		};
+		dbOpenRequest.onerror = function(event) {
+			console.log(event);
+			reject(event);
+		};
+		dbOpenRequest.onupgradeneeded = function(event) {
+			if (event.oldVersion == 0) {
+				// Installed
+				event.target.result.createObjectStore("styles", {keyPath: 'id', autoIncrement: true});
 			} else {
-				cachedStyles = all;
-				callback(filterStyles(all, options));
+				if (event.oldVersion < 2) {
+					upgradeTo2();
+				}
 			}
 		};
-  }, null);
+	});
+}
+
+var cachedStyles = null;
+function getStyles(options) {
+	return new Promise((resolve) => {
+		if (cachedStyles != null) {
+			resolve(filterStyles(cachedStyles, options));
+		} else {
+			getDatabase().then((db) => {
+				var tx = db.transaction(["styles"], "readonly");
+				var os = tx.objectStore("styles");
+				var all = [];
+				os.openCursor().onsuccess = function(event) {
+					var cursor = event.target.result;
+					if (cursor) {
+						var s = cursor.value;
+						s.id = cursor.key;
+						all.push(cursor.value);
+						cursor.continue();
+					} else {
+						cachedStyles = all;
+						resolve(filterStyles(all, options));
+					}
+				};
+			});
+		}
+	});
 }
 
 function getInstalledStyleForDomain(domain){
@@ -101,78 +103,74 @@ function filterStyles(styles, options) {
 	return styles;
 }
 
-function saveStyle(o, callback) {
+function saveStyle(o) {
 	delete o["method"];
-	getDatabase(function(db) {
-		var tx = db.transaction(["styles"], "readwrite");
-		var os = tx.objectStore("styles");
-
-		// Update
-		if (o.id) {
-			var request = os.get(Number(o.id));
-			request.onsuccess = function(event) {
-				var style = request.result || {};
-				for (var prop in o) {
-					if (prop == "id") {
-						continue;
-					}
-					style[prop] = o[prop];
-				}
-				if (typeof(style.advanced) === 'undefined') {
-					style.advanced = {"item": {}, "saved": {}, "css": []};
-				}
-				request = os.put(style);
+	return new Promise((resolve) => {
+		getDatabase().then((db) => {
+			var tx = db.transaction(["styles"], "readwrite");
+			var os = tx.objectStore("styles");
+			// Update
+			if (o.id) {
+				var request = os.get(Number(o.id));
 				request.onsuccess = function(event) {
-					notifyAllTabs({method: "styleUpdated", style: style});
-					invalidateCache(true);
-					if (callback) {
-						callback(style);
+					var style = request.result || {};
+					for (var prop in o) {
+						if (prop == "id") {
+							continue;
+						}
+						style[prop] = o[prop];
 					}
+					if (typeof(style.advanced) === 'undefined') {
+						style.advanced = {"item": {}, "saved": {}, "css": []};
+					}
+					request = os.put(style);
+					request.onsuccess = function(event) {
+						notifyAllTabs({method: "styleUpdated", style: style});
+						invalidateCache(true);
+						resolve(style);
+					};
 				};
-			};
-			return;
-		}
-
-		// Create
-		// Set optional things to null if they're undefined
-		["updateUrl", "md5Url", "url", "originalMd5"].filter(function(att) {
-			return !(att in o);
-		}).forEach(function(att) {
-			o[att] = null;
-		});
-		if (typeof(o.advanced) === 'undefined') {
-			o.advanced = {"item": {}, "saved": {}, "css": []};
-		}
-		// Set other optional things to empty array if they're undefined
-		o.sections.forEach(function(section) {
-			["urls", "urlPrefixes", "domains", "regexps"].forEach(function(property) {
-				if (!section[property]) {
-					section[property] = [];
-				}
-			});
-		});
-		// Set to enabled if not set
-		if (!("enabled" in o)) {
-			o.enabled = true;
-		}
-		// Make sure it's not null - that makes indexeddb sad
-		delete o["id"];
-		var request = os.add(o);
-		request.onsuccess = function(event) {
-			invalidateCache(true);
-			// Give it the ID that was generated
-			o.id = event.target.result;
-			notifyAllTabs({method: "styleAdded", style: o});
-			if (callback) {
-				callback(o);
+				return;
 			}
-		};
+			// Create
+			// Set optional things to null if they're undefined
+			["updateUrl", "md5Url", "url", "originalMd5"].filter(function(att) {
+				return !(att in o);
+			}).forEach(function(att) {
+				o[att] = null;
+			});
+			if (typeof(o.advanced) === 'undefined') {
+				o.advanced = {"item": {}, "saved": {}, "css": []};
+			}
+			// Set other optional things to empty array if they're undefined
+			o.sections.forEach(function(section) {
+				["urls", "urlPrefixes", "domains", "regexps"].forEach(function(property) {
+					if (!section[property]) {
+						section[property] = [];
+					}
+				});
+			});
+			// Set to enabled if not set
+			if (!("enabled" in o)) {
+				o.enabled = true;
+			}
+			// Make sure it's not null - that makes indexeddb sad
+			delete o["id"];
+			var request = os.add(o);
+			request.onsuccess = function(event) {
+				invalidateCache(true);
+				// Give it the ID that was generated
+				o.id = event.target.result;
+				notifyAllTabs({method: "styleAdded", style: o});
+				resolve(o);
+			};
+		});
 	});
 }
 
 function enableStyle(id, enabled) {
 	return new Promise(function(resolve){
-		saveStyle({id: id, enabled: enabled}, function(style) {
+		saveStyle({id: id, enabled: enabled}).then((style) => {
 			handleUpdate(style);
 			notifyAllTabs({method: "styleUpdated", style: style});
 			resolve();
@@ -182,7 +180,7 @@ function enableStyle(id, enabled) {
 
 function deleteStyle(id) {
 	return new Promise(function(resolve){
-		getDatabase(function(db) {
+		getDatabase().then((db) => {
 			var tx = db.transaction(["styles"], "readwrite");
 			var os = tx.objectStore("styles");
 			var request = os.delete(Number(id));
@@ -194,15 +192,6 @@ function deleteStyle(id) {
 			};
 		});
 	});
-}
-
-function reportError() {
-	for (i in arguments) {
-		if ("message" in arguments[i]) {
-			//alert(arguments[i].message);
-			console.log(arguments[i].message);
-		}
-	}
 }
 
 function fixBoolean(b) {
@@ -672,7 +661,7 @@ function getSync() {
 
 // Upgrade functions
 function upgradeTo2() {
-	getDatabase((db) => {
+	getDatabase().then((db) => {
 		let tx = db.transaction(["styles"], "readwrite");
 		let os = tx.objectStore("styles");
 		os.openCursor().onsuccess = function(e) {

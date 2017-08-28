@@ -35,7 +35,7 @@ function webNavigationListener(method, data) {
 	if (data.frameId != 0 && !frameIdMessageable) {
 		return;
 	}
-	getStyles({matchUrl: data.url, enabled: true, asHash: true}, (styleHash) => {
+	getStyles({matchUrl: data.url, enabled: true, asHash: true}).then((styleHash) => {
 		if (method) {
 			browser.tabs.sendMessage(data.tabId, {method: method, styles: styleHash}, frameIdMessageable ? {frameId: data.frameId} : undefined);
 		}
@@ -51,16 +51,16 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	}
 	switch (request.method) {
 		case "getStyles":
-			var styles = getStyles(request, sendResponse);
 			// check if this is a main content frame style enumeration
-			if (request.matchUrl && !request.id
-			&& sender && sender.tab && sender.frameId == 0
-			&& sender.tab.url == request.matchUrl) {
-				updateIcon(sender.tab, styles);
-			}
+			getStyles(request).then((styles) => {
+				if (request.matchUrl && !request.id && sender && sender.tab && sender.frameId == 0 && sender.tab.url == request.matchUrl) {
+					updateIcon(sender.tab, styles);
+				}
+				sendResponse(styles);
+			});
 			return true;
 		case "saveStyle":
-			saveStyle(request, sendResponse);
+			saveStyle(request).then(sendResponse);
 			return true;
 		case "invalidateCache":
 			if (typeof invalidateCache != "undefined") {
@@ -68,7 +68,11 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			}
 			break;
 		case "healthCheck":
-			getDatabase(() => { sendResponse(true); }, () => { sendResponse(false); });
+			getDatabase().then(() => {
+				sendResponse(true);
+			}).catch(() => {
+				sendResponse(false);
+			});
 			return true;
 		case "openURL":
 			openURL(request, sendResponse);
@@ -149,9 +153,6 @@ function disableAllStylesToggle(newState) {
 	prefs.set("disableAll", newState);
 }
 
-// Get the DB so that any first run actions will be performed immediately when the background page loads.
-getDatabase(() => {}, reportError);
-
 // Modify CSP
 browser.webRequest.onHeadersReceived.addListener((e) => {
 	if (!prefs.get("modify-csp")) {
@@ -185,7 +186,7 @@ function toggleAutoUpdate(e) {
 	}
 }
 function autoUpdateStyles() {
-	getStyles({}, (styles) => {
+	getStyles({}).then((styles) => {
 		for (let style of styles) {
 			if (!style.url || !style.autoUpdate) {
 				continue;

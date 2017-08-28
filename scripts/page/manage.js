@@ -246,7 +246,7 @@ function showToast(message) {
 
 // import and export
 function onSaveToFileClick(){
-	getStyles({}, (styles) => {
+	getStyles({}).then((styles) => {
 		var text = JSON.stringify(styles);
 		saveAsFile(text, generateFileName());
 	});
@@ -261,7 +261,7 @@ function onLoadFromFileClick(){
 		function proceed(){
 			nextStyle = json[i++];
 			if (nextStyle) {
-				saveStyle(nextStyle, proceed);
+				saveStyle(nextStyle).then(proceed);
 			}else{
 				i--;
 				done();
@@ -345,7 +345,7 @@ function onInstallFromFileClick(){
 				showToast(t('fileTypeUnknown'));
 				return;
 		}
-		saveStyle(json, (style) => {
+		saveStyle(json).then((style) => {
 			if (Object.keys(style.advanced.item).length > 0) {
 				window.location.href = 'advanced.html?id=' + style.id;
 			} else {
@@ -469,7 +469,7 @@ function cloudExport() {
 		document.getElementById('cloud_beforeload').style.display = 'none';
 		document.getElementById('cloud_loading').style.display = 'table-row';
 		var cloud = getCloud();
-		getStyles({}, (styles) => {
+		getStyles({}).then((styles) => {
 			cloud.uploadFile(name, JSON.stringify(styles)).then(cloudLoadList);
 		});
 	}
@@ -489,7 +489,7 @@ function cloudImport() {
 			function proceed(){
 				nextStyle = content[i++];
 				if (nextStyle) {
-					saveStyle(nextStyle, proceed);
+					saveStyle(nextStyle).then(proceed);
 				}else{
 					i--;
 					done();
