@@ -313,17 +313,36 @@
 		padding-left: 16px;
 		font-size: 16px;
 	}
-	#lint .label-title {
-		padding-left: 16px;
-		font-size: 15px;
-		margin-bottom: 0;
+	#lint .help-button {
+		margin-left: 10px;
 	}
-	#lint .mdl-list {
+	#lint .code-list > div .mdl-list {
 		margin-top: 0;
 		margin-bottom: 0;
 		padding-top: 0;
 		padding-bottom: 0;
 		font-size: 14px;
+		display: none;
+	}
+	#lint .code-list > div.show .mdl-list {
+		display: block;
+	}
+	#lint .code-list > div .label-title {
+		font-size: 15px;
+		margin-bottom: 0;
+		padding: 8px 16px;
+		cursor: pointer;
+	}
+	#lint .code-list > div .label-title .material-icons {
+		transition: .2s;
+		transform: rotate(180deg);
+		float: right;
+		user-select: none;
+		-moz-user-select: none;
+		-webkit-user-select: none;
+	}
+	#lint .code-list > div.show .label-title .material-icons {
+		transform: rotate(0);
 	}
 	#lint li {
 		padding-top: 8px;
@@ -342,10 +361,8 @@
 		text-overflow: ellipsis;
 		width: 100%;
 	}
-	#lint td[role="severity"] {
-		font-size: 0;
-		width: 16px;
-		padding-right: 0.25rem;
+	#lint .severity {
+		padding-right: 5px;
 	}
 
 	/************ CSS beautifier ************/
@@ -456,7 +473,7 @@
 	<template data-id="lintItem">
 		<li class="mdl-list__item mdl-list__item--two-line">
 			<span class="mdl-list__item-primary-content">
-				<span><i class="severity CodeMirror-lint-marker-{{severity}}"></i> At line <span class="line">{{line}}</span> col <span class="col">{{col}}</span></span>
+				<span><i class="severity CodeMirror-lint-marker-{{severity}}"></i>Line <span class="line">{{line}}</span> col <span class="col">{{col}}</span></span>
 				<span class="mdl-list__item-sub-title" title="{{message}}">{{message}}</span>
 			</span>
  		</li>
@@ -589,7 +606,7 @@
 		</nav>
 		<section id="lint">
 			<p class="title" i18n-text="issues">: <span id="issue-count"></span><i id="lint-help" class="material-icons help-button" i18n-title="helpAlt">help_outline</i></p>
-			<div></div>
+			<div class="code-list"></div>
 		</section>
 	</div>
 	<main class="mdl-layout__content">

@@ -954,6 +954,7 @@ function renderLintReport(someBlockChanged) {
 	let content = container.children[1];
 	let label = t("sectionCode");
 	let aLabel = "Advanced Code";
+	let firstAdvanced = null;
 	let codeIndex = 1;
 	let aCodeIndex = 1;
 	let newContent = content.cloneNode(false);
@@ -966,14 +967,33 @@ function renderLintReport(someBlockChanged) {
 		} else {
 			index = codeIndex++;
 		}
-		if (cm.state.lint.html) {
-			let newBlock = newContent.appendChild(document.createElement("div"));
-			let html = "<p class='label-title'>" + (cmIsAdvanced ? aLabel : label) + " " + index + "</p>" + cm.state.lint.html;
+		if (cm.state.lint.marked.length) {
+			let newBlock = document.createElement("div");
+			if (cmIsAdvanced) {
+				newContent.appendChild(newBlock);
+				if (firstAdvanced === null) {
+					firstAdvanced = newBlock;
+				}
+			} else {
+				if (firstAdvanced === null) {
+					newContent.appendChild(newBlock);
+				} else {
+					newContent.insertBefore(newBlock, firstAdvanced);
+				}
+			}
+			let html = "<p class='label-title'>" + (cmIsAdvanced ? aLabel : label) + " " + index + " (" + cm.state.lint.marked.length + ")<i class='material-icons'>keyboard_arrow_up</i></p>" + cm.state.lint.html;
 			newBlock.innerHTML = html;
 			newBlock.cm = cm;
 			issueCount += newBlock.children.length - 1;
+			newBlock.querySelector('.label-title').addEventListener('click', function() {
+				this.parentElement.classList.toggle('show');
+			});
 
 			let block = content.children[newContent.children.length - 1];
+			if (block && block.classList.contains('show')) {
+				newBlock.classList.add('show');
+			}
+
 			let blockChanged = !block || cm != block.cm || html != block.innerHTML;
 			someBlockChanged |= blockChanged;
 			cm.state.lint.reportDisplayed = blockChanged;
