@@ -950,21 +950,31 @@ function updateLintReport(cm, delay) {
 }
 
 function renderLintReport(someBlockChanged) {
-	var container = document.getElementById("lint");
-	var content = container.children[1];
-	var label = t("sectionCode");
-	var newContent = content.cloneNode(false);
-	var issueCount = 0;
-	editors.forEach((cm, index) => {
+	let container = document.getElementById("lint");
+	let content = container.children[1];
+	let label = t("sectionCode");
+	let aLabel = "Advanced Code";
+	let codeIndex = 1;
+	let aCodeIndex = 1;
+	let newContent = content.cloneNode(false);
+	let issueCount = 0;
+	editors.forEach((cm) => {
+		let cmIsAdvanced = isAdvanced(cm.display.wrapper);
+		let index = 0;
+		if (cmIsAdvanced) {
+			index = aCodeIndex++;
+		} else {
+			index = codeIndex++;
+		}
 		if (cm.state.lint.html) {
-			var newBlock = newContent.appendChild(document.createElement("div"));
-			var html = "<p class='label-title'>" + label + " " + (index+1) + "</p>" + cm.state.lint.html;
+			let newBlock = newContent.appendChild(document.createElement("div"));
+			let html = "<p class='label-title'>" + (cmIsAdvanced ? aLabel : label) + " " + index + "</p>" + cm.state.lint.html;
 			newBlock.innerHTML = html;
 			newBlock.cm = cm;
 			issueCount += newBlock.children.length - 1;
 
-			var block = content.children[newContent.children.length - 1];
-			var blockChanged = !block || cm != block.cm || html != block.innerHTML;
+			let block = content.children[newContent.children.length - 1];
+			let blockChanged = !block || cm != block.cm || html != block.innerHTML;
 			someBlockChanged |= blockChanged;
 			cm.state.lint.reportDisplayed = blockChanged;
 		}
@@ -974,6 +984,16 @@ function renderLintReport(someBlockChanged) {
 		container.replaceChild(newContent, content);
 		container.style.display = newContent.children.length ? "block" : "none";
 		resizeLintReport(null, newContent);
+	}
+	function isAdvanced(el) {
+		let e = el;
+		while (e.parentElement) {
+			if (e.parentElement.id === 'sections') {
+				return false;
+			}
+			e = e.parentElement;
+		}
+		return true;
 	}
 }
 
