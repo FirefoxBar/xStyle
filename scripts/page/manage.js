@@ -293,6 +293,14 @@ function onInstallFromFileClick(){
 			case 'json':
 				json = JSON.parse(rawText);
 				delete json.id;
+				if (Object.keys(json.advanced.item).length > 0) {
+					let saved = {};
+					for (let k in json.advanced.item) {
+						saved[k] = typeof(json.advanced.item[k].default) === 'undefined' ? Object.keys(json.advanced.item[k].option)[0] : json.advanced.item[k].default;
+					}
+					json.advanced.saved = saved;
+					json.sections = applyAdvanced(json.advanced.css, json.advanced.item, json.advanced.saved);
+				}
 				break;
 			case 'css':
 				if (trimNewLines(rawText).indexOf('/* ==UserStyle==') === 0) {

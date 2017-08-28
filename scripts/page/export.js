@@ -47,6 +47,8 @@ function doExport() {
 		"advanced": window.style.advanced || {"item": {}, "saved": {}, "css": []},
 		"sections": window.style.sections
 	};
+	// remove saved
+	result.saved = {};
 	// Copy md5 to clipboard
 	if (isChrome || FIREFOX_VERSION >= 51) {
 		var copyText = document.createElement("input");
