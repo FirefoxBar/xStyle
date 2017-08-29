@@ -909,9 +909,6 @@ function updateLintReport(cm, delay) {
 					var isActiveLine = info.from.line == cm.getCursor().line;
 					var pos = isActiveLine ? "cursor" : (info.from.line + "," + info.from.ch);
 					var message = escapeHtml(info.message.replace(/ at line \d.+$/, ""));
-					if (message.length > 100) {
-						message = message.substr(0, 100) + "...";
-					}
 					if (isActiveLine || oldMarkers[pos] == message) {
 						delete oldMarkers[pos];
 					}
@@ -981,7 +978,8 @@ function renderLintReport(someBlockChanged) {
 					newContent.insertBefore(newBlock, firstAdvanced);
 				}
 			}
-			let html = "<p class='label-title'>" + (cmIsAdvanced ? aLabel : label) + " " + index + " (" + cm.state.lint.marked.length + ")<i class='material-icons'>keyboard_arrow_up</i></p>" + cm.state.lint.html;
+			let html = "<p class='label-title'>" + (cmIsAdvanced ? aLabel : label) + index.toString() + " (" + cm.state.lint.marked.length + ")<i class='material-icons'>keyboard_arrow_up</i></p>" + cm.state.lint.html;
+			newBlock.setAttribute('data-advanced', cmIsAdvanced ? 1 : 0);
 			newBlock.innerHTML = html;
 			newBlock.cm = cm;
 			issueCount += newBlock.children.length - 1;
@@ -1034,6 +1032,12 @@ function gotoLintIssue(event) {
 		return;
 	}
 	var block = issue.closest("div");
+	if (block.getAttribute('data-advanced') == 1 && document.getElementById('advanced-box').classList.contains('close')) {
+		let evt = document.createEvent("MouseEvents");
+		evt.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+		evt.initEvent("click", false, false);
+		document.getElementById('toggle-advanced').dispatchEvent(evt);
+	}
 	makeSectionVisible(block.cm);
 	block.cm.focus();
 	block.cm.setSelection({
