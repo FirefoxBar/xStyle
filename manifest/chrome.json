@@ -36,6 +36,12 @@
 			"js": ["scripts/browser-polyfill.js", "scripts/common.js", "scripts/userstyle.js", "scripts/inject/install.js", "scripts/inject/userstyles.org.js"]
 		},
 		{
+			"matches": ["http://freestyler.ws/*", "https://freestyler.ws/*"],
+			"run_at": "document_end",
+			"all_frames": false,
+			"js": ["scripts/browser-polyfill.js", "scripts/common.js", "scripts/userstyle.js", "scripts/inject/install.js", "scripts/inject/freestyler.ws.js"]
+		},
+		{
 			"matches": ["http://*.firefoxcn.net/*", "https://*.firefoxcn.net/*", "https://*.github.io/*", "https://*.oschina.io/*"],
 			"run_at": "document_end",
 			"all_frames": false,
