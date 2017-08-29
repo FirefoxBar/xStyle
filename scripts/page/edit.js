@@ -950,7 +950,7 @@ function renderLintReport(someBlockChanged) {
 	let container = document.getElementById("lint");
 	let content = container.children[1];
 	let label = t("sectionCode");
-	let aLabel = "Advanced Code";
+	let aLabel = t("advancedSectionCode");
 	let firstAdvanced = null;
 	let codeIndex = 1;
 	let aCodeIndex = 1;
