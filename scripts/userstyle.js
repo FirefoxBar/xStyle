@@ -10,8 +10,12 @@ function parseMozillaFormat(css) {
 	let mozStyle = trimNewLines(css.replace(/@namespace url\((.*?)\);/g, ""));
 	let currentIndex = mozStyle.indexOf('@-moz-document ');
 	let lastIndex = currentIndex;
-	if (currentIndex > 0) {
-		allSection[0].code += "\n" + trimNewLines(mozStyle.substr(0, currentIndex - 1));
+	if (currentIndex !== 0) {
+		if (currentIndex > 0) {
+			allSection[0].code += "\n" + trimNewLines(mozStyle.substr(0, currentIndex - 1));
+		} else {
+			allSection[0].code += trimNewLines(mozStyle);
+		}
 	}
 	// split by @-moz-document
 	while (mozStyle.indexOf('@-moz-document ', currentIndex) >= 0) {

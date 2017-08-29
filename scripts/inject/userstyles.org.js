@@ -78,9 +78,19 @@ function usoInstall () {
 				styleInstallByCode(style);
 			});
 		} else {
-			getURL(getCodeUrl()).then((code) => {
-				var style = JSON.parse(code);
-				style.author = author;
+			Promise.all([getURL('https://userstyles.org/api/v1/styles/' + style_id), getURL(md5_url)]).then((results) => {
+				let serverJson = JSON.parse(results[0]);
+				let md5 = results[1];
+				let style = {
+					"name": styleName,
+					"updateUrl": 'https://userstyles.org/styles/' + style_id + '.css',
+					"md5Url": md5_url,
+					"url": getIdUrl(),
+					"author": author,
+					"originalMd5": md5,
+					"advanced": {"item": {}, "saved": {}, "css": []},
+					"sections": parseMozillaFormat(serverJson.css)
+				};
 				styleInstallByCode(style);
 			});
 		}
