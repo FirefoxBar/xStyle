@@ -121,7 +121,7 @@ body.all-off #installed {
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
-	width: calc(100% - 60px);
+	width: calc(100% - 70px);
 	display: inline-block;
 }
 #installed .style-author {

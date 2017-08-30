@@ -173,7 +173,7 @@ function updateSiteName(url){
 			el.addEventListener('click', onSearchClick);
 		});
 	} else {
-		document.getElementById('searchStylesMenu').style.display = 'none';
+		document.getElementById('searchStyles').style.display = 'none';
 	}
 }
 
