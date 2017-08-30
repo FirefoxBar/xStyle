@@ -17,7 +17,8 @@
 		"storage",
 		"downloads",
 		"*://*/*",
-		"clipboardWrite"
+		"clipboardWrite",
+		"unlimitedStorage"
 	],
 	"background": {
 		"scripts": ["scripts/browser-polyfill.js", "scripts/common.js", "scripts/messaging.js", "scripts/storage.js", "scripts/background.js"]
