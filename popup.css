@@ -58,12 +58,9 @@ body.all-off #installed {
 	width: 100%;
 	box-sizing: border-box;
 }
-#getFromUserstyle{
-	background-image:url(images/u.png);
-	height: 22px;
-	width: 22px;
+#searchStyles {
 	position: absolute;
-	top: 15px;
+	top: 12px;
 	right: 10px
 }
 

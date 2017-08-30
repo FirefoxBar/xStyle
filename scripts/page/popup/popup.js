@@ -16,6 +16,8 @@ const disableAllCheckbox = document.getElementById("disable-all-checkbox");
 var menutype;
 var website;
 
+var domain = '';
+
 function isDisabledAll(){
 	return browser.extension.getBackgroundPage().prefs.get("disableAll");
 }
@@ -166,9 +168,12 @@ function updateCreateStyleLink(url){
 function updateSiteName(url){
 	document.getElementById('sitename').innerHTML = getSiteName(url);
 	if (canStyle(url)) {
-		document.getElementById('getFromUserstyle').href = "https://userstyles.org/styles/browse/all/" + getSiteName(url);
+		domain = getSiteName(url);
+		document.getElementById('searchStylesMenu').childNodes.forEach((el) => {
+			el.addEventListener('click', onSearchClick);
+		});
 	} else {
-		document.getElementById('getFromUserstyle').style.display = 'none';
+		document.getElementById('searchStylesMenu').style.display = 'none';
 	}
 }
 
@@ -237,4 +242,9 @@ getActiveTab((tab) => {
 document.querySelectorAll(".open-manage-link").forEach((el) => {
 	el.addEventListener("click", openLink, false);
 });
-document.getElementById('getFromUserstyle').addEventListener("click", openLink, false);
+
+function onSearchClick() {
+	let url = this.getAttribute('data-url').replace('%s', domain);
+	browser.runtime.sendMessage({method: "openURL", "url": url});
+	close();
+}

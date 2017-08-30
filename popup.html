@@ -36,7 +36,11 @@
 </head>
 <body id="xstyle-popup">
 <div id="sitename">firefoxcn.net</div>
-<a id="getFromUserstyle" target="_blank"></a>
+<button id="searchStyles" class="mdl-button mdl-js-button mdl-button--icon"><i class="material-icons">search</i></button>
+<ul id="searchStylesMenu" class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="searchStyles">
+  	<li class="mdl-menu__item" data-url="https://userstyles.org/styles/browse/all/%s">userstyles.org</li>
+  	<li class="mdl-menu__item" data-url="http://freestyler.ws/search?q=%s">freestyler.ws</li>
+</ul>
 <div class="tabs-container">
     <section id="styles" class="tab-item tab-installed">
         <div id="disable-all-container">
