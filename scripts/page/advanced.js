@@ -199,4 +199,5 @@ document.addEventListener("DOMContentLoaded", () => {
 	setting_list = document.getElementById('setting-list');
 	init();
 	document.getElementById('save').addEventListener('click', onSaveClick);
+	document.getElementById('menu-save').addEventListener('click', onSaveClick);
 });
