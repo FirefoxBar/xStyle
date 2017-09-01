@@ -633,7 +633,7 @@ function setupGlobalSearch() {
 
 	function find(activeCM) {
 		activeCM = focusClosestCM(activeCM);
-		customizeOpenDialog(activeCM, template.find, (query) => {
+		customizeOpenDialog(activeCM, template.find, function(query) {
 			this(query);
 			curState = activeCM.state.search;
 			if (editors.length == 1 || !curState.query) {
@@ -725,7 +725,7 @@ function setupGlobalSearch() {
 	function replace(activeCM, all) {
 		var queue, query, replacement;
 		activeCM = focusClosestCM(activeCM);
-		customizeOpenDialog(activeCM, template[all ? "replaceAll" : "replace"], (txt) => {
+		customizeOpenDialog(activeCM, template[all ? "replaceAll" : "replace"], function(txt) {
 			query = txt;
 			customizeOpenDialog(activeCM, template.replaceWith, (txt) => {
 				replacement = txt;
