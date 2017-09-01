@@ -311,7 +311,7 @@ function updateFontStyle() {
 }
 
 // replace given textarea with the CodeMirror editor
-function setupCodeMirror(textarea, index) {
+function setupCodeMirror(textarea, index, isAdvanced) {
 	var cm = CodeMirror.fromTextArea(textarea, {
 		lineNumbers: true,
 		mode : "css",
@@ -342,6 +342,7 @@ function setupCodeMirror(textarea, index) {
 		hotkeyRerouter.setState(false);
 		cm.display.wrapper.classList.add("CodeMirror-active");
 	});
+	cm.isAdvanced = isAdvanced ? 1 : 0;
 
 	var resizeGrip = cm.display.wrapper.appendChild(document.createElement("div"));
 	resizeGrip.className = "resize-grip";
@@ -380,6 +381,24 @@ function setupCodeMirror(textarea, index) {
 	});
 
 	editors.splice(index || editors.length, 0, cm);
+
+	// sort editors
+	editors.sort((e1, e2) => {
+		if (typeof(e1.isAdvanced) === 'undefined') {
+			e1.isAdvanced = isAdvancedEditor(e1);
+		}
+		if (typeof(e2.isAdvanced) === 'undefined') {
+			e2.isAdvanced = isAdvancedEditor(e2);
+		}
+		if (e1.isAdvanced === e2.isAdvanced) {
+			return 0;
+		} else if (e1.isAdvanced) {
+			return -1;
+		} else {
+			return 1;
+		}
+	});
+
 	return cm;
 }
 
@@ -563,6 +582,18 @@ function removeAreaAndSetDirty(area) {
 }
 
 function makeSectionVisible(cm) {
+	let isAdvanced = false;
+	let e = cm.display.wrapper;
+	while (!isAdvanced && e.parentElement) {
+		isAdvanced = e.parentElement.id === 'advanced-box';
+		e = e.parentElement;
+	}
+	if (isAdvanced && document.getElementById('advanced-box').classList.contains('close')) {
+		let evt = document.createEvent("MouseEvents");
+		evt.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+		evt.initEvent("click", false, false);
+		document.getElementById('toggle-advanced').dispatchEvent(evt);
+	}
 	var section = cm.getSection();
 	var bounds = section.getBoundingClientRect();
 	if ((bounds.bottom > window.innerHeight && bounds.top > 0) || (bounds.top < 0 && bounds.bottom < window.innerHeight)) {
@@ -1032,12 +1063,6 @@ function gotoLintIssue(event) {
 		return;
 	}
 	var block = issue.closest("div");
-	if (block.getAttribute('data-advanced') == 1 && document.getElementById('advanced-box').classList.contains('close')) {
-		let evt = document.createEvent("MouseEvents");
-		evt.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-		evt.initEvent("click", false, false);
-		document.getElementById('toggle-advanced').dispatchEvent(evt);
-	}
 	makeSectionVisible(block.cm);
 	block.cm.focus();
 	block.cm.setSelection({
@@ -1344,7 +1369,7 @@ function createAdvancedDropdown(key, title, items) {
 			advancedId++;
 		});
 		options.appendChild(m);
-		m.CodeMirror = setupCodeMirror(m.querySelector('textarea'));
+		m.CodeMirror = setupCodeMirror(m.querySelector('textarea'), null, true);
 		setCleanSection(m);
 	});
 	if (items) {
@@ -1357,7 +1382,7 @@ function createAdvancedDropdown(key, title, items) {
 				m.remove();
 			});
 			options.appendChild(m);
-			m.CodeMirror = setupCodeMirror(m.querySelector('textarea'));
+			m.CodeMirror = setupCodeMirror(m.querySelector('textarea'), null, true);
 			setCleanSection(m);
 		}
 	}
