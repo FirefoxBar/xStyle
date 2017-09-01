@@ -66,7 +66,8 @@
 			"128": "images/128.png"
 		},
 		"default_title": "__MSG_extName__",
-		"default_popup": "popup.html"
+		"default_popup": "popup.html",
+		"browser_style": false
 	},
 	"commands": {
 		"openManage": {
@@ -78,7 +79,8 @@
 	},
 	"options_ui": {
 		"page": "manage.html",
-		"open_in_tab": true
+		"open_in_tab": true,
+		"browser_style": false
 	},
 	"default_locale": "en"
 }
