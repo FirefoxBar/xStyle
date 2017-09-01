@@ -124,6 +124,19 @@ if (isMobile) {
 			prefs.set(info.menuItemId, info.checked);
 		}
 	});
+	// commands
+	browser.commands.onCommand.addListener((command) => {
+		switch (command) {
+			case 'openManage':
+				openURL({"url": browser.extension.getURL("manage.html")});
+				break;
+			case 'styleDisableAll':
+				disableAllStylesToggle();
+				break;
+			default:
+				break;
+		}
+	});
 }
 
 browser.tabs.onUpdated.addListener((tabId, info, tab) => {

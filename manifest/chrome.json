@@ -63,6 +63,14 @@
 		"default_title": "__MSG_extName__",
 		"default_popup": "popup.html"
 	},
+	"commands": {
+		"openManage": {
+			"description": "__MSG_openManage__"
+		},
+		"styleDisableAll": {
+			"description": "__MSG_disableAllStyles__"
+		}
+	},
 	"options_ui": {
 		"page": "manage.html",
 		"open_in_tab": true
