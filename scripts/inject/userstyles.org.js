@@ -154,3 +154,22 @@ function getAdvanced() {
 }
 document.addEventListener("stylishInstall", usoInstall, false);
 document.addEventListener("stylishUpdate", usoInstall, false);
+
+// Fix a uso bug
+if (isChrome) {
+	let src = document.createElement('script');
+	src.innerHTML = '\
+	;(function() {\
+		let fixObserver = new MutationObserver(function(mutations) {\
+			if (document.getElementById("install_style_button")) {\
+				document.getElementById("install_style_button").addEventListener("click", function() {\
+					let newEvent = new CustomEvent("stylishInstall", {detail: null});\
+					document.dispatchEvent(newEvent);\
+				});\
+				fixObserver.disconnect();\
+			}\
+		});\
+		fixObserver.observe(document.body, {childList: true});\
+	})()';
+	document.getElementsByTagName("body")[0].appendChild(src);
+}
