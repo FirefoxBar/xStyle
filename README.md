@@ -5,7 +5,9 @@
 
 A user style manager for Firefox and Chrome. Build on WebExtension.
 
-You can aslo get this extension from [AMO (Firefox)](https://addons.mozilla.org/zh-CN/firefox/addon/xstyle/). But if you want to experience the latest version at the first time, you should [install our self-distribution version](https://github.com/FirefoxBar/xStyle/releases)
+You can get this extension from [Mozilla Add-ons](https://addons.mozilla.org/zh-CN/firefox/addon/xstyle/) and [Chrome Webstore](https://chrome.google.com/webstore/detail/xstyle/hncgkmhphmncjohllpoleelnibpmccpj).
+
+But if you want to experience the latest version at the first time, you should [install our self-distribution version](https://github.com/FirefoxBar/xStyle/releases)
 
 For more documentation, Please visit [wiki](https://github.com/FirefoxBar/xStyle/wiki)
 
@@ -15,7 +17,7 @@ For more documentation, Please visit [wiki](https://github.com/FirefoxBar/xStyle
 
 * Chrome
 
-## Installation on Chrome
+## Install self-distribution version to Chrome
 
 You should download [Administrators Policy Templates](http://www.chromium.org/administrators/policy-templates) and install it.
 
