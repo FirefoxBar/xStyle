@@ -2,22 +2,21 @@ let fs_api_url = window.location.protocol + "//freestyler.ws/api/v2/";
 function fsInstall () {
 	let style_id = window.location.href.match(/style\/(\d+)\//)[1];
 	let param = JSON.parse(getMeta('xstyle-fs-param'));
-	let styleName = trimNewLines(document.querySelector('h1[itemprop="name"]').innerHTML);
-	if (confirm(browser.i18n.getMessage('styleInstall', [styleName]))) {
-		let css = getURL(fs_api_url + 'get_css.php?json=' + encodeURIComponent(JSON.stringify([{"id": style_id, "params": param}])));
-		let info = getURL(fs_api_url + 'get_styles_info.php?json=' + encodeURIComponent(JSON.stringify([style_id])));
-		Promise.all([css, info]).then((result) => {
-			let styleInfo = JSON.parse(result[1])[0];
-			let style = {
-				"name": styleName,
-				"url": styleInfo.url,
-				"author": styleInfo.author.name,
-				"advanced": {"item": {}, "saved": {}, "css": []},
-				"sections": parseMozillaFormat(result[0])
-			};
-			styleInstallByCode(style);
-		});
-	}
+	getURL(fs_api_url + 'get_styles_info.php?json=' + encodeURIComponent(JSON.stringify([style_id]))).then((styleInfoJson) => {
+		let styleInfo = JSON.parse(styleInfoJson)[0];
+		if (confirm(browser.i18n.getMessage('styleInstall', [styleInfo.name]))) {
+			getURL(fs_api_url + 'get_css.php?json=' + encodeURIComponent(JSON.stringify([{"id": style_id, "params": param}]))).then((css) => {
+				let style = {
+					"name": styleInfo.name,
+					"url": styleInfo.url,
+					"author": styleInfo.author.name,
+					"advanced": {"item": {}, "saved": {}, "css": []},
+					"sections": parseMozillaFormat(css)
+				};
+				styleInstallByCode(style);
+			});
+		}
+	});
 }
 document.addEventListener('xstyleFsInstall', fsInstall);
 
