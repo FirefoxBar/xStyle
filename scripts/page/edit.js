@@ -582,12 +582,15 @@ function removeAreaAndSetDirty(area) {
 }
 
 function makeSectionVisible(cm) {
-	let isAdvanced = false;
-	let e = cm.display.wrapper;
-	while (!isAdvanced && e.parentElement) {
-		isAdvanced = e.parentElement.id === 'advanced-box';
-		e = e.parentElement;
-	}
+	let isAdvanced = typeof(cm.isAdvanced) !== 'undefined' ? cm.isAdvanced : (() => {
+		let i = false;
+		let e = cm.display.wrapper;
+		while (!i && e.parentElement) {
+			i = e.parentElement.id === 'advanced-box';
+			e = e.parentElement;
+		}
+		return i;
+	})();
 	if (isAdvanced && document.getElementById('advanced-box').classList.contains('close')) {
 		let evt = document.createEvent("MouseEvents");
 		evt.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
@@ -912,7 +915,7 @@ function updateLintReport(cm, delay) {
 		// give csslint some time to find the issues, e.g. 500 (1/10 of our default 5s)
 		// by settings its internal delay to 1ms and restoring it back later
 		var lintOpt = editors[0].state.lint.options;
-		setTimeout(((opt, delay) => {
+		setTimeout((function(opt, delay) {
 			opt.delay = delay == 1 ? opt.delay : delay; // options object is shared between editors
 			update(this);
 		}).bind(cm, lintOpt, lintOpt.delay), delay);
