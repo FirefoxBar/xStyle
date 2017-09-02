@@ -1,5 +1,6 @@
 // parse mozilla format, return sections
 function parseMozillaFormat(css) {
+	const docParams = ['@-moz-document ', "@-moz-document\n", "@-moz-document\r\n"];
 	let allSection = [{
 		"urls": [],
 		"urlPrefixes": [],
@@ -8,7 +9,7 @@ function parseMozillaFormat(css) {
 		"code": ""
 	}];
 	let mozStyle = trimNewLines(css.replace(/@namespace url\((.*?)\);/g, ""));
-	let currentIndex = mozStyle.indexOf('@-moz-document ');
+	let currentIndex = findMozDocument(mozStyle, 0);
 	let lastIndex = currentIndex;
 	if (currentIndex !== 0) {
 		if (currentIndex > 0) {
@@ -18,10 +19,10 @@ function parseMozillaFormat(css) {
 		}
 	}
 	// split by @-moz-document
-	while (mozStyle.indexOf('@-moz-document ', currentIndex) >= 0) {
+	while (findMozDocument(mozStyle, currentIndex) >= 0) {
 		currentIndex++;
 		// Jump to next
-		let nextMoz = mozStyle.indexOf('@-moz-document ', currentIndex);
+		let nextMoz = findMozDocument(mozStyle, currentIndex)
 		let nextComment = mozStyle.indexOf('/*', currentIndex);
 		if (nextComment === -1){
 			nextComment = nextMoz;
@@ -32,12 +33,11 @@ function parseMozillaFormat(css) {
 		}
 		currentIndex = Math.min(nextMoz, nextComment, nextQuote);
 		if (currentIndex < 0) {
-			currentIndex = mozStyle.length;
-			parseOneSection(mozStyle.substr(lastIndex, currentIndex));
+			parseOneSection(mozStyle.substr(lastIndex));
 			break;
 		}
 		currentIndex = ignoreSomeCodes(mozStyle, currentIndex);
-		if (mozStyle.indexOf('@-moz-document ', currentIndex) === currentIndex) {
+		if (findMozDocument(mozStyle, currentIndex) === currentIndex) {
 			parseOneSection(mozStyle.substr(lastIndex, currentIndex - lastIndex));
 			lastIndex = currentIndex;
 		}
@@ -48,6 +48,17 @@ function parseMozillaFormat(css) {
 		allSection.splice(0, 1);
 	}
 	return allSection;
+	// find @-moz-document(space) or @-moz-document(\n)
+	function findMozDocument(str, index) {
+		let min = -1;
+		for (let i = 0; i < docParams.length; i++) {
+			let t = str.indexOf(docParams[i], index || 0);
+			if (t >= 0 && (min === -1 || min > t)) {
+				min = t;
+			}
+		}
+		return min;
+	}
 	function ignoreSomeCodes(f, index) {
 		// ignore quotation marks
 		if (f[index] === '"') {
@@ -73,7 +84,7 @@ function parseMozillaFormat(css) {
 		return index;
 	}
 	function parseOneSection(f) {
-		f = f.replace('@-moz-document ', '');
+		f = f.replace('@-moz-document', '');
 		if (f === '') {
 			return;
 		}
