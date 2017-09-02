@@ -48,4 +48,4 @@ src.innerHTML = '\
 		document.dispatchEvent(newEvent);\
 	}\
 })()';
-document.getElementsByTagName("body")[0].appendChild(src);
+document.body.appendChild(src);

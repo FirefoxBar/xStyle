@@ -170,5 +170,5 @@ if (isChrome) {
 		});\
 		fixObserver.observe(document.body, {childList: true});\
 	})()';
-	document.getElementsByTagName("body")[0].appendChild(src);
+	document.body.appendChild(src);
 }
