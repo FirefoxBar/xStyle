@@ -66,7 +66,7 @@ function usoInstall () {
 					}
 				}
 				let style = {
-					"name": styleName,
+					"name": serverJson.name,
 					"updateUrl": 'https://userstyles.org/styles/' + style_id + '.css',
 					"md5Url": md5_url,
 					"url": getIdUrl(),
@@ -82,7 +82,7 @@ function usoInstall () {
 				let serverJson = JSON.parse(results[0]);
 				let md5 = results[1];
 				let style = {
-					"name": styleName,
+					"name": serverJson.name,
 					"updateUrl": 'https://userstyles.org/styles/' + style_id + '.css',
 					"md5Url": md5_url,
 					"url": getIdUrl(),
@@ -105,11 +105,11 @@ function hasAdvanced() {
 // Get all advanced
 function readImage(file) {
 	return new Promise((resolve) => {
-        	var reader = new FileReader();
-        	reader.onload = () => {
-				resolve(reader.result);
-        	};
-        	reader.readAsDataURL(file);
+		var reader = new FileReader();
+		reader.onload = () => {
+			resolve(reader.result);
+		};
+		reader.readAsDataURL(file);
 	});
 }
 function getAdvanced() {
@@ -158,8 +158,7 @@ document.addEventListener("stylishUpdate", usoInstall, false);
 // Fix a uso bug
 if (isChrome) {
 	let src = document.createElement('script');
-	src.innerHTML = '\
-	;(function() {\
+	src.innerHTML = ';(function() {\
 		let fixObserver = new MutationObserver(function(mutations) {\
 			if (document.getElementById("install_style_button")) {\
 				document.getElementById("install_style_button").addEventListener("click", function() {\
