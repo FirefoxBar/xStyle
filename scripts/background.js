@@ -62,6 +62,9 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		case "saveStyle":
 			saveStyle(request).then(sendResponse);
 			return true;
+		case "installStyle":
+			installStyle(request).then(sendResponse);
+			return true;
 		case "invalidateCache":
 			if (typeof invalidateCache != "undefined") {
 				invalidateCache(false);

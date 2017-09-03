@@ -70,15 +70,12 @@ function confirmAStyle(code) {
 
 function styleInstallByCode(json) {
 	//Check whether the style has been installed
-	browser.runtime.sendMessage({method: "getStyles", url: json.url || getIdUrl() || location.href}).then((response) => {
-		json.method = "saveStyle";
-		if (response.length != 0) {
-			json.id = response[0].id;
-			delete json.name;
-		}
-		browser.runtime.sendMessage(json).then((response) => {
-			sendEvent("styleInstalled");
-		});
+	json.method = "installStyle";
+	if (!json.url) {
+		json.url = getIdUrl() || location.href;
+	}
+	browser.runtime.sendMessage(json).then((response) => {
+		sendEvent("styleInstalled");
 	});
 }
 

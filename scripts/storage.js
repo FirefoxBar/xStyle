@@ -168,6 +168,23 @@ function saveStyle(o) {
 	});
 }
 
+// Install a style, check its url
+function installStyle(json) {
+	if (json.url) {
+		return new Promise((resolve) => {
+			getStyles({url: json.url}).then((response) => {
+				if (response.length != 0) {
+					json.id = response[0].id;
+					delete json.name;
+				}
+				saveStyle(json).then(resolve);
+			});
+		});
+	}
+	// Have not URL key, install as a new style
+	return saveStyle(json);
+}
+
 function enableStyle(id, enabled) {
 	return new Promise(function(resolve){
 		saveStyle({id: id, enabled: enabled}).then((style) => {

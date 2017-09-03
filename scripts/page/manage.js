@@ -248,31 +248,33 @@ function showToast(message) {
 function onSaveToFileClick(){
 	getStyles({}).then((styles) => {
 		var text = JSON.stringify(styles);
-		saveAsFile(text, generateFileName());
+		saveAsFile(text, generateExportFileName());
+	});
+}
+
+function loadStylesFromBackup(content) {
+	return new Promise((resolve) => {
+		var i = 0, nextStyle;
+		function proceed(){
+			nextStyle = content[i++];
+			if (nextStyle) {
+				delete nextStyle["id"];
+				installStyle(nextStyle).then(proceed);
+			} else {
+				i--;
+				resolve();
+			}
+		}
+		proceed();
 	});
 }
 
 function onLoadFromFileClick(){
 	loadFromFile(XSTYLE_DUMP_FILE_EXT).then((result) => {
 		var json = JSON.parse(result[0]);
-
-		var i = 0, nextStyle;
-
-		function proceed(){
-			nextStyle = json[i++];
-			if (nextStyle) {
-				saveStyle(nextStyle).then(proceed);
-			}else{
-				i--;
-				done();
-			}
-		}
-
-		function done(){
+		loadStylesFromBackup(json).then(() => {
 			window.location.reload();
-		}
-
-		proceed();
+		});
 	});
 }
 
@@ -345,7 +347,7 @@ function onInstallFromFileClick(){
 				showToast(t('fileTypeUnknown'));
 				return;
 		}
-		saveStyle(json).then((style) => {
+		installStyle(json).then((style) => {
 			if (Object.keys(style.advanced.item).length > 0) {
 				window.location.href = 'advanced.html?id=' + style.id;
 			} else {
@@ -355,7 +357,7 @@ function onInstallFromFileClick(){
 	});
 }
 
-function generateFileName(){
+function generateExportFileName(){
 	return DateFormat(XSTYLE_DUMP_FILE_NAME);
 }
 
@@ -463,7 +465,7 @@ function cloudLoadList() {
 }
 
 function cloudExport() {
-	var name = window.prompt(t('cloudInputFilename'), generateFileName());
+	var name = window.prompt(t('cloudInputFilename'), generateExportFileName());
 	if (name) {
 		document.getElementById('cloud_loaded').style.display = 'none';
 		document.getElementById('cloud_beforeload').style.display = 'none';
@@ -485,20 +487,9 @@ function cloudImport() {
 			if (typeof(content) === 'string') {
 				content = JSON.parse(content);
 			}
-			var i = 0, nextStyle;
-			function proceed(){
-				nextStyle = content[i++];
-				if (nextStyle) {
-					saveStyle(nextStyle).then(proceed);
-				}else{
-					i--;
-					done();
-				}
-			}
-			function done(){
-				location.reload();
-			}
-			proceed();
+			loadStylesFromBackup(content).then(() => {
+				window.location.reload();
+			});
 		});
 	}
 }
