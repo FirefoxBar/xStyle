@@ -70,7 +70,7 @@ function createStyleElement(style) {
 	} else {
 		appliesTo.appendChild(document.createTextNode(t('appliesToEverything')));
 	}
-	if (style.url) {
+	if (style.url && style.url.indexOf('https://ext.firefoxcn.net/xstyle/md5namespace/') < 0) {
 		e.querySelector(".homepage").href = style.url;
 		e.querySelector(".homepage").classList.remove('hidden');
 	}
