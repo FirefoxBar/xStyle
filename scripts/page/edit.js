@@ -451,15 +451,6 @@ document.addEventListener("wheel", (event) => {
 	}
 });
 
-window.onbeforeunload = () => {
-	document.activeElement.blur();
-	if (isCleanGlobal()) {
-		return;
-	}
-	updateLintReport(null, 0);
-	return confirm(t('styleChangesNotSaved'));
-};
-
 function addAppliesTo(list, name, value) {
 	var showingEverything = list.querySelector(".applies-to-everything") != null;
 	// blow away "Everything" if it's there
@@ -1932,6 +1923,14 @@ function getComputedHeight(el) {
 		parseFloat(compStyle.marginTop) + parseFloat(compStyle.marginBottom);
 }
 
+window.onbeforeunload = () => {
+	document.activeElement.blur();
+	if (isCleanGlobal()) {
+		return;
+	}
+	updateLintReport(null, 0);
+	return t('styleChangesNotSaved');
+};
 
 document.addEventListener("DOMContentLoaded", () => {
 	advanceBox = document.getElementById('advanced');
