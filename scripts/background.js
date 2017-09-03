@@ -93,7 +93,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 
-if (isMobile) {
+if (IS_MOBILE) {
 	browser.browserAction.onClicked.addListener(() => {
 		openURL({url: browser.extension.getURL('manage.html')});
 	});

@@ -156,7 +156,7 @@ document.addEventListener("stylishInstall", usoInstall, false);
 document.addEventListener("stylishUpdate", usoInstall, false);
 
 // Fix a uso bug
-if (isChrome) {
+if (IS_CHROME) {
 	let src = document.createElement('script');
 	src.innerHTML = ';(function() {\
 		let fixObserver = new MutationObserver(function(mutations) {\

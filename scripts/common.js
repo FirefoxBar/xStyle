@@ -1,7 +1,8 @@
 // is mobile or not
-const isAndroid = navigator.userAgent.includes('Android');
-const isIOS = navigator.userAgent.includes('iOS');
-const isMobile = (isAndroid || isIOS);
+const IS_ANDROID = navigator.userAgent.includes('Android');
+//const IS_IOS = navigator.userAgent.includes('iOS');
+//const IS_MOBILE = (IS_ANDROID || IS_IOS);
+const IS_MOBILE = IS_ANDROID;
 
 //export
 const XSTYLE_DUMP_FILE_EXT = ".json";
@@ -9,23 +10,25 @@ const XSTYLE_DUMP_FILE_NAME = "xstyle-{Y}-{m}-{d}-{H}-{i}-{s}" + XSTYLE_DUMP_FIL
 const XSTYLE_DEFAULT_SAVE_NAME = "xstyle-export" + XSTYLE_DUMP_FILE_EXT;
 
 // direct & reverse mapping of @-moz-document keywords and internal property names
-var propertyToCss = {urls: "url", urlPrefixes: "url-prefix", domains: "domain", regexps: "regexp"};
-var CssToProperty = {"url": "urls", "url-prefix": "urlPrefixes", "domain": "domains", "regexp": "regexps"};
+const propertyToCss = {urls: "url", urlPrefixes: "url-prefix", domains: "domain", regexps: "regexp"};
+const CssToProperty = {"url": "urls", "url-prefix": "urlPrefixes", "domain": "domains", "regexp": "regexps"};
 
-var isFirefox = false;
-var FIREFOX_VERSION = 0;
+let IS_FIREFOX = false;
+let IS_CHROME = false;
+let FIREFOX_VERSION = 0;
+let CHROME_VERSION = 0;
 if (/Firefox\/(\d+)\.(\d+)/.test(navigator.userAgent)) {
-	isFirefox = true;
-	FIREFOX_VERSION = navigator.userAgent.match(/Firefox\/(\d+)\.(\d+)/);
-	FIREFOX_VERSION = parseFloat(FIREFOX_VERSION[1] + '.' + FIREFOX_VERSION[2]);
-}
-
-var isChrome = false;
-var CHROME_VERSION = 0;
-if (/Chrome\/(\d+)\.(\d+)/.test(navigator.userAgent)) {
-	isChrome = true;
-	CHROME_VERSION = navigator.userAgent.match(/Chrome\/(\d+)\.(\d+)/);
-	CHROME_VERSION = parseFloat(CHROME_VERSION[1] + '.' + CHROME_VERSION[2]);
+	IS_FIREFOX = true;
+	FIREFOX_VERSION = (() => {
+		let a = navigator.userAgent.match(/Firefox\/(\d+)\.(\d+)/);
+		return parseFloat(a[1] + '.' + a[2]);
+	})();
+} else if (/Chrome\/(\d+)\.(\d+)/.test(navigator.userAgent)) {
+	IS_CHROME = true;
+	CHROME_VERSION = (() => {
+		let a = navigator.userAgent.match(/Chrome\/(\d+)\.(\d+)/);
+		return parseFloat(a[1] + '.' + a[2]);
+	})();
 }
 
 // make querySelectorAll enumeration code readable
@@ -73,7 +76,7 @@ function canStyle(url) {
 	if ((url.indexOf("moz-extension") === 0 || url.indexOf("chrome-extension") === 0) && url.indexOf(browser.extension.getURL("")) !== 0) {
 		return false;
 	}
-	if (isFirefox && url.indexOf('https://addons.mozilla.org') === 0) {
+	if (IS_FIREFOX && url.indexOf('https://addons.mozilla.org') === 0) {
 		return false;
 	}
 	return true;

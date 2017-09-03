@@ -6,7 +6,7 @@ function saveAsFile(text, fileName, dialog) {
 		var fileUrl = URL.createObjectURL(blob);
 		var option = {filename: fileName, url: fileUrl};
 		// Firefox supported saveAs since version 52
-		if (isChrome || FIREFOX_VERSION >= 52) {
+		if (IS_CHROME || FIREFOX_VERSION >= 52) {
 			option.saveAs = true;
 		}
 		browser.downloads.download(option).then(resolve);

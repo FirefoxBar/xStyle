@@ -1,6 +1,6 @@
 function notifyAllTabs(request) {
 	return new Promise((resolve) => {
-		if (isMobile) {
+		if (IS_MOBILE) {
 			browser.tabs.query({}).then((tabs) => {
 				for (let tab of tabs) {
 					updateIcon(tab);
@@ -85,7 +85,7 @@ function updateIcon(tab, styles) {
 		if (styles.disableAll) {
 			icon = "images/128w.png";
 		}
-		if (isMobile) {
+		if (IS_MOBILE) {
 			if (prefs.get("show-badge")) {
 				var t = browser.i18n.getMessage('extName') + (styles.length ? '(' + styles.length.toString() + ')' : "");
 				browser.browserAction.setTitle({title: t, tabId: tab.id});
