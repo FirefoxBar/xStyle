@@ -10,6 +10,11 @@ body {
 a, a:visited {
 	color: black;
 }
+.mdl-button {
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
 .section-spacer {
 	flex-grow: 1;
 }
@@ -131,6 +136,9 @@ body.all-off #installed {
 	max-width: calc(100% - 140px);
 	display: inline-block;
 }
+#installed .mdl-list__item-sub-title > * {
+	vertical-align: middle;
+}
 #installed .mdl-list__item-secondary-action {
 	padding-right: 10px;
 }
@@ -154,6 +162,7 @@ body.all-off #installed {
 	background-color: rgb(238, 238, 238);
 	transition: background-color .2s cubic-bezier(.4,0,.2,1);
 	border-top: 1px solid rgb(224, 224, 224);
+	outline: none;
 }
 .bottom_controls .manage_styles:hover,
 .bottom_controls .add_style:hover {
