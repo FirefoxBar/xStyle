@@ -146,4 +146,4 @@ var CloudOneDrive = {
 			_this.callApi('drive/special/approot:/xstyle/' + filename + ':/', '', 'DELETE').then(resolve);
 		});
 	}
-}
+};

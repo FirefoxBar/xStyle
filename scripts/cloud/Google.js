@@ -146,4 +146,4 @@ var CloudGoogle = {
 			_this.callApi('drive/v3/files/' + data.id + '?spaces=appDataFolder', '', 'DELETE').then(resolve);
 		});
 	}
-}
+};

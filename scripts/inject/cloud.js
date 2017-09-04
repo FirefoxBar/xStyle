@@ -19,6 +19,9 @@
 			if (window.location.pathname.includes('login/callback/google.html')) {
 				type = 'Google';
 				code = hash.match(/access_token=(.*?)&/)[1];
+			} else if (window.location.pathname.includes('login/callback/dropbox.html')) {
+				type = 'Dropbox';
+				code = hash.match(/access_token=(.*?)&/)[1];
 			} else {
 				return;
 			}

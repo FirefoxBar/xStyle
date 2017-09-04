@@ -404,6 +404,8 @@ function getCloud() {
 			return CloudOneDrive;
 		case 'Google':
 			return CloudGoogle;
+		case 'Dropbox':
+			return CloudDropbox;
 	}
 }
 
