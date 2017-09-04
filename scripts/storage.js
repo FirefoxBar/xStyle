@@ -177,6 +177,9 @@ function installStyle(json) {
 					json.id = response[0].id;
 					delete json.name;
 				}
+				if (typeof(json.autoUpdate) === 'undefined') {
+					json.autoUpdate = json.updateUrl === null;
+				}
 				saveStyle(json).then(resolve);
 			});
 		});

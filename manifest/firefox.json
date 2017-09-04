@@ -27,7 +27,7 @@
 		"clipboardWrite"
 	],
 	"background": {
-		"scripts": ["scripts/common.js", "scripts/messaging.js", "scripts/storage.js", "scripts/background.js"]
+		"scripts": ["scripts/common.js", "scripts/messaging.js", "scripts/userstyle.js", "scripts/storage.js", "scripts/background.js"]
 	},
 	"content_scripts": [
 		{
