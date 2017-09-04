@@ -183,7 +183,7 @@ browser.webRequest.onHeadersReceived.addListener((e) => {
 			if (csp.includes("'unsafe-inline'")) {
 				break;
 			}
-			e.responseHeaders[k].value = e.responseHeaders[k].value.replace(/style-src (.*?);/, "style-src $1 'unsafe-inline';");
+			e.responseHeaders[k].value = e.responseHeaders[k].value.replace('style-src ' + csp, 'style-src ' + csp + " 'unsafe-inline'");
 			break;
 		}
 	}
