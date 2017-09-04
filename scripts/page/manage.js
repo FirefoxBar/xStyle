@@ -407,6 +407,19 @@ function getCloud() {
 	}
 }
 
+function cloudTabListen() {
+	function listener(tabId) {
+		if (cloudLoginTab && tabId === cloudLoginTab.id) {
+			document.getElementById('cloud_loaded').style.display = 'none';
+			document.getElementById('cloud_beforeload').style.display = 'table-row';
+			document.getElementById('cloud_loading').style.display = 'none';
+			cloudLoginTab = null;
+			browser.tabs.onRemoved.removeListener(listener);
+		}
+	}
+	browser.tabs.onRemoved.addListener(listener);
+}
+
 function cloudLoginCallback(type, code) {
 	var cloud = getCloud();
 	if (cloudLoginTab !== null) {
@@ -435,6 +448,7 @@ function cloudLoadList() {
 				"active": true
 			}).then((tab) => {
 				cloudLoginTab = tab;
+				cloudTabListen();
 			});
 		} else {
 			cloud.getFileList().then((result) => {
@@ -443,8 +457,8 @@ function cloudLoadList() {
 				result.forEach((v) => {
 					var newElement = tpl.cloneNode(true);
 					newElement.className = '';
-					newElement.querySelector('.name').innerHTML = v.name;
-					newElement.querySelector('.size').innerHTML = Math.round(v.size / 1000).toString() + 'kb';
+					newElement.querySelector('.name').appendChild(document.createTextNode(v.name));
+					newElement.querySelector('.size').appendChild(document.createTextNode(Math.round(v.size / 1000).toString() + 'kb'));
 					if (typeof(v.data) !== 'undefined') {
 						newElement.setAttribute('data-cloud', v.data);
 					}
@@ -512,6 +526,11 @@ function cloudTypeChange() {
 			el.remove();
 		}
 	});
+	if (cloudLoginTab !== null) {
+		browser.tabs.remove(cloudLoginTab.id).then(() => {
+			cloudLoginTab = null;
+		});
+	}
 	document.getElementById('cloud_loaded').style.display = 'none';
 	document.getElementById('cloud_beforeload').style.display = 'table-row';
 	document.getElementById('cloud_loading').style.display = 'none';
