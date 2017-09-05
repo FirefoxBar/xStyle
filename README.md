@@ -5,7 +5,7 @@
 
 A user style manager for Firefox and Chrome. Build on WebExtension.
 
-You can get this extension from [Mozilla Add-ons](https://addons.mozilla.org/zh-CN/firefox/addon/xstyle/) and [Chrome Webstore](https://chrome.google.com/webstore/detail/xstyle/hncgkmhphmncjohllpoleelnibpmccpj).
+You can get this extension from [Mozilla Add-ons](https://addons.mozilla.org/en-US/firefox/addon/xstyle/) and [Chrome Webstore](https://chrome.google.com/webstore/detail/xstyle/hncgkmhphmncjohllpoleelnibpmccpj).
 
 But if you want to experience the latest version at the first time, you should [install our self-distribution version](https://github.com/FirefoxBar/xStyle/releases)
 
