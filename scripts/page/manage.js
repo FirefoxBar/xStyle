@@ -279,81 +279,98 @@ function onLoadFromFileClick(){
 }
 
 function onInstallFromFileClick(){
-	loadFromFile('.json,.css').then((result) => {
-		var filename = result[1];
-		var rawText = result[0];
-		// Detect file type
-		var filetype = filename.match(/\.(\w+)$/);
-		if (!filetype) {
-			// unknow type
-			showToast(t('fileTypeUnknown'));
-			return;
-		}
-		filetype = filetype[1].toLowerCase();
-		var json = null;
-		switch (filetype) {
-			case 'json':
-				json = JSON.parse(rawText);
-				delete json.id;
-				if (Object.keys(json.advanced.item).length > 0) {
-					let saved = {};
-					for (let k in json.advanced.item) {
-						saved[k] = typeof(json.advanced.item[k].default) === 'undefined' ? Object.keys(json.advanced.item[k].option)[0] : json.advanced.item[k].default;
+	loadFromFile('.json,.css', true).then((result) => {
+		if (result.length > 1) {
+			let installed = 0;
+			for (let f of result) {
+				installOneFile(f[1], f[0]).then(() => {
+					installed++;
+					if (installed === result.length) {
+						window.location.reload();
 					}
-					json.advanced.saved = saved;
-					json.sections = applyAdvanced(json.advanced.css, json.advanced.item, json.advanced.saved);
-				}
-				break;
-			case 'css':
-				if (trimNewLines(rawText).indexOf('/* ==UserStyle==') === 0) {
-					// is .user.css
-					let meta = parseUCMeta(trimNewLines(rawText.match(/\/\* ==UserStyle==([\s\S]+)==\/UserStyle== \*\//)[1]));
-					let body = trimNewLines(rawText.replace(/\/\* ==UserStyle==([\s\S]+)==\/UserStyle== \*\//, ''));
-					json = {
-						"name": meta.name,
-						"updateUrl": meta.updateUrl || null,
-						"md5Url": meta.md5Url || null,
-						"url": meta.url || null,
-						"author": meta.author || null,
-						"originalMd5": meta.originalMd5 || null
-					};
-					if (Object.keys(meta.advanced).length > 0) {
-						let saved = {};
-						for (let k in meta.advanced) {
-							saved[k] = typeof(meta.advanced[k].default) === 'undefined' ? Object.keys(meta.advanced[k].option)[0] : meta.advanced[k].default;
-						}
-						json.advanced = {"item": meta.advanced, "saved": saved, "css": parseMozillaFormat(body)};
-						json.sections = applyAdvanced(json.advanced.css, json.advanced.item, json.advanced.saved);
-					} else {
-						json.advanced = {"item": {}, "saved": {}, "css": []};
-						json.sections = parseMozillaFormat(body);
-					}
-				} else {
-					// is a normal css file
-					let styleName = filename.match(/^(.*?)\./)[1].replace(/([_\-])/g, ' ');
-					styleName = styleName[0].toUpperCase() + styleName.substr(1);
-					json = {
-						"name": styleName,
-						"updateUrl": null,
-						"md5Url": null,
-						"url": null,
-						"author": null,
-						"originalMd5": null,
-						"sections": parseMozillaFormat(rawText)
-					};
-				}
-				break;
-			default:
-				showToast(t('fileTypeUnknown'));
-				return;
-		}
-		installStyle(json).then((style) => {
-			if (Object.keys(style.advanced.item).length > 0) {
-				window.location.href = 'advanced.html?id=' + style.id;
-			} else {
-				window.location.reload();
+				});
 			}
-		});
+		} else {
+			installOneFile(result[0][1], result[0][0]).then((style) => {
+				if (style === false) {
+					showToast(t('fileTypeUnknown'));
+				} else if (Object.keys(style.advanced.item).length > 0) {
+					window.location.href = 'advanced.html?id=' + style.id;
+				} else {
+					window.location.reload();
+				}
+			});
+		}
+		function installOneFile(filename, rawText) {
+			return new Promise((resolve) => {
+				// Detect file type
+				let filetype = filename.match(/\.(\w+)$/);
+				if (!filetype) {
+					// unknow type
+					resolve(false);
+					return;
+				}
+				filetype = filetype[1].toLowerCase();
+				let json = null;
+				switch (filetype) {
+					case 'json':
+						json = JSON.parse(rawText);
+						delete json.id;
+						if (Object.keys(json.advanced.item).length > 0) {
+							let saved = {};
+							for (let k in json.advanced.item) {
+								saved[k] = typeof(json.advanced.item[k].default) === 'undefined' ? Object.keys(json.advanced.item[k].option)[0] : json.advanced.item[k].default;
+							}
+							json.advanced.saved = saved;
+							json.sections = applyAdvanced(json.advanced.css, json.advanced.item, json.advanced.saved);
+						}
+						break;
+					case 'css':
+						if (trimNewLines(rawText).indexOf('/* ==UserStyle==') === 0) {
+							// is .user.css
+							let meta = parseUCMeta(trimNewLines(rawText.match(/\/\* ==UserStyle==([\s\S]+)==\/UserStyle== \*\//)[1]));
+							let body = trimNewLines(rawText.replace(/\/\* ==UserStyle==([\s\S]+)==\/UserStyle== \*\//, ''));
+							json = {
+								"name": meta.name,
+								"updateUrl": meta.updateUrl || null,
+								"md5Url": meta.md5Url || null,
+								"url": meta.url || null,
+								"author": meta.author || null,
+								"originalMd5": meta.originalMd5 || null
+							};
+							if (Object.keys(meta.advanced).length > 0) {
+								let saved = {};
+								for (let k in meta.advanced) {
+									saved[k] = typeof(meta.advanced[k].default) === 'undefined' ? Object.keys(meta.advanced[k].option)[0] : meta.advanced[k].default;
+								}
+								json.advanced = {"item": meta.advanced, "saved": saved, "css": parseMozillaFormat(body)};
+								json.sections = applyAdvanced(json.advanced.css, json.advanced.item, json.advanced.saved);
+							} else {
+								json.advanced = {"item": {}, "saved": {}, "css": []};
+								json.sections = parseMozillaFormat(body);
+							}
+						} else {
+							// is a normal css file
+							let styleName = filename.match(/^(.*?)\./)[1].replace(/([_\-])/g, ' ');
+							styleName = styleName[0].toUpperCase() + styleName.substr(1);
+							json = {
+								"name": styleName,
+								"updateUrl": null,
+								"md5Url": null,
+								"url": null,
+								"author": null,
+								"originalMd5": null,
+								"sections": parseMozillaFormat(rawText)
+							};
+						}
+						break;
+					default:
+						resolve(false);
+						return;
+				}
+				installStyle(json).then(resolve);
+			});
+		}
 	});
 }
 
