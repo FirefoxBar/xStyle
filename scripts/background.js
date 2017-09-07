@@ -117,6 +117,19 @@ if (IS_MOBILE) {
 			type: "checkbox", contexts: ["browser_action"], checked: prefs.get("disableAll")
 		}, () => { var clearError = browser.runtime.lastError });
 	});
+	function requestContextMentsPrefs() {
+		let t = setTimeout(() => {
+			clearTimeout(t);
+			if (!prefs.isDefault) {
+				['disableAll', 'show-badge'].forEach((k) => {
+					browser.contextMenus.update(k, {"checked": prefs.get(k)});
+				});
+			} else {
+				requestContextMentsPrefs();
+			}
+		}, 10);
+	}
+	requestContextMentsPrefs();
 
 	browser.contextMenus.onClicked.addListener((info, tab) => {
 		if (info.menuItemId === 'openManage') {

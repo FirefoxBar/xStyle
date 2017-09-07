@@ -456,6 +456,8 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 		"editor.fontSize": 16, // font size
 		"editor.fontName": "sans-serif" // font size
 	};
+	// when browser is strarting up, the setting is default
+	me.isDefault = true;
 
 	var values = deepCopy(defaults);
 	boundMethods.enc = boundWrappers.enc = http;
@@ -525,6 +527,7 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 	});
 
 	getSync().get("settings").then(function(result) {
+		me.isDefault = false;
 		var synced = result.settings;
 		for (var key in defaults) {
 			if (synced && (key in synced)) {
