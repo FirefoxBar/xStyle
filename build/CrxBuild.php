@@ -35,8 +35,14 @@ class CrxBuild
         if (!isset($options['name'])) {
             throw new Exception('name is not set');
         }
+
+        if (!isset($options['only_zip'])) {
+            $options['only_zip'] = false;
+        }
+        $options['only_zip'] = (bool)$options['only_zip'];
+
         $options['key_file'] = trim(@$options['key_file']);
-        if (!isset($options['key_file'][0])) {
+        if (!isset($options['key_file'][0]) && !$options['only_zip']) {
             throw new Exception('key_file is not set');
         }
 
@@ -45,10 +51,6 @@ class CrxBuild
             $options['output_dir'] = '.';
         }
         $options['output_dir'] = rtrim($options['output_dir'], '\\/') . '/';
-        if (!isset($options['only_zip'])) {
-            $options['only_zip'] = false;
-        }
-        $options['only_zip'] = (bool)$options['only_zip'];
 
         $this->_crxName = $options['name'];
         $this->options = $options;
