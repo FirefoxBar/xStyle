@@ -223,7 +223,7 @@ function fixBoolean(b) {
 
 function getDomains(url) {
 	if (url.indexOf("file:") == 0) {
-		return '';
+		return [];
 	}
 	var d = /.*?:\/*([^\/:]+)/.exec(url)[1];
 	var domains = [d];
