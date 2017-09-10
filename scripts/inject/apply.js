@@ -1,6 +1,7 @@
 var g_disableAll = false;
 var g_styleElements = {};
 var iframeObserver;
+var bodyObserver;
 var retiredStyleIds = [];
 
 initObserver();
@@ -134,7 +135,9 @@ function applyStyles(styleHash) {
 		applySections(styleId, styleHash[styleId]);
 	}
 
-	initBodyObserver();
+	if (Object.keys(g_styleElements).length) {
+		initBodyObserver();
+	}
 
 	if (retiredStyleIds.length) {
 		setTimeout(() => {
@@ -251,6 +254,9 @@ function replaceAll(newStyles, doc, pass2) {
 }
 
 function initBodyObserver() {
+	if (bodyObserver) {
+		return;
+	}
 	// move all style elements after body
 	bodyObserver = new MutationObserver(() => {
 		if (!document.body) {
