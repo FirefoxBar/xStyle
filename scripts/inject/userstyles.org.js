@@ -159,16 +159,25 @@ document.addEventListener("stylishUpdate", usoInstall, false);
 if (IS_CHROME) {
 	let src = document.createElement('script');
 	src.innerHTML = ';(function() {\
-		let fixObserver = new MutationObserver(function(mutations) {\
+		function checkInstallButton() {\
 			if (document.getElementById("install_style_button")) {\
 				document.getElementById("install_style_button").addEventListener("click", function() {\
 					let newEvent = new CustomEvent("stylishInstall", {detail: null});\
 					document.dispatchEvent(newEvent);\
 				});\
-				fixObserver.disconnect();\
+				return true;\
+			} else {\
+				return false;\
 			}\
-		});\
-		fixObserver.observe(document.body, {childList: true});\
+		}\
+		if (!checkInstallButton()) {\
+			let fixObserver = new MutationObserver(function(mutations) {\
+				if (checkInstallButton()) {\
+					fixObserver.disconnect();\
+				}\
+			});\
+			fixObserver.observe(document.body, {childList: true});\
+		}\
 	})()';
 	document.body.appendChild(src);
 }
