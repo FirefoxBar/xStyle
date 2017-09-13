@@ -259,18 +259,19 @@ function initBodyObserver() {
 	}
 	// move all style elements after body
 	bodyObserver = new MutationObserver(() => {
-		if (!document.body) {
-			return;
-		}
-		let last_xstyle_el = document.body;
-		for (const id in g_styleElements) {
-			const s = document.getElementById(id);
-			if (s.previousElementSibling !== last_xstyle_el) {
-				last_xstyle_el.parentElement.insertBefore(s, last_xstyle_el.nextSibling);
-				last_xstyle_el = s;
-			} else {
-				break;
+		if (document.body) {
+			let last_xstyle_el = document.body;
+			for (const id in g_styleElements) {
+				const s = document.getElementById(id);
+				if (s.previousElementSibling !== last_xstyle_el) {
+					last_xstyle_el.parentElement.insertBefore(s, last_xstyle_el.nextSibling);
+					last_xstyle_el = s;
+				} else {
+					break;
+				}
 			}
+			bodyObserver.disconnect();
+			bodyObserver = null;
 		}
 	});
 	bodyObserver.observe(document.documentElement, {childList: true});
