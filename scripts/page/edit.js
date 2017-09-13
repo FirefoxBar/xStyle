@@ -982,7 +982,15 @@ function renderLintReport(someBlockChanged) {
 	let newContent = content.cloneNode(false);
 	let issueCount = 0;
 	editors.forEach((cm) => {
-		let cmIsAdvanced = isAdvanced(cm.display.wrapper);
+		let cmIsAdvanced = typeof(cm.isAdvanced) !== 'undefined' ? cm.isAdvanced : (() => {
+			let i = false;
+			let e = cm.display.wrapper;
+			while (!i && e.parentElement) {
+				i = e.parentElement.id === 'advanced-box';
+				e = e.parentElement;
+			}
+			return i;
+		})();
 		let index = 0;
 		if (cmIsAdvanced) {
 			index = aCodeIndex++;
@@ -1027,16 +1035,6 @@ function renderLintReport(someBlockChanged) {
 		container.replaceChild(newContent, content);
 		container.style.display = newContent.children.length ? "block" : "none";
 		resizeLintReport(null, newContent);
-	}
-	function isAdvanced(el) {
-		let e = el;
-		while (e.parentElement) {
-			if (e.parentElement.id === 'sections') {
-				return false;
-			}
-			e = e.parentElement;
-		}
-		return true;
 	}
 }
 
@@ -1221,7 +1219,7 @@ function initWithStyle(style) {
 		updateLintReport(sectionDiv.CodeMirror, prefs.get("editor.lintDelay"));
 	}
 
-	if (style.advanced.css.length > 0) {
+	if (Object.keys(style.advanced.item).length > 0) {
 		advancedSaved = style.advanced.saved;
 		let advancedItems = style.advanced.item;
 		let advancedQueue = Object.keys(advancedItems);
