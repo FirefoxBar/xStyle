@@ -84,11 +84,16 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			browser.contextMenus.update("disableAll", {checked: request.disableAll});
 			break;
 		case "prefChanged":
-			if (request.prefName == "show-badge") {
-				browser.contextMenus.update("show-badge", {checked: request.value});
-			}
-			if (request.prefName == "auto-update") {
-				toggleAutoUpdate(request.value);
+			switch (request.prefName) {
+				case "show-badge":
+					browser.contextMenus.update("show-badge", {checked: request.value});
+					break;
+				case "auto-update":
+					toggleAutoUpdate(request.value);
+					break;
+				case "modify-csp":
+					toggleCSP(request.value);
+					break;
 			}
 			break;
 	}
@@ -117,19 +122,6 @@ if (IS_MOBILE) {
 			type: "checkbox", contexts: ["browser_action"], checked: prefs.get("disableAll")
 		}, () => { var clearError = browser.runtime.lastError });
 	});
-	function requestContextMentsPrefs() {
-		let t = setTimeout(() => {
-			clearTimeout(t);
-			if (!prefs.isDefault) {
-				['disableAll', 'show-badge'].forEach((k) => {
-					browser.contextMenus.update(k, {"checked": prefs.get(k)});
-				});
-			} else {
-				requestContextMentsPrefs();
-			}
-		}, 10);
-	}
-	requestContextMentsPrefs();
 
 	browser.contextMenus.onClicked.addListener((info, tab) => {
 		if (info.menuItemId === 'openManage') {
@@ -183,10 +175,7 @@ function disableAllStylesToggle(newState) {
 }
 
 // Modify CSP
-browser.webRequest.onHeadersReceived.addListener((e) => {
-	if (!prefs.get("modify-csp")) {
-		return {"responseHeaders": e.responseHeaders};
-	}
+function modifyCSPHeader(e) {
 	for (let k in e.responseHeaders) {
 		if (e.responseHeaders[k].name.toLowerCase() === 'content-security-policy') {
 			if (!e.responseHeaders[k].value.includes('style-src')) {
@@ -201,7 +190,14 @@ browser.webRequest.onHeadersReceived.addListener((e) => {
 		}
 	}
 	return {"responseHeaders": e.responseHeaders};
-}, {urls: ["<all_urls>"]}, ['blocking', 'responseHeaders']);
+}
+function toggleCSP(to) {
+	if (!to && browser.webRequest.onHeadersReceived.hasListener(modifyCSPHeader)) {
+		browser.webRequest.onHeadersReceived.removeListener(modifyCSPHeader)
+	} else if (to && !browser.webRequest.onHeadersReceived.hasListener(modifyCSPHeader)) {
+		browser.webRequest.onHeadersReceived.addListener(modifyCSPHeader, {urls: ["<all_urls>"]}, ['blocking', 'responseHeaders']);
+	}
+}
 
 // enable/disable auto update
 function toggleAutoUpdate(e) {
@@ -231,7 +227,6 @@ function autoUpdateStyles() {
 		}
 	});
 }
-toggleAutoUpdate(prefs.get('auto-update'));
 
 function openURL(options, sendResponse) {
 	delete options.method;
@@ -245,3 +240,22 @@ function openURL(options, sendResponse) {
 		browser.tabs[isNewTab ? "update" : "create"](options).then(sendResponse);
 	});
 }
+
+
+function requestUserPrefs() {
+	let t = setTimeout(() => {
+		clearTimeout(t);
+		if (!prefs.isDefault) {
+			if (!IS_MOBILE) {
+				['disableAll', 'show-badge'].forEach((k) => {
+					browser.contextMenus.update(k, {"checked": prefs.get(k)});
+				});
+			}
+			toggleAutoUpdate(prefs.get('auto-update'));
+			toggleCSP(prefs.get('modify-csp'));
+		} else {
+			requestUserPrefs();
+		}
+	}, 10);
+}
+requestUserPrefs();
