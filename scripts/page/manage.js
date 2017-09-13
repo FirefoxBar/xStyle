@@ -91,7 +91,10 @@ function createStyleElement(style) {
 	}, false);
 	if (style.updateUrl) {
 		e.querySelector(".update").addEventListener("click", doUpdate, false);
+		e.querySelector(".update-switcher").addEventListener("click", enableStyleUpdate);
 		e.querySelector(".update").classList.remove('hidden');
+		e.querySelector('.update-switcher').classList.remove('hidden');
+		e.querySelector('.update-switcher').classList.add(style.autoUpdate ? 'on' : 'off');
 	}
 	e.querySelector(".delete").addEventListener("click", doDelete, false);
 	//material
@@ -107,11 +110,17 @@ function recalculateStyleRight(e) {
 	e.querySelector('.mdl-card__title').style.paddingRight = (24 + menuWidth).toString() + 'px';
 }
 
+function enableStyleUpdate(event) {
+	var id = getId(event);
+	var to = this.classList.contains('off');
+	saveStyle({id: id, autoUpdate: to}).then((style) => {
+		handleUpdate(style);
+	});
+}
 
 function enable(event, enabled) {
 	var id = getId(event);
 	enableStyle(id, enabled);
-	var styleid = getGlobalId(event);
 }
 
 function doDelete(event) {

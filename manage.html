@@ -75,6 +75,9 @@
 	.menu .hidden {
 		display: none;
 	}
+	.update-switcher.off {
+		opacity: .4;
+	}
 	</style>
 
 	<template data-id="style">
@@ -92,6 +95,7 @@
 				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect update hidden"><span i18n-text="updateOneStyle"></span><div class="loading mdl-spinner mdl-js-spinner is-active"></div></a>
 			</div>
 			<div class="mdl-card__menu">
+				<button class="mdl-button mdl-js-button mdl-button--icon update-switcher hidden" i18n-title="autoUpdateLabel"><i class="material-icons">update</i></button>
 				<button class="mdl-button mdl-js-button mdl-button--icon enable" i18n-title="enableStyleLabel"><i class="material-icons">block</i></button>
 				<button class="mdl-button mdl-js-button mdl-button--icon disable" i18n-title="disableStyleLabel"><i class="material-icons">done</i></button>
 			</div>
