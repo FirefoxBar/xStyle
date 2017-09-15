@@ -47,13 +47,14 @@ function usoInstall () {
 				advanced.css = parseMozillaFormat(serverJson.css);
 				// Parse advanced
 				for (let i of serverJson.style_settings) {
-					advanced.item[i.install_key] = {"type": i.setting_type, "title": i.label};
+					const install_key = i.install_key.replace(/([^a-zA-Z0-9\-_]+)/g, '_');
+					advanced.item[install_key] = {"type": i.setting_type, "title": i.label};
 					switch (i.setting_type) {
 						case 'dropdown':
 						case 'image':
-							advanced.item[i.install_key].option = {};
+							advanced.item[install_key].option = {};
 							for (let oneOption of i.style_setting_options) {
-								advanced.item[i.install_key].option[oneOption.install_key] = {
+								advanced.item[install_key].option[oneOption.install_key.replace(/([^a-zA-Z0-9\-_]+)/g, '_')] = {
 									"title": oneOption.label,
 									"value": oneOption.value
 								};
@@ -61,7 +62,7 @@ function usoInstall () {
 							break;
 						case 'color':
 						case 'text':
-							advanced.item[i.install_key].default = i.style_setting_options[0].value;
+							advanced.item[install_key].default = i.style_setting_options[0].value;
 							break;
 					}
 				}
