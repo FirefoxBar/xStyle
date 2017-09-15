@@ -39,6 +39,8 @@ You can help us to translate this extension on [transifex](https://www.transifex
 
 * zh-TW: [shyangs](https://github.com/shyangs) [zhtw2013](https://github.com/zhtw2013)
 
+* sv-SE: [Kim](https://github.com/JumpySWE)
+
 ## Licenses
 
 Copyright status of the "third-party/codemirror" directory, see [third-party/codemirror/LICENSE](third-party/codemirror/LICENSE).
