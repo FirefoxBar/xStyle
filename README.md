@@ -7,7 +7,7 @@ A style manager for your browser. Built on the WebExtensions APIs.
 
 You can get this extension from [Mozilla Add-ons](https://addons.mozilla.org/firefox/addon/xstyle/) and [Chrome Webstore](https://chrome.google.com/webstore/detail/xstyle/hncgkmhphmncjohllpoleelnibpmccpj).
 
-But if you want to experience the latest version a bit earlier, you should [install our self-distributed version](https://github.com/FirefoxBar/xStyle/releases).
+But if you want to stay up-to-date with the latest developments, you should [install our self-distributed version](https://github.com/FirefoxBar/xStyle/releases).
 
 For more documentation, please visit the [wiki](https://github.com/FirefoxBar/xStyle/wiki).
 
