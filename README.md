@@ -3,43 +3,43 @@
 [![GitHub release](https://img.shields.io/github/release/FirefoxBar/xStyle.svg)](https://github.com/FirefoxBar/xStyle/releases)
 [![license](https://img.shields.io/github/license/FirefoxBar/xStyle.svg)](https://github.com/FirefoxBar/xStyle/blob/master/COPYING)
 
-A user style manager for Firefox and Chrome. Build on WebExtension.
+A style manager for your browser. Built on the WebExtensions APIs.
 
-You can get this extension from [Mozilla Add-ons](https://addons.mozilla.org/en-US/firefox/addon/xstyle/) and [Chrome Webstore](https://chrome.google.com/webstore/detail/xstyle/hncgkmhphmncjohllpoleelnibpmccpj).
+You can get this extension from [Mozilla Add-ons](https://addons.mozilla.org/firefox/addon/xstyle/) and [Chrome Webstore](https://chrome.google.com/webstore/detail/xstyle/hncgkmhphmncjohllpoleelnibpmccpj).
 
-But if you want to experience the latest version at the first time, you should [install our self-distribution version](https://github.com/FirefoxBar/xStyle/releases)
+But if you want to stay up-to-date with the latest developments, you should [install our self-distributed version](https://github.com/FirefoxBar/xStyle/releases).
 
-For more documentation, Please visit [wiki](https://github.com/FirefoxBar/xStyle/wiki)
+For more documentation, please visit the [wiki](https://github.com/FirefoxBar/xStyle/wiki).
 
-## Requirements
+## Compatibility
 
-* Firefox 49+
+![Firefox Logo](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/42.8.0/firefox/firefox_16x16.png) Mozilla Firefox 49+
 
-* Chrome
+![Chrome Logo](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/42.8.0/chrome/chrome_16x16.png) Google Chrome
 
-## Install self-distribution version to Chrome
+## Install self-distributed version in Chrome
 
-You should download [Administrators Policy Templates](http://www.chromium.org/administrators/policy-templates) and install it.
+You should download an [Administrative Policy Template](http://www.chromium.org/administrators/policy-templates) and install it.
 
-Then, allow Chrome to install local plugins, add the ID of this extension(`dbbjndgnfkbjmciadekfomemdiledmam`) to the whitelist.
+Then, allow Chrome to install local plugins and whitelist the ID for this extension (`dbbjndgnfkbjmciadekfomemdiledmam`).
 
-For more information, see [kafan](http://bbs.kafan.cn/thread-1689765-1-1.html) and [tieba](http://tieba.baidu.com/p/3091171066)
+For more information, see [kafan](http://bbs.kafan.cn/thread-1689765-1-1.html) and [tieba](http://tieba.baidu.com/p/3091171066).
 
 ## Contribution
 
-You can contribute codes by [submit a pull request](https://github.com/FirefoxBar/xStyle/compare).
+You can contribute code by [submiting a pull request](https://github.com/FirefoxBar/xStyle/compare).
 
-You can help us to translate this extension on [transifex](https://www.transifex.com/sytec/xstyle/).
+You can also help us translate this extension on [Transifex](https://www.transifex.com/sytec/xstyle/).
 
-## Translator
+## Translators
 
 * en: [ShuangYa](https://github.com/sylingd)
 
 * zh-CN: [ShuangYa](https://github.com/sylingd)
 
-* zh-TW: [shyangs](https://github.com/shyangs) [zhtw2013](https://github.com/zhtw2013)
+* zh-TW: [shyangs](https://github.com/shyangs), [zhtw2013](https://github.com/zhtw2013)
 
-* sv-SE: [Kim](https://github.com/JumpySWE)
+* sv-SE: [Kim](https://github.com/JumpySWE "JumpySWE")
 
 ## Licenses
 
@@ -55,10 +55,10 @@ Copyright status of the "third-party/mdl" directory is [Apache 2.0](https://gith
 
 Copyright status of the "third-party/material-design-icons" directory is [Apache 2.0](https://github.com/google/material-design-icons/blob/master/LICENSE).
 
-Everything else:
+**Everything else:**
 
 Copyright © 2005-2014 [Jason Barnabe](https://github.com/JasonBarnabe)
 
 Copyright © 2017 [FirefoxBar Team](http://team.firefoxcn.net)
 
-Open source under GPLv3 license.
+Open source material is licensed under [GPLv3](COPYING).
