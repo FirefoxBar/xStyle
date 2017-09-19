@@ -238,58 +238,59 @@
 	<script src="scripts/page/edit.js"></script>
 </head>
 <body id="xstyle-edit">
-<div class="mdl-layout mdl-layout--fixed-drawer">
-	<div class="mdl-layout__obfuscator"></div>
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
 	<header class="mdl-layout__header">
 		<div class="mdl-layout__header-row">
-			<div id="menu-button" aria-expanded="false" role="button" tabindex="0" class="mdl-layout__drawer-button"><i class="material-icons">menu</i></div>
+			<div id="back-button" role="button" tabindex="0" class="mdl-layout__drawer-button"><i class="material-icons">arrow_back</i></div>
 			<span id="heading" class="mdl-layout-title"></span>
 			<div class="mdl-layout-spacer"></div>
 		</div>
 	</header>
-	<div class="menu mdl-layout__drawer">
-		<span class="mdl-layout-title"><p><img src="images/128.png"></p><p>xStyle</p></span>
-		<nav class="mdl-navigation">
-			<a class="mdl-navigation__link" id="save-link" title="Ctrl-S" i18n-text="save"></a>
-			<a class="mdl-navigation__link" i18n-text="styleCancelEditLabel" href="manage.html"></a>
-			<a class="mdl-navigation__link" id="beautify" i18n-text="styleBeautify"></a>
-			<a class="mdl-navigation__link" id="from-mozilla" i18n-text="styleMozillaFormatImport"></a>
-			<a class="mdl-navigation__link" id="to-mozilla" i18n-text="styleMozillaFormatExport"></a>
-		</nav>
-		<section id="lint">
-			<p class="title" i18n-text="issues">: <span id="issue-count"></span><i id="lint-help" class="material-icons help-button" i18n-title="helpAlt">help_outline</i></p>
-			<div class="code-list"></div>
-		</section>
-	</div>
+	<div class="mdl-layout__drawer"></div>
 	<main class="mdl-layout__content">
 		<div class="page-content">
-			<div class="half">
-				<div class="mdl-card mdl-shadow--2dp">
+			<div class="left-section">
+				<section id="sections"></section>
+				<!-- advanced -->
+				<div id="advanced-box" class="mdl-card mdl-shadow--2dp close">
 					<div class="mdl-card__title mdl-card--expand">
-						<h2 class="mdl-card__title-text" id="contentHeading"></h2>
+						<h2 class="mdl-card__title-text" i18n-text="advancedTitle"></h2>
 					</div>
-					<div class="mdl-card__supporting-text">
-						<div class="mdl-cell mdl-cell--9-col">
+					<div id="advanced" class="mdl-card__supporting-text"></div>
+					<div class="mdl-card__actions mdl-card--border">
+						<button class="mdl-button mdl-js-button mdl-js-ripple-effect advanced-add-dropdown" i18n-text="advancedAddDropdown"></button>
+						<button class="mdl-button mdl-js-button mdl-js-ripple-effect advanced-add-image" i18n-text="advancedAddImage"></button>
+						<button class="mdl-button mdl-js-button mdl-js-ripple-effect advanced-add-text" i18n-text="advancedAddText"></button>
+						<button class="mdl-button mdl-js-button mdl-js-ripple-effect advanced-add-color" i18n-text="advancedAddColor"></button>
+					</div>
+					<div class="mdl-card__menu">
+						<button id="toggle-advanced" class="mdl-button mdl-js-button mdl-button--icon"><i class="material-icons">keyboard_arrow_up</i></button>
+					</div>
+				</div>
+			</div>
+			<div class="right-section mdl-card mdl-shadow--2dp">
+				<div class="mdl-card__supporting-text">
+					<div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+						<div class="mdl-tabs__tab-bar">
+							<a href="#style-panel" class="mdl-tabs__tab is-active"><i class="material-icons">style</i></a>
+							<a href="#editor-panel" class="mdl-tabs__tab"><i class="material-icons">edit</i></a>
+							<a href="#issue-panel" class="mdl-tabs__tab"><i class="material-icons">error</i></a>
+						</div>
+						<div class="mdl-tabs__panel is-active" id="style-panel">
 							<div class="mdl-textfield mdl-textfield--floating-label style-name-box">
 								<input class="mdl-textfield__input style-contributor" type="text" id="name">
 								<label class="mdl-textfield__label" for="name" i18n-text="styleName"></label>
 							</div>
-						</div>
-						<div class="mdl-cell mdl-cell--2-col">
 							<label class="mdl-checkbox" id="enabled-label" for="enabled">
 								<input type="checkbox" id="enabled" class="mdl-checkbox__input style-contributor">
 								<span class="mdl-checkbox__label" i18n-text="styleEnabledLabel"></span>
 							</label>
+							<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" id="save-link" title="Ctrl-S" i18n-text="save"></button>
+							<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" id="beautify" i18n-text="styleBeautify"></button>
+							<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" id="from-mozilla" i18n-text="styleMozillaFormatImport"></button>
+							<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" id="to-mozilla" i18n-text="styleMozillaFormatExport"></button>
 						</div>
-					</div>
-				</div>
-				<!-- editor settings -->
-				<div id="editorSetting" class="mdl-card mdl-shadow--2dp half">
-					<div class="mdl-card__title mdl-card--expand">
-						<h2 class="mdl-card__title-text" i18n-text="editorSetting"></h2>
-					</div>
-					<div id="options" class="mdl-card__supporting-text mdl-grid">
-						<div class="mdl-cell mdl-cell--4-col">
+						<div class="mdl-tabs__panel" id="editor-panel">
 							<label class="mdl-checkbox mdl-js-ripple-effect" id="lineWrapping-label" for="editor.lineWrapping">
 								<input type="checkbox" data-option="lineWrapping" id="editor.lineWrapping" class="mdl-checkbox__input">
 								<span class="mdl-checkbox__label" i18n-text="cm_lineWrapping"></span>
@@ -302,8 +303,6 @@
 								<input type="checkbox" data-option="indentWithTabs" id="editor.indentWithTabs" class="mdl-checkbox__input">
 								<span class="mdl-checkbox__label" i18n-text="cm_indentWithTabs"></span>
 							</label>
-						</div>
-						<div class="mdl-cell mdl-cell--4-col">
 							<div class="option">
 								<label id="keyMap-label" for="editor.keyMap" i18n-text="cm_keyMap"></label>
 								<select data-option="keyMap" id="editor.keyMap"></select>
@@ -317,8 +316,6 @@
 								<label id="fontName-label" for="editor.fontName" i18n-text="fontName"></label>
 								<select data-option="fontName" id="editor.fontName"></select>
 							</div>
-						</div>
-						<div class="mdl-cell mdl-cell--4-col">
 							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 								<input class="mdl-textfield__input" data-option="tabSize" id="editor.tabSize" type="number" min="0">
 								<label class="mdl-textfield__label" id="tabSize-label" for="editor.tabSize" i18n-text="cm_tabSize"></label>
@@ -328,26 +325,15 @@
 								<label class="mdl-textfield__label" id="fontSize-label" for="editor.fontSize" i18n-text="fontSize"></label>
 							</div>
 						</div>
+						<div class="mdl-tabs__panel" id="issue-panel">
+							<section id="lint">
+								<p class="title" i18n-text="issues">: <span id="issue-count"></span><i id="lint-help" class="material-icons help-button" i18n-title="helpAlt">help_outline</i></p>
+								<div class="code-list"></div>
+							</section>
+						</div>
 					</div>
 				</div>
 			</div>
-			<!-- advanced -->
-			<div id="advanced-box" class="mdl-card mdl-shadow--2dp close">
-				<div class="mdl-card__title mdl-card--expand">
-					<h2 class="mdl-card__title-text" i18n-text="advancedTitle"></h2>
-				</div>
-				<div id="advanced" class="mdl-card__supporting-text"></div>
-				<div class="mdl-card__actions mdl-card--border">
-					<button class="mdl-button mdl-js-button mdl-js-ripple-effect advanced-add-dropdown" i18n-text="advancedAddDropdown"></button>
-					<button class="mdl-button mdl-js-button mdl-js-ripple-effect advanced-add-image" i18n-text="advancedAddImage"></button>
-					<button class="mdl-button mdl-js-button mdl-js-ripple-effect advanced-add-text" i18n-text="advancedAddText"></button>
-					<button class="mdl-button mdl-js-button mdl-js-ripple-effect advanced-add-color" i18n-text="advancedAddColor"></button>
-				</div>
-				<div class="mdl-card__menu">
-					<button id="toggle-advanced" class="mdl-button mdl-js-button mdl-button--icon"><i class="material-icons">keyboard_arrow_up</i></button>
-				</div>
-			</div>
-			<section id="sections"></section>
 		</div>
 	</main>
 </div>
@@ -355,8 +341,6 @@
 	<div class="mdl-snackbar__text"></div>
 	<button class="mdl-snackbar__action" type="button"></button>
 </div>
-<!-- save button -->
-<button id="save-button" i18n-title="save" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored"><i class="material-icons">save</i></button>
 <div id="help-popup">
 	<div class="title"></div><div class="close-icon"></div>
 	<div class="contents"></div>

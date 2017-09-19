@@ -241,14 +241,14 @@ function initCodeMirror() {
 		themeControl.innerHTML = optionsHtmlFromArray(['default', '3024-day', '3024-night', 'ambiance-mobile', 'ambiance', 'base16-dark', 'base16-light', 'blackboard', 'cobalt', 'colorforth', 'eclipse', 'elegant', 'erlang-dark', 'lesser-dark', 'liquibyte', 'mbo', 'mdn-like', 'midnight', 'monokai', 'neat', 'neo', 'night', 'paraiso-dark', 'paraiso-light', 'pastel-on-dark', 'rubyblue', 'solarized', 'the-matrix', 'tomorrow-night-bright', 'tomorrow-night-eighties', 'twilight', 'vibrant-ink', 'xq-dark', 'xq-light', 'zenburn']);
 		document.getElementById("editor.keyMap").innerHTML = optionsHtmlFromArray(Object.keys(CM.keyMap).sort());
 		document.getElementById("editor.fontName").innerHTML = optionsHtmlFromArray(['sans-serif', 'Source Code Pro', 'Microsoft YaHei', 'Consolas', 'Rotobo', 'PingFang SC', 'PingFang TC', 'WenQuanYi Micro Hei']);
-		document.getElementById("options").addEventListener("change", acmeEventListener, false);
+		document.getElementById("editor-panel").addEventListener("change", acmeEventListener, false);
 		setupLivePrefs(
-			document.querySelectorAll("#options *[data-option][id^='editor.']")
+			document.querySelectorAll("#editor-panel *[data-option][id^='editor.']")
 				.map((option) => { return option.id })
 		);
 		updateFontStyle();
 		if (typeof(componentHandler) !== 'undefined') {
-			document.querySelectorAll('#options input[type="checkbox"').forEach((el) => {
+			document.querySelectorAll('#editor-panel input[type="checkbox"').forEach((el) => {
 				componentHandler.upgradeElement(el.parentElement, 'MaterialCheckbox');
 			});
 		}
@@ -358,6 +358,7 @@ function setupCodeMirror(textarea, index, isAdvanced) {
 			if (height != cm.display.wrapper.clientHeight) {
 				cm.setSize(null, height);
 			}
+			reCalculatePanelPosition();
   		}
 		document.addEventListener("mousemove", resize);
 		document.addEventListener("mouseup", function resizeStop() {
@@ -482,6 +483,7 @@ function addAppliesTo(list, name, value) {
 		appliesToId++;
 	}
 	list.appendChild(e);
+	reCalculatePanelPosition();
 }
 
 function addSection(event, section) {
@@ -529,6 +531,7 @@ function addSection(event, section) {
 
 	div.CodeMirror = cm;
 	setCleanSection(div);
+	reCalculatePanelPosition();
 	return div;
 }
 
@@ -539,6 +542,7 @@ function removeAppliesTo(event) {
 	if (!appliesToList.hasChildNodes()) {
 		addAppliesTo(appliesToList);
 	}
+	reCalculatePanelPosition();
 }
 
 function removeSection(event) {
@@ -550,6 +554,7 @@ function removeSection(event) {
 	if (getSections().length === 0) {
 		addSection(null, {"code": ""});
 	}
+	reCalculatePanelPosition();
 }
 
 function removeAreaAndSetDirty(area) {
@@ -1158,7 +1163,6 @@ function init() {
 		// default to enabled
 		document.getElementById("enabled").checked = true;
 		document.getElementById("heading").innerHTML = t("addStyleTitle");
-		document.getElementById("contentHeading").innerHTML = t("addStyleTitle");
 		initHooks();
 		//material
 		if (typeof(componentHandler) !== 'undefined') {
@@ -1170,7 +1174,6 @@ function init() {
 		return;
 	}
 	// This is an edit
-	document.getElementById("contentHeading").innerHTML = t("editStyleHeading");
 	document.getElementById("heading").innerHTML = t("editStyleHeading");
 	requestStyle();
 	function requestStyle() {
@@ -1217,6 +1220,7 @@ function initWithStyle(style) {
 		var sectionDiv = addSection(null, queue.shift());
 		maximizeCodeHeight(sectionDiv, !queue.length);
 		updateLintReport(sectionDiv.CodeMirror, prefs.get("editor.lintDelay"));
+		reCalculatePanelPosition();
 	}
 
 	if (Object.keys(style.advanced.item).length > 0) {
@@ -1266,7 +1270,6 @@ function initHooks() {
 	document.getElementById("from-mozilla").addEventListener("click", fromMozillaFormat);
 	document.getElementById("beautify").addEventListener("click", beautify);
 	document.getElementById("save-link").addEventListener("click", save, false);
-	document.getElementById("save-button").addEventListener("click", save, false);
 	document.getElementById("keyMap-help").addEventListener("click", showKeyMapHelp, false);
 	document.getElementById("lint-help").addEventListener("click", showLintHelp);
 	document.getElementById("lint").addEventListener("click", gotoLintIssue);
@@ -1917,19 +1920,22 @@ window.onbeforeunload = () => {
 	return t('styleChangesNotSaved');
 };
 
+
+function reCalculatePanelPosition() {
+	const leftSection = document.querySelector('.left-section');
+	const rightSection = document.querySelector('.right-section');
+	rightSection.style.left = (leftSection.offsetLeft + leftSection.offsetWidth + 10).toString() + 'px';
+}
+
+
 document.addEventListener("DOMContentLoaded", () => {
 	advanceBox = document.getElementById('advanced');
 	init();
-	//menu
-	var toggleMenu = () => {
-		if (document.querySelector('.mdl-layout__drawer').classList.contains('is-visible')) {
-			document.querySelector('.mdl-layout__obfuscator').classList.remove('is-visible');
-			document.querySelector('.mdl-layout__drawer').classList.remove('is-visible');
-		} else {
-			document.querySelector('.mdl-layout__obfuscator').classList.add('is-visible');
-			document.querySelector('.mdl-layout__drawer').classList.add('is-visible');
-		}
-	};
+	// Set float panel
+	window.addEventListener('resize', () => {
+		reCalculatePanelPosition();
+	});
+	reCalculatePanelPosition();
 	// toggle advanced
 	document.getElementById('toggle-advanced').addEventListener('click', () => {
 		let box = document.getElementById('advanced-box');
@@ -1976,7 +1982,4 @@ document.addEventListener("DOMContentLoaded", () => {
 	document.querySelector('.advanced-add-color').addEventListener('click', () => {
 		createAdvancedColor();
 	});
-
-	document.getElementById('menu-button').addEventListener('click', toggleMenu);
-	document.querySelector('.mdl-layout__obfuscator').addEventListener('click', toggleMenu);
 });

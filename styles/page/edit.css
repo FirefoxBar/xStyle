@@ -35,10 +35,42 @@
 .style-name-box {
 	width: 100%;
 }
-#options .mdl-textfield {
+/* Panels */
+.left-section {
+	width: calc(100% - 290px);
+}
+#sections .mdl-card {
+	margin-bottom: 10px;
+}
+.right-section {
+	width: 280px;
+	position: fixed;
+	top: 70px;
+	height: calc(100% - 80px);
+}
+.right-section .mdl-tabs__tab-bar {
+	border-bottom: none;
+}
+.right-section .mdl-tabs__tab {
+	width: 33.3%;
+}
+.right-section .mdl-card__supporting-text {
+	padding: 0;
+}
+.right-section .mdl-tabs__panel {
+	padding: 16px;
+}
+.right-section .mdl-tabs__panel > *{
+	margin-bottom: 10px;
+}
+#style-panel .mdl-button {
+	width: 100%;
+	display: block;
+}
+#editor-panel .mdl-textfield {
 	padding-bottom: 1px;
 }
-#options .mdl-textfield__label::after {
+#editor-panel .mdl-textfield__label::after {
 	bottom: 0;
 }
 

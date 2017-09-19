@@ -578,20 +578,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		"modify-csp",
 		"auto-update"
 	]);
-	
-	//menu
-	var toggleMenu = () => {
-		if (document.querySelector('.mdl-layout__drawer').classList.contains('is-visible')) {
-			document.querySelector('.mdl-layout__obfuscator').classList.remove('is-visible');
-			document.querySelector('.mdl-layout__drawer').classList.remove('is-visible');
-		} else {
-			document.querySelector('.mdl-layout__obfuscator').classList.add('is-visible');
-			document.querySelector('.mdl-layout__drawer').classList.add('is-visible');
-		}
-	};
-	document.getElementById('menu-button').addEventListener('click', toggleMenu);
-	document.querySelector('.mdl-layout__obfuscator').addEventListener('click', toggleMenu);
-	
+
 	//cloud
 	document.getElementById('cloud_load_list').addEventListener('click', cloudLoadList);
 	document.getElementById('cloud_reload_list').addEventListener('click', cloudLoadList);
