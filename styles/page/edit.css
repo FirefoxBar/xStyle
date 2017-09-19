@@ -18,12 +18,6 @@
 .page-content .half .option {
 	margin-bottom: 5px;
 }
-#save-button {
-	position: fixed;
-	right: 20px;
-	bottom: 20px;
-	z-index: 999;
-}
 .help-button {
 	font-size: 22px;
 	vertical-align: middle;
@@ -45,7 +39,7 @@
 .right-section {
 	width: 280px;
 	position: fixed;
-	top: 70px;
+	top: 75px;
 	height: calc(100% - 80px);
 }
 .right-section .mdl-tabs__tab-bar {

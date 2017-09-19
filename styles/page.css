@@ -29,7 +29,7 @@ body {
 	font-weight: bold;
 }
 .page-content {
-	padding: 5px;
+	padding: 10px;
 }
 .page-content .mdl-card .mdl-card--expand {
 	flex-grow: 0;
