@@ -40,7 +40,7 @@ body {
 	border-right: none;
 }
 .menu .mdl-layout-title {
-	background-image: url('images/menu-head.jpg');
+	background-image: url('/images/menu-head.jpg');
 	background-size: 100% 100%;
 	background-repeat: no-repeat no-repeat;
 	background-position: 0 0;

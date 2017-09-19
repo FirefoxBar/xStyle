@@ -1,0 +1,37 @@
+
+#setting-list .image {
+	display: inline-block;
+	box-sizing: border-box;
+	width: 120px;
+	padding: 10px;
+}
+#setting-list .image img {
+	display: block;
+	width: 100px;
+	height: 100px;
+	margin: 0 auto;
+}
+#setting-list .image .title {
+	margin-top: 5px;
+	display: block;
+	width: 100%;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	box-sizing: border-box;
+	text-align: center;
+}
+#setting-list input[type="color"] {
+	border: none;
+	background-color: transparent;
+	padding: 0;
+	cursor: pointer;
+	height: 25px;
+	width: 50px;
+	margin-top: 5px;
+}
+#setting-list select {
+	margin-top: 5px;
+	min-width: 100px;
+	height: 28px;
+}

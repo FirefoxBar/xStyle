@@ -1,0 +1,70 @@
+
+.page-content #installed {
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
+	flex-wrap: wrap;
+}
+.page-content #installed .mdl-card {
+	width: calc(50% - 10px);
+	margin: 5px;
+}
+.page-content #installed .mdl-card .style-name {
+	display: block;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+.page-content #installed .mdl-card .applies-to {
+	word-break: break-all;
+	max-height: 100px;
+	overflow: auto;
+}
+.page-content #installed .mdl-card .applies-to code {
+	display: inline-block;
+	background-color: #F8F8F8;
+	border-radius: 2px;
+	padding: 3px;
+	margin-right: 5px;
+	margin-bottom: 5px;
+}
+.cloud .mdl-radio {
+	margin-right: 10px;
+}
+.cloud .mdl-data-table {
+	width: 100%;
+	margin-top: 10px;
+}
+.cloud .mdl-data-table .special {
+	display: none;
+}
+.cloud .mdl-data-table .special td {
+	text-align: center;
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+.cloud .mdl-button {
+	margin-right: 10px;
+}
+
+@media screen and (max-width: 1024px) {
+	.page-content #installed .mdl-card {
+		margin: 10px 5px;
+		width: calc(100% - 10px);
+	}
+}
+.mdl-card__menu .mdl-button {
+	color: #555;
+}
+.disabled .disable {
+	display: none;
+}
+.enabled .enable {
+	display: none;
+}
+.menu .hidden {
+	display: none;
+}
+.update-switcher.off {
+	opacity: .4;
+}

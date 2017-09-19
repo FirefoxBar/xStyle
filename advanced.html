@@ -7,7 +7,8 @@
 	<title i18n-text="advancedTitle"></title>
 	<link rel="stylesheet" href="third-party/material-design-icons/material-icons.min.css"/>
 	<link rel="stylesheet" href="third-party/mdl/material.min.css"/>
-	<link rel="stylesheet" href="page.css"/>
+	<link rel="stylesheet" href="styles/page.css"/>
+	<link rel="stylesheet" href="styles/page/advanced.css"/>
 	<script src="scripts/browser-polyfill.js"></script>
 	<script src="scripts/common.js"></script>
 	<script src="scripts/localization.js"></script>
@@ -17,44 +18,6 @@
 	<script src="scripts/inject/apply.js"></script>
 	<script src="scripts/page/advanced.js"></script>
 
-	<style>
-	#setting-list .image {
-		display: inline-block;
-		box-sizing: border-box;
-		width: 120px;
-		padding: 10px;
-	}
-	#setting-list .image img {
-		display: block;
-		width: 100px;
-		height: 100px;
-		margin: 0 auto;
-	}
-	#setting-list .image .title {
-		margin-top: 5px;
-		display: block;
-		width: 100%;
-		overflow: hidden;
-		white-space: nowrap;
-		text-overflow: ellipsis;
-		box-sizing: border-box;
-		text-align: center;
-	}
-	#setting-list input[type="color"] {
-		border: none;
-		background-color: transparent;
-		padding: 0;
-		cursor: pointer;
-		height: 25px;
-		width: 50px;
-		margin-top: 5px;
-	}
-	#setting-list select {
-		margin-top: 5px;
-		min-width: 100px;
-		height: 28px;
-	}
-	</style>
 	<template data-id="dropdown">
 		<div class="mdl-cell mdl-cell--4-col">
 			<span class="title"></span><br><select class="options"></select>
