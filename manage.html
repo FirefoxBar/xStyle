@@ -43,10 +43,10 @@
 	<script src="scripts/page/manage.js"></script>
 </head>
 <body id="xstyle-manage">
-<div class="mdl-layout mdl-layout--fixed-drawer">
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
 	<header class="mdl-layout__header">
 		<div class="mdl-layout__header-row">
-			<div id="menu-button" aria-expanded="false" role="button" tabindex="0" class="mdl-layout__drawer-button"><i class="material-icons">menu</i></div>
+			<a role="button" tabindex="0" class="mdl-layout__drawer-button"><i class="material-icons">menu</i></a>
 			<span class="mdl-layout-title" i18n-text="manageHeading"></span>
 			<div class="mdl-layout-spacer"></div>
 			<button id="sort-options" class="mdl-button mdl-js-button mdl-button--icon"><i class="material-icons">sort</i></button>
@@ -107,7 +107,7 @@
 						<input type="radio" id="cloud-dropbox" class="mdl-radio__button" name="cloud-type" value="Dropbox">
 						<span class="mdl-radio__label">Dropbox</span>
 					</label>
-					<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+					<table class="mdl-data-table mdl-js-data-table" style="border:0">
 						<thead>
 							<tr>
 								<th class="mdl-data-table__cell--non-numeric" i18n-text="cloudFileName"></th>

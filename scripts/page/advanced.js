@@ -6,8 +6,6 @@ function init() {
 		window.location.href = 'manage.html';
 		return;
 	}
-	let editLink = document.querySelector(".style-edit-link");
-	editLink.setAttribute("href", editLink.getAttribute("href") + params.id);
 	requestStyle();
 	function requestStyle() {
 		browser.runtime.sendMessage({method: "getStyles", id: params.id}).then((styles) => {
@@ -199,5 +197,5 @@ document.addEventListener("DOMContentLoaded", () => {
 	setting_list = document.getElementById('setting-list');
 	init();
 	document.getElementById('save').addEventListener('click', onSaveClick);
-	document.getElementById('menu-save').addEventListener('click', onSaveClick);
+	//document.getElementById('menu-save').addEventListener('click', onSaveClick);
 });

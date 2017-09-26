@@ -28,8 +28,14 @@ body {
 	color: rgb(255, 64, 129);
 	font-weight: bold;
 }
+.mdl-layout__drawer-button .material-icons {
+	max-width: 24px;
+}
 .page-content {
 	padding: 10px;
+}
+.page-content > .mdl-card {
+	margin-bottom: 10px;
 }
 .page-content .mdl-card .mdl-card--expand {
 	flex-grow: 0;
