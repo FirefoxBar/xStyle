@@ -1,6 +1,9 @@
 body {
 	background-color: #EEE;
 }
+.mdl-button:not(.mdl-button--icon):not(.mdl-button--fab) .material-icons {
+	margin-right: 5px;
+}
 .mdl-card {
 	min-height: 0;
 	width: 100%;
