@@ -435,7 +435,7 @@ function getCloud() {
 	}
 }
 
-function cloudTabListen() {
+function cloudTabListen(isRemove) {
 	function listener(tabId) {
 		if (cloudLoginTab && tabId === cloudLoginTab.id) {
 			document.getElementById('cloud_loaded').style.display = 'none';
@@ -445,12 +445,17 @@ function cloudTabListen() {
 			browser.tabs.onRemoved.removeListener(listener);
 		}
 	}
-	browser.tabs.onRemoved.addListener(listener);
+	if (isRemove) {
+		browser.tabs.onRemoved.removeListener(listener);
+	} else {
+		browser.tabs.onRemoved.addListener(listener);
+	}
 }
 
 function cloudLoginCallback(type, code) {
 	var cloud = getCloud();
 	if (cloudLoginTab !== null) {
+		cloudTabListen(true); // remove listener
 		browser.tabs.remove(cloudLoginTab.id).then(() => {
 			cloudLoginTab = null;
 		});
