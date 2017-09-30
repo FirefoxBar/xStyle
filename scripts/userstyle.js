@@ -313,7 +313,7 @@ function updateStyleFullCode(style) {
 
 // Apply advanced to a style
 function applyAdvanced(css, item, saved) {
-	let getValue = (k, v) => {
+	const getValue = (k, v) => {
 		if (typeof(item[k]) === 'undefined') {
 			return null;
 		}
@@ -338,9 +338,17 @@ function applyAdvanced(css, item, saved) {
 		}
 		return cssMds.length ? "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}" : section.code;
 	}).join("\n\n");
-	for (let k in saved) {
-		content = content.replace(new RegExp('\\/\\*\\[\\[' + k + '\\]\\]\\*\\/', 'g'), getValue(k, saved[k]));
-	}
+	let isContinue = false;
+	do {
+		isContinue = false;
+		for (let k in saved) {
+			const reg = new RegExp('\\/\\*\\[\\[' + k + '\\]\\]\\*\\/', 'g');
+			if (reg.test(content)) {
+				isContinue = true;
+				content = content.replace(reg, getValue(k, saved[k]));
+			}
+		}
+	} while (isContinue);
 	return parseMozillaFormat(content);
 }
 
