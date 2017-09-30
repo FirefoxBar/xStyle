@@ -40,7 +40,7 @@
 	width: 280px;
 	position: fixed;
 	top: 75px;
-	height: calc(100% - 80px);
+	height: calc(100% - 85px);
 }
 .right-section .mdl-tabs__tab-bar {
 	border-bottom: none;
@@ -50,6 +50,8 @@
 }
 .right-section .mdl-card__supporting-text {
 	padding: 0;
+	overflow-x: hidden;
+	overflow-y: auto;
 }
 .right-section .mdl-tabs__panel {
 	padding: 16px;
@@ -282,12 +284,9 @@
 /************ lint ************/
 #lint {
 	display: none;
-	border-top: 1px solid #DDD;
-	padding-top: 16px;
 	color: #888;
 }
 #lint .title {
-	padding-left: 16px;
 	font-size: 16px;
 }
 #lint .help-button {
@@ -307,7 +306,7 @@
 #lint .code-list > div .label-title {
 	font-size: 15px;
 	margin-bottom: 0;
-	padding: 8px 16px;
+	padding: 8px 0;
 	cursor: pointer;
 }
 #lint .code-list > div .label-title .material-icons {
@@ -322,13 +321,12 @@
 	transform: rotate(0);
 }
 #lint li {
-	padding-top: 8px;
-	padding-bottom: 8px;
+	padding: 8px 4px;
 	height: 56px;
 	cursor: pointer;
 }
 #lint li:hover {
-	background-color: rgba(0, 0, 0, 0.1);
+	background-color: rgba(50, 50, 50, 0.1);
 }
 #lint .mdl-list__item-primary-content {
 	width: 100%;

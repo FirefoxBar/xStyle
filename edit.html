@@ -268,73 +268,71 @@
 				</div>
 			</div>
 			<div class="right-section mdl-card mdl-shadow--2dp">
-				<div class="mdl-card__supporting-text">
-					<div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
-						<div class="mdl-tabs__tab-bar">
-							<a href="#style-panel" class="mdl-tabs__tab is-active"><i class="material-icons">style</i></a>
-							<a href="#editor-panel" class="mdl-tabs__tab"><i class="material-icons">edit</i></a>
-							<a href="#issue-panel" class="mdl-tabs__tab"><i class="material-icons">error</i></a>
+				<div class="mdl-card__supporting-text mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+					<div class="mdl-tabs__tab-bar">
+						<a href="#style-panel" class="mdl-tabs__tab is-active"><i class="material-icons">style</i></a>
+						<a href="#editor-panel" class="mdl-tabs__tab"><i class="material-icons">edit</i></a>
+						<a href="#issue-panel" class="mdl-tabs__tab"><i class="material-icons">error</i></a>
+					</div>
+					<div class="mdl-tabs__panel is-active" id="style-panel">
+						<div class="mdl-textfield mdl-textfield--floating-label style-name-box">
+							<input class="mdl-textfield__input style-contributor" type="text" id="name">
+							<label class="mdl-textfield__label" for="name" i18n-text="styleName"></label>
 						</div>
-						<div class="mdl-tabs__panel is-active" id="style-panel">
-							<div class="mdl-textfield mdl-textfield--floating-label style-name-box">
-								<input class="mdl-textfield__input style-contributor" type="text" id="name">
-								<label class="mdl-textfield__label" for="name" i18n-text="styleName"></label>
-							</div>
-							<label class="mdl-checkbox" id="enabled-label" for="enabled">
-								<input type="checkbox" id="enabled" class="mdl-checkbox__input style-contributor">
-								<span class="mdl-checkbox__label" i18n-text="styleEnabledLabel"></span>
-							</label>
-							<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" id="save-link" title="Ctrl-S" i18n-text="save"></button>
-							<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" id="beautify" i18n-text="styleBeautify"></button>
-							<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" id="from-mozilla" i18n-text="styleMozillaFormatImport"></button>
-							<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" id="to-mozilla" i18n-text="styleMozillaFormatExport"></button>
+						<label class="mdl-checkbox" id="enabled-label" for="enabled">
+							<input type="checkbox" id="enabled" class="mdl-checkbox__input style-contributor">
+							<span class="mdl-checkbox__label" i18n-text="styleEnabledLabel"></span>
+						</label>
+						<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" id="save-link" title="Ctrl-S" i18n-text="save"></button>
+						<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" id="beautify" i18n-text="styleBeautify"></button>
+						<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" id="from-mozilla" i18n-text="styleMozillaFormatImport"></button>
+						<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" id="to-mozilla" i18n-text="styleMozillaFormatExport"></button>
+					</div>
+					<div class="mdl-tabs__panel" id="editor-panel">
+						<label class="mdl-checkbox mdl-js-ripple-effect" id="lineWrapping-label" for="editor.lineWrapping">
+							<input type="checkbox" data-option="lineWrapping" id="editor.lineWrapping" class="mdl-checkbox__input">
+							<span class="mdl-checkbox__label" i18n-text="cm_lineWrapping"></span>
+						</label>
+						<label class="mdl-checkbox mdl-js-ripple-effect" id="smartIndent-label" for="editor.smartIndent">
+							<input type="checkbox" data-option="smartIndent" id="editor.smartIndent" class="mdl-checkbox__input">
+							<span class="mdl-checkbox__label" i18n-text="cm_smartIndent"></span>
+						</label>
+						<label class="mdl-checkbox mdl-js-ripple-effect" id="indentWithTabs-label" for="editor.indentWithTabs">
+							<input type="checkbox" data-option="indentWithTabs" id="editor.indentWithTabs" class="mdl-checkbox__input">
+							<span class="mdl-checkbox__label" i18n-text="cm_indentWithTabs"></span>
+						</label>
+						<div class="option">
+							<label id="keyMap-label" for="editor.keyMap" i18n-text="cm_keyMap"></label>
+							<select data-option="keyMap" id="editor.keyMap"></select>
+							<i id="keyMap-help" class="help-button material-icons" i18n-title="helpAlt">help_outline</i>
 						</div>
-						<div class="mdl-tabs__panel" id="editor-panel">
-							<label class="mdl-checkbox mdl-js-ripple-effect" id="lineWrapping-label" for="editor.lineWrapping">
-								<input type="checkbox" data-option="lineWrapping" id="editor.lineWrapping" class="mdl-checkbox__input">
-								<span class="mdl-checkbox__label" i18n-text="cm_lineWrapping"></span>
-							</label>
-							<label class="mdl-checkbox mdl-js-ripple-effect" id="smartIndent-label" for="editor.smartIndent">
-								<input type="checkbox" data-option="smartIndent" id="editor.smartIndent" class="mdl-checkbox__input">
-								<span class="mdl-checkbox__label" i18n-text="cm_smartIndent"></span>
-							</label>
-							<label class="mdl-checkbox mdl-js-ripple-effect" id="indentWithTabs-label" for="editor.indentWithTabs">
-								<input type="checkbox" data-option="indentWithTabs" id="editor.indentWithTabs" class="mdl-checkbox__input">
-								<span class="mdl-checkbox__label" i18n-text="cm_indentWithTabs"></span>
-							</label>
-							<div class="option">
-								<label id="keyMap-label" for="editor.keyMap" i18n-text="cm_keyMap"></label>
-								<select data-option="keyMap" id="editor.keyMap"></select>
-								<i id="keyMap-help" class="help-button material-icons" i18n-title="helpAlt">help_outline</i>
-							</div>
-							<div class="option">
-								<label id="theme-label" for="editor.theme" i18n-text="cm_theme"></label>
-								<select data-option="theme" id="editor.theme"></select>
-							</div>
-							<div class="option">
-								<label id="fontName-label" for="editor.fontName" i18n-text="fontName"></label>
-								<select data-option="fontName" id="editor.fontName"></select>
-							</div>
-							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-								<input class="mdl-textfield__input" data-option="tabSize" id="editor.tabSize" type="number" min="0">
-								<label class="mdl-textfield__label" id="tabSize-label" for="editor.tabSize" i18n-text="cm_tabSize"></label>
-							</div>
-							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-								<input class="mdl-textfield__input" data-option="fontSize" id="editor.fontSize" type="number" min="10">
-								<label class="mdl-textfield__label" id="fontSize-label" for="editor.fontSize" i18n-text="fontSize"></label>
-							</div>
-							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-								<input class="mdl-textfield__input" data-option="initAdvanced" id="editor.initAdvanced" type="number" min="0">
-								<label class="mdl-textfield__label" id="fontSize-label" for="editor.initAdvanced" i18n-text="advancedInitMax"></label>
-							</div>
-							<div i18n-text="advancedInitMaxHelp"></div>
+						<div class="option">
+							<label id="theme-label" for="editor.theme" i18n-text="cm_theme"></label>
+							<select data-option="theme" id="editor.theme"></select>
 						</div>
-						<div class="mdl-tabs__panel" id="issue-panel">
-							<section id="lint">
-								<p class="title" i18n-text="issues">: <span id="issue-count"></span><i id="lint-help" class="material-icons help-button" i18n-title="helpAlt">help_outline</i></p>
-								<div class="code-list"></div>
-							</section>
+						<div class="option">
+							<label id="fontName-label" for="editor.fontName" i18n-text="fontName"></label>
+							<select data-option="fontName" id="editor.fontName"></select>
 						</div>
+						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+							<input class="mdl-textfield__input" data-option="tabSize" id="editor.tabSize" type="number" min="0">
+							<label class="mdl-textfield__label" id="tabSize-label" for="editor.tabSize" i18n-text="cm_tabSize"></label>
+						</div>
+						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+							<input class="mdl-textfield__input" data-option="fontSize" id="editor.fontSize" type="number" min="10">
+							<label class="mdl-textfield__label" id="fontSize-label" for="editor.fontSize" i18n-text="fontSize"></label>
+						</div>
+						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+							<input class="mdl-textfield__input" data-option="initAdvanced" id="editor.initAdvanced" type="number" min="0">
+							<label class="mdl-textfield__label" id="fontSize-label" for="editor.initAdvanced" i18n-text="advancedInitMax"></label>
+						</div>
+						<div i18n-text="advancedInitMaxHelp"></div>
+					</div>
+					<div class="mdl-tabs__panel" id="issue-panel">
+						<section id="lint">
+							<p class="title" i18n-text="issues">: <span id="issue-count"></span><i id="lint-help" class="material-icons help-button" i18n-title="helpAlt">help_outline</i></p>
+							<div class="code-list"></div>
+						</section>
 					</div>
 				</div>
 			</div>

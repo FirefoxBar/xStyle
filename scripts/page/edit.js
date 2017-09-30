@@ -1224,6 +1224,8 @@ function initWithStyle(style) {
 		reCalculatePanelPosition();
 	}
 
+	initHooks();
+
 	if (Object.keys(style.advanced.item).length > 0) {
 		if (Object.keys(style.advanced.item).length > prefs.get('editor.initAdvanced')) {
 			initAdvancedEditor = false;
@@ -1261,8 +1263,6 @@ function initWithStyle(style) {
 			delete advancedItems[k];
 		}
 	}
-
-	initHooks();
 }
 
 function initHooks() {
