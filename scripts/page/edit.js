@@ -5,6 +5,7 @@ var appliesToId = 999; // use of template
 let advanceBox = null;
 let advancedId = 0;
 let advancedSaved = {};
+let initAdvancedEditor = true;
 var styleId = null;
 var dirty = {}; // only the actually dirty items here
 var editors = []; // array of all CodeMirror instances
@@ -307,7 +308,7 @@ function acmeEventListener(event) {
 function updateFontStyle() {
 	var name = prefs.get("editor.fontName");
 	var size = parseInt(prefs.get("editor.fontSize"));
-	document.getElementById('font-style').innerHTML = '.CodeMirror { font-size: ' + size.toString() + 'px !important;font-family: "' + name + '" !important; line-height: ' + (size + 6).toString() + 'px !important; } .codemirror-colorview { height:' + (size - 2).toString() + 'px;width:' + (size - 2).toString() + 'px; }';
+	document.getElementById('font-style').innerHTML = '.CodeMirror, #advanced textarea { font-size: ' + size.toString() + 'px !important;font-family: "' + name + '" !important; line-height: ' + (size + 6).toString() + 'px !important; } .codemirror-colorview { height:' + (size - 2).toString() + 'px;width:' + (size - 2).toString() + 'px; }';
 }
 
 // replace given textarea with the CodeMirror editor
@@ -1224,6 +1225,9 @@ function initWithStyle(style) {
 	}
 
 	if (Object.keys(style.advanced.item).length > 0) {
+		if (Object.keys(style.advanced.item).length > prefs.get('editor.initAdvanced')) {
+			initAdvancedEditor = false;
+		}
 		advancedSaved = style.advanced.saved;
 		let advancedItems = style.advanced.item;
 		let advancedQueue = Object.keys(advancedItems);
@@ -1353,7 +1357,9 @@ function createAdvancedDropdown(key, title, items) {
 			advancedId++;
 		});
 		options.appendChild(m);
-		m.CodeMirror = setupCodeMirror(m.querySelector('textarea'), null, true);
+		if (initAdvancedEditor) {
+			m.CodeMirror = setupCodeMirror(m.querySelector('textarea'), null, true);
+		}
 		setCleanSection(m);
 	});
 	if (items) {
@@ -1366,7 +1372,9 @@ function createAdvancedDropdown(key, title, items) {
 				m.remove();
 			});
 			options.appendChild(m);
-			m.CodeMirror = setupCodeMirror(m.querySelector('textarea'), null, true);
+			if (initAdvancedEditor) {
+				m.CodeMirror = setupCodeMirror(m.querySelector('textarea'), null, true);
+			}
 			setCleanSection(m);
 		}
 	}

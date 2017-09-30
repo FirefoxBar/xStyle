@@ -20,9 +20,6 @@ foreach ($language_list as $v) {
 	}
 	echo "Downloading $v ... ";
 	$url = 'https://www.transifex.com/api/2/project/xstyle/resource/messages/translation/' . $v . '/';
-	if ($v !== 'en') {
-		$url .= '?mode=onlyreviewed';
-	}
 	do {
 		$language = json_decode(fetchUrl($url), 1);
 	} while (empty($language));

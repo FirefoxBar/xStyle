@@ -422,27 +422,28 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 	}
 
 	var defaults = {
-		"ExternalSuffix": "Ext",				// Suffix to get value from external resource
-		"show-badge": true,					 // display text on popup menu icon
-		"modify-csp": true,					 // modify csp
-		"auto-update": false,                 // Auto update styles
-		"disableAll": false,					// boss key
+		"ExternalSuffix": "Ext", // Suffix to get value from external resource
+		"show-badge": true, // display text on popup menu icon
+		"modify-csp": true, // modify csp
+		"auto-update": false, // Auto update styles
+		"disableAll": false, // boss key
 
-		"popup.breadcrumbs": true,			  // display "New style" links as URL breadcrumbs
-		"popup.breadcrumbs.usePath": false,	 // use URL path for "this URL"
-		"popup.enabledFirst": true,			 // display enabled styles before disabled styles
+		"popup.breadcrumbs": true, // display "New style" links as URL breadcrumbs
+		"popup.breadcrumbs.usePath": false, // use URL path for "this URL"
+		"popup.enabledFirst": true, // display enabled styles before disabled styles
 
 		"manage.sort": "id", //sort styles in management page
 
-		"editor.options": {},				   // CodeMirror.defaults.*
-		"editor.lineWrapping": true,			// word wrap
-		"editor.smartIndent": true,			 // "smart" indent
-		"editor.indentWithTabs": false,		 // smart indent with tabs
-		"editor.tabSize": 4,					// tab width, in spaces
+		"editor.initAdvanced": 20,
+		"editor.options": {}, // CodeMirror.defaults.*
+		"editor.lineWrapping": true, // word wrap
+		"editor.smartIndent": true, // "smart" indent
+		"editor.indentWithTabs": false, // smart indent with tabs
+		"editor.tabSize": 4, // tab width, in spaces
 		"editor.keyMap":
 			navigator.appVersion.indexOf("Windows") > 0 ? "sublime" : "default",
-		"editor.theme": "default",			  // CSS theme
-		"editor.beautify": {					// CSS beautifier
+		"editor.theme": "default", // CSS theme
+		"editor.beautify": { // CSS beautifier
 			selector_separator_newline: true,
 			newline_before_open_brace: false,
 			newline_after_open_brace: true,
@@ -451,8 +452,8 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 			newline_between_rules: false,
 			end_with_newline: false
 		},
-		"editor.lintDelay": 500,				// lint gutter marker update delay, ms
-		"editor.lintReportDelay": 4500,		 // lint report update delay, ms
+		"editor.lintDelay": 500, // lint gutter marker update delay, ms
+		"editor.lintReportDelay": 4500, // lint report update delay, ms
 		"editor.fontSize": 16, // font size
 		"editor.fontName": "sans-serif" // font size
 	};
