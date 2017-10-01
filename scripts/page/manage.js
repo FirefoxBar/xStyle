@@ -24,6 +24,9 @@ function createStyleElement(style) {
 	if (style.originalMd5) {
 		e.setAttribute("style-original-md5", style.originalMd5);
 	}
+	if (style.lastModified) {
+		e.setAttribute('style-last-modified', style.lastModified);
+	}
 
 	const styleName = e.querySelector(".style-name");
 	styleName.setAttribute('title', style.name);
@@ -407,19 +410,29 @@ function sortStylesById(styles) {
 		return parseInt(e1.getAttribute('style-id')) > parseInt(e2.getAttribute('style-id'));
 	});
 }
+function sortStylesByModified(styles) {
+	return styles.sort((e1, e2) => {
+		return parseInt(e1.getAttribute('style-last-modified')) < parseInt(e2.getAttribute('style-last-modified'));
+	});
+}
+function onSortItemClick() {
+	const sortMethod = this.getAttribute('data-method');
+	prefs.set('manage.sort', sortMethod);
+	this.parentElement.querySelector('.active').classList.remove('active');
+	this.classList.add('active');
+	switch (sortMethod) {
+		case 'id':
+			sortStyles(sortStylesById);
+			break;
+		case 'name':
+			sortStyles(sortStylesByName);
+			break;
+		case 'modified':
+			sortStyles(sortStylesByModified);
+			break;
+	}
+}
 
-function onSortIdClick() {
-	prefs.set('manage.sort', 'id');
-	this.parentElement.querySelector('.active').classList.remove('active');
-	this.classList.add('active');
-	sortStyles(sortStylesById);
-}
-function onSortNameClick() {
-	prefs.set('manage.sort', 'name');
-	this.parentElement.querySelector('.active').classList.remove('active');
-	this.classList.add('active');
-	sortStyles(sortStylesByName);
-}
 
 // Cloud
 var cloudLoginTab = null;
@@ -594,8 +607,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	//sort
 	let sort = prefs.get('manage.sort');
-	document.getElementById('sort-id').addEventListener('click', onSortIdClick, false);
-	document.getElementById('sort-name').addEventListener('click', onSortNameClick, false);
+	document.querySelectorAll('.sort-method-list li').forEach((e) => {
+		e.addEventListener('click', onSortItemClick, false);
+	});
 
 	// init styles
 	browser.runtime.sendMessage({method: "getStyles"}).then(function onGetStyles(r) {
@@ -604,12 +618,17 @@ document.addEventListener("DOMContentLoaded", () => {
 			return;
 		}
 		showStyles(r);
-		if (sort === 'id') {
-			sortStyles(sortStylesById);
-			document.getElementById('sort-id').classList.add('active');
-		} else {
-			sortStyles(sortStylesByName);
-			document.getElementById('sort-name').classList.add('active');
+		document.querySelector('.sort-method-list li[data-method="' + sort + '"]').classList.add('active');
+		switch (sort) {
+			case 'id':
+				sortStyles(sortStylesById);
+				break;
+			case 'name':
+				sortStyles(sortStylesByName);
+				break;
+			case 'modified':
+				sortStyles(sortStylesByModified);
+				break;
 		}
 	});
 });

@@ -1539,6 +1539,7 @@ function save() {
 	let request = {
 		method: "saveStyle",
 		id: styleId,
+		lastModified: new Date().getTime(),
 		name: document.getElementById("name").value,
 		enabled: document.getElementById("enabled").checked,
 		updateUrl: document.getElementById("update-url").value,

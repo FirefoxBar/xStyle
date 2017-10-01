@@ -57,9 +57,10 @@
 			<div class="page-content">
 				<div class="action">
 					<button id="sort-options" class="mdl-button mdl-js-button mdl-js-ripple-effect"><i class="material-icons">sort</i><span>排序样式</span></button>
-					<ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="sort-options">
-						<li id="sort-id" class="mdl-menu__item" i18n-text="sortStylesById"></li>
-						<li id="sort-name" class="mdl-menu__item" i18n-text="sortStylesByName"></li>
+					<ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect sort-method-list" for="sort-options">
+						<li data-method="id" class="mdl-menu__item" i18n-text="sortStylesById"></li>
+						<li data-method="name" class="mdl-menu__item" i18n-text="sortStylesByName"></li>
+						<li data-method="modified" class="mdl-menu__item">sortStylesByModified</li>
 					</ul>
 					<button id="update-all-styles" class="mdl-button mdl-js-button mdl-js-ripple-effect"><i class="material-icons">refresh</i><span i18n-text="updateAllStyles"></span></button>
 					<a href="edit.html" class="mdl-button mdl-js-button mdl-js-ripple-effect"><i class="material-icons">add</i><span i18n-text="addStyleLabel"></span></a>

@@ -1,6 +1,6 @@
 function getDatabase() {
 	return new Promise((resolve, reject) => {
-		let dbOpenRequest = window.indexedDB.open("xstyle", 2);
+		let dbOpenRequest = window.indexedDB.open("xstyle", 3);
 		dbOpenRequest.onsuccess = function(e) {
 			resolve(e.target.result);
 		};
@@ -15,6 +15,9 @@ function getDatabase() {
 			} else {
 				if (event.oldVersion < 2) {
 					upgradeTo2();
+				}
+				if (event.oldVersion < 3) {
+					upgradeTo3();
 				}
 			}
 		};
@@ -179,6 +182,9 @@ function installStyle(json) {
 				}
 				if (typeof(json.autoUpdate) === 'undefined') {
 					json.autoUpdate = json.updateUrl !== null;
+				}
+				if (typeof(json.lastModified) === 'undefined') {
+					json.lastModified = new Date().getTime();
 				}
 				saveStyle(json).then(resolve);
 			});
@@ -695,6 +701,24 @@ function upgradeTo2() {
 				s.id = cursor.key;
 				if (!s.advanced) {
 					s.advanced = {"item": {}, "saved": {}, "css": []};
+					os.put(s);
+				}
+				cursor.continue();
+			}
+		};
+	});
+}
+function upgradeTo3() {
+	getDatabase().then((db) => {
+		let tx = db.transaction(["styles"], "readwrite");
+		let os = tx.objectStore("styles");
+		os.openCursor().onsuccess = function(e) {
+			let cursor = e.target.result;
+			if (cursor) {
+				let s = cursor.value;
+				s.id = cursor.key;
+				if (!s.lastModified) {
+					s.lastModified = new Date().getTime();
 					os.put(s);
 				}
 				cursor.continue();
