@@ -1,16 +1,27 @@
-.mdl-layout__header-row {
-	padding-left: 20px;
+.mdl-layout__tab-bar-left-button,
+.mdl-layout__tab-bar-right-button {
+	display: none;
 }
-.page-content {
-	padding-top: 0;
+.mdl-layout__tab-bar-container {
+	height: 64px;
 }
-.mdl-tabs__tab-bar {
-	margin-bottom: 5px;
-	justify-content: flex-start;
-	-webkit-flex-direction: flex-start;
+.mdl-layout__tab {
+	height: 64px;
+	line-height: 64px;
+}
+.mdl-layout__tab-bar {
+	padding-left: 0;
+	padding-right: 0;
+	width: 100%;
+	height: 64px;
+	overflow: hidden;
 }
 .mdl-tabs__panel > .mdl-card {
 	margin-bottom: 10px;
+}
+.mdl-layout__tab .material-icons {
+	vertical-align: middle;
+	margin-right: 12px;
 }
 #style-panel .action {
 	margin-bottom: 10px;
@@ -36,6 +47,8 @@
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
+	color: #000;
+	text-decoration: none;
 }
 #style-panel #installed .mdl-card .applies-to {
 	word-break: break-all;

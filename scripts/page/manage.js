@@ -25,9 +25,12 @@ function createStyleElement(style) {
 		e.setAttribute("style-original-md5", style.originalMd5);
 	}
 
-	var styleName = e.querySelector(".style-name");
+	const styleName = e.querySelector(".style-name");
 	styleName.setAttribute('title', style.name);
 	styleName.appendChild(document.createTextNode(style.name));
+	if (style.url && style.url.indexOf('https://ext.firefoxcn.net/xstyle/md5namespace/') < 0) {
+		styleName.href = style.url;
+	}
 	var domains = [];
 	var urls = [];
 	var urlPrefixes = [];
@@ -69,10 +72,6 @@ function createStyleElement(style) {
 		}
 	} else {
 		appliesTo.appendChild(document.createTextNode(t('appliesToEverything')));
-	}
-	if (style.url && style.url.indexOf('https://ext.firefoxcn.net/xstyle/md5namespace/') < 0) {
-		e.querySelector(".homepage").href = style.url;
-		e.querySelector(".homepage").classList.remove('hidden');
 	}
 	var editLink = e.querySelector(".style-edit-link");
 	editLink.setAttribute("href", editLink.getAttribute("href") + style.id);

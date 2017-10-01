@@ -12,11 +12,10 @@
 	<template data-id="style">
 		<section class="mdl-card mdl-shadow--2dp">
 			<div class="mdl-card__title mdl-card--expand">
-				<h2 class="mdl-card__title-text style-name"></h2>
+				<h2 class="mdl-card__title-text"><a target="_blank" class="style-name"></a></h2>
 			</div>
 			<div class="mdl-card__supporting-text applies-to"></div>
 			<div class="mdl-card__actions mdl-card--border">
-				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect homepage hidden" target="_blank" i18n-text="homepage"></a>
 				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect style-edit-link" href="edit.html?id=" i18n-text="editStyleLabel"></a>
 				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect delete" i18n-text="deleteStyleLabel"></a>
 				<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect style-export-link" href="export.html?id=" i18n-text="export"></a>
@@ -45,114 +44,113 @@
 <body id="xstyle-manage">
 <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
 	<header class="mdl-layout__header">
-		<div class="mdl-layout__header-row">
-			<span class="mdl-layout-title" i18n-text="manageHeading"></span>
+		<div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+			<a href="#style-panel" class="mdl-layout__tab is-active"><i class="material-icons">style</i>Styles</a>
+			<a href="#option-panel" class="mdl-layout__tab"><i class="material-icons">settings</i>Setting</a>
+			<a href="#backup-panel" class="mdl-layout__tab"><i class="material-icons">settings_backup_restore</i>Export & Import</a>
+			<span style="flex-grow:1"></span>
+			<a href="https://github.com/FirefoxBar/xStyle/wiki" class="mdl-layout__tab"><i class="material-icons">help</i><span i18n-text="helpAlt"></span></a>
 		</div>
 	</header>
 	<main class="mdl-layout__content">
-		<div class="page-content">
-			<div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
-				<div class="mdl-tabs__tab-bar">
-					<a href="#style-panel" class="mdl-tabs__tab is-active"><i class="material-icons">style</i></a>
-					<a href="#option-panel" class="mdl-tabs__tab"><i class="material-icons">settings</i></a>
-					<a href="#backup-panel" class="mdl-tabs__tab"><i class="material-icons">settings_backup_restore</i></a>
-					<span style="flex-grow:1"></span>
-					<a href="https://github.com/FirefoxBar/xStyle/wiki" class="mdl-tabs__tab" i18n-title="helpAlt"><i class="material-icons">help</i></a>
+		<section class="mdl-layout__tab-panel is-active" id="style-panel">
+			<div class="page-content">
+				<div class="action">
+					<button id="sort-options" class="mdl-button mdl-js-button mdl-js-ripple-effect"><i class="material-icons">sort</i><span>排序样式</span></button>
+					<ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="sort-options">
+						<li id="sort-id" class="mdl-menu__item" i18n-text="sortStylesById"></li>
+						<li id="sort-name" class="mdl-menu__item" i18n-text="sortStylesByName"></li>
+					</ul>
+					<button id="update-all-styles" class="mdl-button mdl-js-button mdl-js-ripple-effect"><i class="material-icons">refresh</i><span i18n-text="updateAllStyles"></span></button>
+					<a href="edit.html" class="mdl-button mdl-js-button mdl-js-ripple-effect"><i class="material-icons">add</i><span i18n-text="addStyleLabel"></span></a>
+					<button id="install-from-file" class="mdl-button mdl-js-button mdl-js-ripple-effect"><i class="material-icons">create_new_folder</i><span i18n-text="installFromFile"></span></button>
 				</div>
-				<div class="mdl-tabs__panel is-active" id="style-panel">
-					<div class="action">
-						<button id="sort-options" class="mdl-button mdl-js-button mdl-js-ripple-effect"><i class="material-icons">sort</i><span>排序样式</span></button>
-						<ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="sort-options">
-							<li id="sort-id" class="mdl-menu__item" i18n-text="sortStylesById"></li>
-							<li id="sort-name" class="mdl-menu__item" i18n-text="sortStylesByName"></li>
-						</ul>
-						<button id="update-all-styles" class="mdl-button mdl-js-button mdl-js-ripple-effect"><i class="material-icons">refresh</i><span i18n-text="updateAllStyles"></span></button>
-						<a href="edit.html" class="mdl-button mdl-js-button mdl-js-ripple-effect"><i class="material-icons">add</i><span i18n-text="addStyleLabel"></span></a>
-						<button id="install-from-file" class="mdl-button mdl-js-button mdl-js-ripple-effect"><i class="material-icons">create_new_folder</i><span i18n-text="installFromFile"></span></button>
+				<div id="installed"></div>
+			</div>
+		</section>
+		<section class="mdl-layout__tab-panel" id="option-panel">
+			<div class="page-content">
+				<div class="mdl-card mdl-shadow--2dp option">
+					<div class="mdl-card__title mdl-card--expand">
+						<h2 class="mdl-card__title-text" i18n-text="optionsHeading"></h2>
 					</div>
-					<div id="installed"></div>
-				</div>
-				<div class="mdl-tabs__panel" id="option-panel">
-					<div class="mdl-card mdl-shadow--2dp option">
-						<div class="mdl-card__title mdl-card--expand">
-							<h2 class="mdl-card__title-text" i18n-text="optionsHeading"></h2>
-						</div>
-						<div class="mdl-card__supporting-text mdl-grid">
-							<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mdl-cell mdl-cell--6-col" id="show-badge-label" for="show-badge">
-								<input type="checkbox" id="show-badge" class="mdl-checkbox__input">
-								<span class="mdl-checkbox__label" i18n-text="prefShowBadge"></span>
-							</label>
-							<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mdl-cell mdl-cell--6-col" id="modify-csp-label" for="modify-csp">
-								<input type="checkbox" id="modify-csp" class="mdl-checkbox__input">
-								<span class="mdl-checkbox__label" i18n-text="modifyCSP"></span>
-							</label>
-							<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mdl-cell mdl-cell--6-col" id="auto-update-label" for="auto-update">
-								<input type="checkbox" id="auto-update" class="mdl-checkbox__input">
-								<span class="mdl-checkbox__label" i18n-text="autoUpdateStyles"></span>
-							</label>
-						</div>
-					</div>
-				</div>
-				<div class="mdl-tabs__panel" id="backup-panel">
-					<div class="mdl-card mdl-shadow--2dp file">
-						<div class="mdl-card__title mdl-card--expand">
-							<h2 class="mdl-card__title-text">导入和导出</h2>
-						</div>
-						<div class="mdl-card__supporting-text">
-							<button id="file-all-styles" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" i18n-text="bckpInstStyles"></button>
-							<button id="unfile-all-styles" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" i18n-text="retrieveBckp"></button>
-							<a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" href="http://stylish.team.firefoxcn.net/" i18n-text="importFromFirefoxStylish"></a>
-						</div>
-					</div>
-					<div class="mdl-card mdl-shadow--2dp cloud">
-						<div class="mdl-card__title mdl-card--expand">
-							<h2 class="mdl-card__title-text" i18n-text="cloudTitle"></h2>
-						</div>
-						<div class="mdl-card__supporting-text">
-							<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="cloud-onedrive">
-								<input type="radio" id="cloud-onedrive" class="mdl-radio__button" name="cloud-type" value="OneDrive" checked>
-								<span class="mdl-radio__label">OneDrive</span>
-							</label>
-							<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="cloud-google">
-								<input type="radio" id="cloud-google" class="mdl-radio__button" name="cloud-type" value="Google">
-								<span class="mdl-radio__label">Google Drive</span>
-							</label>
-							<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="cloud-dropbox">
-								<input type="radio" id="cloud-dropbox" class="mdl-radio__button" name="cloud-type" value="Dropbox">
-								<span class="mdl-radio__label">Dropbox</span>
-							</label>
-							<table class="mdl-data-table mdl-js-data-table" style="border:0">
-								<thead>
-									<tr>
-										<th class="mdl-data-table__cell--non-numeric" i18n-text="cloudFileName"></th>
-										<th i18n-text="cloudFileSize"></th>
-										<th class="mdl-data-table__cell--non-numeric" i18n-text="cloudFileAction"></th>
-									</tr>
-								</thead>
-								<tbody id="cloud_filelist">
-									<tr class="special template">
-										<td class="name mdl-data-table__cell--non-numeric"></td>
-										<td class="size"></td>
-										<td class="mdl-data-table__cell--non-numeric">
-											<button class="mdl-button mdl-js-ripple-effect import"><span i18n-text="cloudImport"></span><div class="mdl-spinner mdl-js-spinner is-active"></div></button>
-											<button class="mdl-button mdl-js-ripple-effect delete"><span i18n-text="cloudDelete"></span><div class="mdl-spinner mdl-js-spinner is-active"></div></button>
-										</td>
-									</tr>
-									<tr class="special" id="cloud_loading"><td colspan="3"><div class="mdl-spinner mdl-js-spinner is-active"></div></td></tr>
-									<tr class="special" id="cloud_loaded">
-										<td colspan="3">
-											<button id="cloud_export" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" i18n-text="cloudExport"></button>
-											<button id="cloud_reload_list" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" i18n-text="cloudReload"></button>
-										</td>
-									</tr>
-									<tr class="special" id="cloud_beforeload"><td colspan="3"><button id="cloud_load_list" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" i18n-text="cloudLoadList"></button></td></tr>
-								</tbody>
-							</table>
-						</div>
+					<div class="mdl-card__supporting-text mdl-grid">
+						<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mdl-cell mdl-cell--6-col" id="show-badge-label" for="show-badge">
+							<input type="checkbox" id="show-badge" class="mdl-checkbox__input">
+							<span class="mdl-checkbox__label" i18n-text="prefShowBadge"></span>
+						</label>
+						<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mdl-cell mdl-cell--6-col" id="modify-csp-label" for="modify-csp">
+							<input type="checkbox" id="modify-csp" class="mdl-checkbox__input">
+							<span class="mdl-checkbox__label" i18n-text="modifyCSP"></span>
+						</label>
+						<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mdl-cell mdl-cell--6-col" id="auto-update-label" for="auto-update">
+							<input type="checkbox" id="auto-update" class="mdl-checkbox__input">
+							<span class="mdl-checkbox__label" i18n-text="autoUpdateStyles"></span>
+						</label>
 					</div>
 				</div>
 			</div>
-		</div>
+		</section>
+		<section class="mdl-layout__tab-panel" id="backup-panel">
+			<div class="page-content">
+				<div class="mdl-card mdl-shadow--2dp file">
+					<div class="mdl-card__title mdl-card--expand">
+						<h2 class="mdl-card__title-text">导入和导出</h2>
+					</div>
+					<div class="mdl-card__supporting-text">
+						<button id="file-all-styles" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" i18n-text="bckpInstStyles"></button>
+						<button id="unfile-all-styles" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" i18n-text="retrieveBckp"></button>
+						<a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" href="http://stylish.team.firefoxcn.net/" i18n-text="importFromFirefoxStylish"></a>
+					</div>
+				</div>
+				<div class="mdl-card mdl-shadow--2dp cloud">
+					<div class="mdl-card__title mdl-card--expand">
+						<h2 class="mdl-card__title-text" i18n-text="cloudTitle"></h2>
+					</div>
+					<div class="mdl-card__supporting-text">
+						<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="cloud-onedrive">
+							<input type="radio" id="cloud-onedrive" class="mdl-radio__button" name="cloud-type" value="OneDrive" checked>
+							<span class="mdl-radio__label">OneDrive</span>
+						</label>
+						<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="cloud-google">
+							<input type="radio" id="cloud-google" class="mdl-radio__button" name="cloud-type" value="Google">
+							<span class="mdl-radio__label">Google Drive</span>
+						</label>
+						<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="cloud-dropbox">
+							<input type="radio" id="cloud-dropbox" class="mdl-radio__button" name="cloud-type" value="Dropbox">
+							<span class="mdl-radio__label">Dropbox</span>
+						</label>
+						<table class="mdl-data-table mdl-js-data-table" style="border:0">
+							<thead>
+								<tr>
+									<th class="mdl-data-table__cell--non-numeric" i18n-text="cloudFileName"></th>
+									<th i18n-text="cloudFileSize"></th>
+									<th class="mdl-data-table__cell--non-numeric" i18n-text="cloudFileAction"></th>
+								</tr>
+							</thead>
+							<tbody id="cloud_filelist">
+								<tr class="special template">
+									<td class="name mdl-data-table__cell--non-numeric"></td>
+									<td class="size"></td>
+									<td class="mdl-data-table__cell--non-numeric">
+										<button class="mdl-button mdl-js-ripple-effect import"><span i18n-text="cloudImport"></span><div class="mdl-spinner mdl-js-spinner is-active"></div></button>
+										<button class="mdl-button mdl-js-ripple-effect delete"><span i18n-text="cloudDelete"></span><div class="mdl-spinner mdl-js-spinner is-active"></div></button>
+									</td>
+								</tr>
+								<tr class="special" id="cloud_loading"><td colspan="3"><div class="mdl-spinner mdl-js-spinner is-active"></div></td></tr>
+								<tr class="special" id="cloud_loaded">
+									<td colspan="3">
+										<button id="cloud_export" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" i18n-text="cloudExport"></button>
+										<button id="cloud_reload_list" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" i18n-text="cloudReload"></button>
+									</td>
+								</tr>
+								<tr class="special" id="cloud_beforeload"><td colspan="3"><button id="cloud_load_list" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" i18n-text="cloudLoadList"></button></td></tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</section>
 	</main>
 </div>
 <div id="toast" class="mdl-js-snackbar mdl-snackbar">
