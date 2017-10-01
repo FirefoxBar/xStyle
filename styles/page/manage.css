@@ -95,6 +95,9 @@
 		margin-right: 0;
 		width: 100%;
 	}
+	.mdl-layout__tab .material-icons {
+		margin-right: 6px;
+	}
 }
 .disabled .disable {
 	display: none;

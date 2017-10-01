@@ -467,10 +467,10 @@ function cloudTabListen(isRemove) {
 function cloudLoginCallback(type, code) {
 	var cloud = getCloud();
 	if (cloudLoginTab !== null) {
+		const tabId = cloudLoginTab.id;
+		cloudLoginTab = null;
 		cloudTabListen(true); // remove listener
-		browser.tabs.remove(cloudLoginTab.id).then(() => {
-			cloudLoginTab = null;
-		});
+		browser.tabs.remove(tabId);
 	}
 	cloud.loginCallback(code).then(cloudLoadList);
 }
