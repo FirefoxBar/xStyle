@@ -63,23 +63,29 @@
 	margin-right: 5px;
 	margin-bottom: 5px;
 }
-.cloud .mdl-radio {
+#backup-panel .backup-buttons .mdl-button {
 	margin-right: 10px;
 }
-.cloud .mdl-data-table {
+#backup-panel .cloud .mdl-radio {
+	margin-right: 10px;
+}
+#backup-panel .cloud .mdl-data-table {
 	width: 100%;
 	margin-top: 10px;
 }
-.cloud .mdl-data-table .special {
+#backup-panel .cloud .mdl-data-table .special {
 	display: none;
 }
-.cloud .mdl-data-table .special td {
+#backup-panel .cloud .mdl-data-table .special td {
 	text-align: center;
 	padding-top: 20px;
 	padding-bottom: 20px;
 }
-.cloud .mdl-button {
+#backup-panel .cloud .mdl-button {
 	margin-right: 10px;
+}
+#backup-panel .cloud .special td {
+	border-bottom: 0;
 }
 
 @media screen and (max-width: 1024px) {
@@ -89,12 +95,6 @@
 		margin-right: 0;
 		width: 100%;
 	}
-}
-.mdl-card__menu .mdl-button {
-	color: #555;
-}
-.cloud .special td {
-	border-bottom: 0;
 }
 .disabled .disable {
 	display: none;
