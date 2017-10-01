@@ -173,6 +173,9 @@ function saveStyle(o) {
 
 // Install a style, check its url
 function installStyle(json) {
+	if (typeof(json.lastModified) === 'undefined') {
+		json.lastModified = new Date().getTime();
+	}
 	if (json.url) {
 		return new Promise((resolve) => {
 			getStyles({url: json.url}).then((response) => {
@@ -182,9 +185,6 @@ function installStyle(json) {
 				}
 				if (typeof(json.autoUpdate) === 'undefined') {
 					json.autoUpdate = json.updateUrl !== null;
-				}
-				if (typeof(json.lastModified) === 'undefined') {
-					json.lastModified = new Date().getTime();
 				}
 				saveStyle(json).then(resolve);
 			});
