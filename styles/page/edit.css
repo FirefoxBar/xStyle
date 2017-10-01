@@ -26,7 +26,8 @@
 .mdl-cell {
 	display: inline-block;
 }
-.style-name-box {
+.style-name-box,
+.style-update-url-box {
 	width: 100%;
 }
 /* Panels */
@@ -369,9 +370,14 @@
 	background-color: rgba(0, 0, 0, 0.05);
 }
 
-@media screen and (max-width: 1400px) {
-	.page-content .half .mdl-card {
-		margin: 10px 5px;
-		width: calc(100% - 10px);
+@media screen and (max-width: 1024px) {
+	.left-section {
+		width: 100%;
+	}
+	.right-section {
+		margin-top: 10px;
+		width: 100%;
+		position: static;
+		height: auto;
 	}
 }
