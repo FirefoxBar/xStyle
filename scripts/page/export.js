@@ -19,6 +19,7 @@ function init() {
 
 function initWithStyle(style) {
 	window.style = style;
+	document.querySelector('.style-name').appendChild(document.createTextNode(style.name));
 	document.getElementById("name").value = style.name;
 	document.getElementById("author").value = style.author || '';
 	document.getElementById("updateUrl").value = style.updateUrl || '';

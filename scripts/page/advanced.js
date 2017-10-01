@@ -21,8 +21,9 @@ function init() {
 
 function initWithStyle(style) {
 	window.style = style;
-	let items = style.advanced.item;
-	for (let k in items) {
+	document.querySelector('.style-name').appendChild(document.createTextNode(style.name));
+	const items = style.advanced.item;
+	for (const k in items) {
 		switch (items[k].type) {
 			case 'dropdown':
 				createDropdown(k, items[k], style.advanced.saved[k] || null);
