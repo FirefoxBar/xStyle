@@ -1168,6 +1168,7 @@ function init() {
 		//material
 		if (typeof(componentHandler) !== 'undefined') {
 			componentHandler.upgradeElement(document.getElementById("name").parentElement, 'MaterialTextfield');
+			componentHandler.upgradeElement(document.getElementById("update-url").parentElement, 'MaterialTextfield');
 			document.getElementById("enabled").parentElement.classList.add('mdl-js-ripple-effect');
 			componentHandler.upgradeElement(document.getElementById("enabled").parentElement, 'MaterialCheckbox');
 			componentHandler.upgradeElement(document.getElementById("enabled").parentElement.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
@@ -1192,10 +1193,12 @@ function init() {
 
 function initWithStyle(style) {
 	document.getElementById("name").value = style.name;
+	document.getElementById("update-url").value = style.updateUrl || '';
 	document.getElementById("enabled").checked = style.enabled;
 	//material
 	if (typeof(componentHandler) !== 'undefined') {
 		componentHandler.upgradeElement(document.getElementById("name").parentElement, 'MaterialTextfield');
+		componentHandler.upgradeElement(document.getElementById("update-url").parentElement, 'MaterialTextfield');
 		document.getElementById("enabled").parentElement.classList.add('mdl-js-ripple-effect');
 		componentHandler.upgradeElement(document.getElementById("enabled").parentElement, 'MaterialCheckbox');
 		componentHandler.upgradeElement(document.getElementById("enabled").parentElement.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
@@ -1532,14 +1535,13 @@ function save() {
 		alert(error);
 		return;
 	}
-	let name = document.getElementById("name").value;
-	let enabled = document.getElementById("enabled").checked;
 	let sections = getSectionsHashes();
 	let request = {
 		method: "saveStyle",
 		id: styleId,
-		name: name,
-		enabled: enabled,
+		name: document.getElementById("name").value,
+		enabled: document.getElementById("enabled").checked,
+		updateUrl: document.getElementById("update-url").value,
 		advanced: {"item": {}, "saved": {}, "css": []}
 	};
 	let advanced = getPageAdvanced();
