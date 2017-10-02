@@ -5,7 +5,7 @@ function healthCheck() {
 		if (ok === undefined) { // Chrome is starting up
 			healthCheck();
 		} else if (!ok && confirm(t("dbError"))) {
-			window.open("http://userstyles.org/dberror");
+			window.open("https://github.com/FirefoxBar/xStyle/wiki/DB-Error");
 		}
 	});
 }
