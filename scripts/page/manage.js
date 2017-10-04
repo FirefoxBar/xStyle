@@ -415,6 +415,23 @@ function sortStylesByModified(styles) {
 		return parseInt(e1.getAttribute('style-last-modified')) < parseInt(e2.getAttribute('style-last-modified'));
 	});
 }
+function sortStylesByStatus(styles) {
+	return styles.sort((e1, e2) => {
+		if (e1.classList.contains('enabled')) {
+			if (e2.classList.contains('enabled')) {
+				return 0;
+			} else {
+				return -1;
+			}
+		} else {
+			if (e2.classList.contains('enabled')) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+	});
+}
 function onSortItemClick() {
 	const sortMethod = this.getAttribute('data-method');
 	prefs.set('manage.sort', sortMethod);
@@ -429,6 +446,9 @@ function onSortItemClick() {
 			break;
 		case 'modified':
 			sortStyles(sortStylesByModified);
+			break;
+		case 'status':
+			sortStyles(sortStylesByStatus);
 			break;
 	}
 }
@@ -628,6 +648,9 @@ document.addEventListener("DOMContentLoaded", () => {
 				break;
 			case 'modified':
 				sortStyles(sortStylesByModified);
+				break;
+			case 'status':
+				sortStyles(sortStylesByStatus);
 				break;
 		}
 	});
