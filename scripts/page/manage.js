@@ -15,6 +15,11 @@ function createStyleElement(style) {
 	var e = template.style.cloneNode(true);
 	e.classList.add(style.enabled ? "enabled" : "disabled");
 	e.setAttribute("style-id", style.id);
+	const enableSwitcher = e.querySelector('.enable-switcher');
+	const enableCheckbox = enableSwitcher.querySelector('input');
+	enableSwitcher.setAttribute('for', 'switcher-' + style.id);
+	enableCheckbox.setAttribute('id', 'switcher-' + style.id);
+	enableCheckbox.checked = style.enabled;
 	if (style.updateUrl) {
 		e.setAttribute("style-update-url", style.updateUrl);
 	}
@@ -85,12 +90,7 @@ function createStyleElement(style) {
 		advancedLink.setAttribute("href", advancedLink.getAttribute("href") + style.id);
 		advancedLink.classList.remove('hidden');
 	}
-	e.querySelector(".enable").addEventListener("click", (event) => {
-		enable(event, true);
-	}, false);
-	e.querySelector(".disable").addEventListener("click", (event) => {
-		enable(event, false);
-	}, false);
+	enableCheckbox.addEventListener("change", doEnable, false);
 	if (style.updateUrl) {
 		e.querySelector(".update").addEventListener("click", doUpdate, false);
 		e.querySelector(".update-switcher").addEventListener("click", enableStyleUpdate);
@@ -102,6 +102,7 @@ function createStyleElement(style) {
 	//material
 	if (typeof(componentHandler) !== 'undefined') {
 		componentHandler.upgradeElement(e.querySelector(".update .loading"), 'MaterialSpinner');
+		componentHandler.upgradeElement(enableSwitcher, 'MaterialSwitch');
 	}
 	return e;
 }
@@ -112,43 +113,32 @@ function recalculateStyleRight(e) {
 	e.querySelector('.mdl-card__title').style.paddingRight = (24 + menuWidth).toString() + 'px';
 }
 
-function enableStyleUpdate(event) {
-	var id = getId(event);
+function enableStyleUpdate() {
+	var id = getId(this);
 	var to = this.classList.contains('off');
 	saveStyle({id: id, autoUpdate: to}).then((style) => {
 		handleUpdate(style);
 	});
 }
 
-function enable(event, enabled) {
-	var id = getId(event);
-	enableStyle(id, enabled);
+function doEnable() {
+	var id = getId(this);
+	enableStyle(id, this.checked);
 }
 
-function doDelete(event) {
+function doDelete() {
 	if (!confirm(t('deleteStyleConfirm'))) {
 		return;
 	}
-	var id = getId(event);
+	var id = getId(this);
 	deleteStyle(id);
 }
 
-function getId(event) {
-	return getStyleElement(event).getAttribute("style-id");
+function getId(e) {
+	return getStyleElement(e).getAttribute("style-id");
 }
 
-function getGlobalId(event){
-	var murl = getStyleElement(event).getAttribute("style-md5-url");
-	var matches = /\/(\d+)\.(md5)/.exec(murl);
-	if (matches && matches.length == 3){
-		return parseInt(matches[1]);
-	} else {
-		return "local";
-	}
-}
-
-function getStyleElement(event) {
-	var e = event.target;
+function getStyleElement(e) {
 	while (e) {
 		if (e.hasAttribute("style-id")) {
 			return e;
@@ -194,9 +184,8 @@ function handleDelete(id) {
 	}
 }
 
-function doUpdate(event) {
-	checkUpdate(getStyleElement(event));
-	var styleid = getGlobalId(event);
+function doUpdate() {
+	checkUpdate(getStyleElement(this));
 }
 
 function updateAllStyles() {

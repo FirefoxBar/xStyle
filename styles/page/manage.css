@@ -32,17 +32,20 @@
 	align-items: stretch;
 	flex-wrap: wrap;
 }
-#style-panel #installed .mdl-card {
+#style-panel #installed .style-item {
 	width: calc(50% - 5px);
 	margin-bottom: 10px;
 }
-#style-panel #installed .mdl-card:nth-child(odd) {
+#style-panel #installed .style-item:nth-child(odd) {
 	margin-right: 5px;
 }
-#style-panel #installed .mdl-card:nth-child(even) {
+#style-panel #installed .style-item:nth-child(even) {
 	margin-left: 5px;
 }
-#style-panel #installed .mdl-card .style-name {
+#style-panel #installed .style-item .mdl-card__menu {
+	padding-right: 8px;
+}
+#style-panel #installed .style-item .style-name {
 	display: block;
 	overflow: hidden;
 	white-space: nowrap;
@@ -50,12 +53,12 @@
 	color: #000;
 	text-decoration: none;
 }
-#style-panel #installed .mdl-card .applies-to {
+#style-panel #installed .style-item .applies-to {
 	word-break: break-all;
 	max-height: 100px;
 	overflow: auto;
 }
-#style-panel #installed .mdl-card .applies-to code {
+#style-panel #installed .style-item .applies-to code {
 	display: inline-block;
 	background-color: #F8F8F8;
 	border-radius: 2px;
@@ -89,8 +92,8 @@
 }
 
 @media screen and (max-width: 1024px) {
-	#style-panel #installed .mdl-card:nth-child(odd),
-	#style-panel #installed .mdl-card:nth-child(even) {
+	#style-panel #installed .style-item:nth-child(odd),
+	#style-panel #installed .style-item:nth-child(even) {
 		margin-left: 0;
 		margin-right: 0;
 		width: 100%;
@@ -98,12 +101,6 @@
 	.mdl-layout__tab .material-icons {
 		margin-right: 6px;
 	}
-}
-.disabled .disable {
-	display: none;
-}
-.enabled .enable {
-	display: none;
 }
 .menu .hidden {
 	display: none;
