@@ -627,7 +627,6 @@ document.addEventListener("DOMContentLoaded", () => {
 			return;
 		}
 		showStyles(r);
-		document.querySelector('.sort-method-list li[data-method="' + sort + '"]').classList.add('active');
 		switch (sort) {
 			case 'id':
 				sortStyles(sortStylesById);
@@ -642,5 +641,6 @@ document.addEventListener("DOMContentLoaded", () => {
 				sortStyles(sortStylesByStatus);
 				break;
 		}
+		document.querySelector('.sort-method-list li[data-method="' + sort + '"]').classList.add('active');
 	});
 });
