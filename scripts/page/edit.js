@@ -231,6 +231,7 @@ function initCodeMirror() {
 		newLink.setAttribute("rel", "stylesheet");
 		newLink.setAttribute("data-theme", theme);
 		newLink.setAttribute("href", themeUrl);
+		document.head.appendChild(newLink);
 	}
 
 	// initialize global editor controls
