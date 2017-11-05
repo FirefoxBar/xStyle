@@ -6,7 +6,7 @@ const IS_MOBILE = IS_ANDROID;
 
 //export
 const XSTYLE_DUMP_FILE_EXT = ".json";
-const XSTYLE_DUMP_FILE_NAME = "xstyle-{Y}-{m}-{d}-{H}-{i}-{s}" + XSTYLE_DUMP_FILE_EXT;
+const XSTYLE_DUMP_FILE_NAME = "xstyle-{Y}-{m}-{d}_{H}.{i}.{s}" + XSTYLE_DUMP_FILE_EXT;
 const XSTYLE_DEFAULT_SAVE_NAME = "xstyle-export" + XSTYLE_DUMP_FILE_EXT;
 
 // direct & reverse mapping of @-moz-document keywords and internal property names
