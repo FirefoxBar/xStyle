@@ -41,6 +41,8 @@ You can also help us translate this extension on [Transifex](https://www.transif
 
 * sv-SE: [Kim](https://github.com/JumpySWE "JumpySWE")
 
+* ru: [Shychara](https://github.com/vanja-san "Shychara")
+
 ## Licenses
 
 Copyright status of the "third-party/codemirror" directory, see [third-party/codemirror/LICENSE](third-party/codemirror/LICENSE).
