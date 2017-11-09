@@ -2,7 +2,7 @@
 require('config.php');
 define('OUTPUT_DIR', realpath(__DIR__ . '/../_locales') . '/');
 $default = 'en';
-$language_list = ['zh_CN', 'zh_TW', 'sv_SE'];
+$language_list = ['zh_CN', 'zh_TW', 'sv_SE', 'ru'];
 $placeholders = json_decode(file_get_contents('locales_placeholder.json'), 1);
 function fetchUrl($url) {
 	$ch = curl_init($url);
