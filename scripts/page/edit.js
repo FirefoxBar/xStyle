@@ -12,7 +12,6 @@ var editors = []; // array of all CodeMirror instances
 var saveSizeOnClose;
 var useHistoryBack; // use browser history back when "back to manage" is clicked
 
-
 // Chrome pre-34
 Element.prototype.matches = Element.prototype.matches || Element.prototype.webkitMatchesSelector;
 
@@ -1544,12 +1543,16 @@ function save() {
 		name: document.getElementById("name").value,
 		enabled: document.getElementById("enabled").checked,
 		updateUrl: document.getElementById("update-url").value,
-		advanced: {"item": {}, "saved": {}, "css": []}
+		code: "",
+		sections: null,
+		advanced: {"item": {}, "saved": {}}
 	};
-	let advanced = getPageAdvanced();
+	// debug code
+	// let advanced = getPageAdvanced();
+	let advanced = {"aaa":{"type":"dropdown","title":"A A A","option":{"adasda":{"title":"ASDASDA","value":""}}}};
 	if (advanced) {
 		request.advanced.item = advanced;
-		request.advanced.css = sections;
+		request.css = sections;
 		for (let k in advanced) {
 			// init saved
 			// 1. if the original style is set, the original setting is used
@@ -1559,11 +1562,20 @@ function save() {
 		}
 		// merge the global variable
 		advancedSaved = deepCopy(request.advanced.saved);
-		request.sections = applyAdvanced(sections, advanced, request.advanced.saved);
+		let _code = applyAdvanced(sections.code, advanced, request.advanced.saved);
+		compileLess(_code).then((css) => {
+			// Minify CSS
+			new CleanCSS(CleanCSSOptions).minify(css, function(error, output) {
+				console.log(output.styles);
+				request.sections = parseMozillaFormat(output.styles);
+				console.log(request.sections);
+				// browser.runtime.sendMessage(request).then(saveComplete);
+			});
+		});
 	} else {
 		request.sections = sections;
+		// browser.runtime.sendMessage(request).then(saveComplete);
 	}
-	browser.runtime.sendMessage(request).then(saveComplete);
 }
 
 function getSectionsHashes() {
@@ -1577,7 +1589,8 @@ function getSectionsHashes() {
 		meta.code = code;
 		sections.push(meta);
 	});
-	return sections;
+	// test
+	return sections[0];
 }
 function getPageAdvanced() {
 	if (advanceBox.childNodes.length === 0) {

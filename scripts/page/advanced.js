@@ -184,10 +184,16 @@ function onSaveClick() {
 	let settings = readAdvanced();
 	let style = window.style;
 	style.advanced.saved = settings;
-	style.sections = applyAdvanced(style.advanced.css, style.advanced.item, settings);
 	style.method = "saveStyle";
-	browser.runtime.sendMessage(style);
-	showToast(t('saveComplete'));
+	let code = applyAdvanced(style.code, advanced, request.advanced.saved);
+	compileLess(code).then((css) => {
+		// Minify CSS
+		new CleanCSS(CleanCSSOptions).minify(css, function(error, output) {
+			// style.sections = parseMozillaFormatTest(output.styles);
+			// browser.runtime.sendMessage(style);
+			// showToast(t('saveComplete'));
+		});
+	});
 }
 
 function showToast(message) {

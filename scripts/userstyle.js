@@ -75,12 +75,6 @@ function parseMozillaFormat(css) {
 				index++;
 			} while (f[index - 2] === '\\');
 		}
-		// ignore comments
-		if (f[index] === '/' && f[index + 1] === '*') {
-			index += 2;
-			index = f.indexOf('*/', index);
-			index ++;
-		}
 		return index;
 	}
 	function parseOneSection(f) {
@@ -312,7 +306,7 @@ function updateStyleFullCode(style) {
 }
 
 // Apply advanced to a style
-function applyAdvanced(css, item, saved) {
+function applyAdvanced(content, item, saved) {
 	const getValue = (k, v) => {
 		if (typeof(item[k]) === 'undefined') {
 			return null;
@@ -327,17 +321,6 @@ function applyAdvanced(css, item, saved) {
 				return typeof(item[k].option[v]) === 'undefined' ? v : item[k].option[v].value;
 		}
 	};
-	let content = css.map((section) => {
-		var cssMds = [];
-		for (var i in propertyToCss) {
-			if (section[i]) {
-				cssMds = cssMds.concat(section[i].map(function (v){
-					return propertyToCss[i] + "(\"" + v.replace(/\\/g, "\\\\") + "\")";
-				}));
-			}
-		}
-		return cssMds.length ? "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}" : section.code;
-	}).join("\n\n");
 	let isContinue = false;
 	do {
 		isContinue = false;
@@ -349,9 +332,22 @@ function applyAdvanced(css, item, saved) {
 			}
 		}
 	} while (isContinue);
-	return parseMozillaFormat(content);
+	return content;
 }
 
+
+// Compile less to css
+function compileLess(content) {
+	return new Promise((resolve) => {
+		if (typeof(less) === 'undefined') {
+			resolve(content);
+			return;
+		}
+		less.render(content, function (e, output) {
+			resolve(output.css);
+		});
+	});
+}
 // two json is equal or not
 function jsonEquals(a, b, property) {
 	var aProp = a[property], typeA = getType(aProp);

@@ -13,6 +13,56 @@ const XSTYLE_DEFAULT_SAVE_NAME = "xstyle-export" + XSTYLE_DUMP_FILE_EXT;
 const propertyToCss = {urls: "url", urlPrefixes: "url-prefix", domains: "domain", regexps: "regexp"};
 const CssToProperty = {"url": "urls", "url-prefix": "urlPrefixes", "domain": "domains", "regexp": "regexps"};
 
+const CleanCSSOptions = {
+	"compatibility": "",
+	"format": false,
+	"inline": ["local"],
+	"rebase": false,
+	"level": {
+		"0": true,
+		"1": {
+			"cleanupCharsets": true,
+			"normalizeUrls": true,
+			"optimizeBackground": true,
+			"optimizeBorderRadius": true,
+			"optimizeFilter": true,
+			"optimizeFontWeight": true,
+			"optimizeOutline": true,
+			"removeEmpty": true,
+			"removeNegativePaddings": true,
+			"removeQuotes": true,
+			"removeWhitespace": true,
+			"replaceMultipleZeros": true,
+			"replaceTimeUnits": true,
+			"replaceZeroUnits": true,
+			"roundingPrecision": "",
+			"selectorsSortingMethod": "standard",
+			"specialComments": "all",
+			"tidyAtRules": true,
+			"tidyBlockScopes": true,
+			"tidySelectors": true
+		},
+		"2": {
+			"mergeAdjacentRules": true,
+			"mergeIntoShorthands": true,
+			"mergeMedia": true,
+			"mergeNonAdjacentRules": false,
+			"mergeSemantically": false,
+			"overrideProperties": true,
+			"reduceNonAdjacentRules": true,
+			"removeDuplicateFontRules": true,
+			"removeDuplicateMediaBlocks": true,
+			"removeDuplicateRules": true,
+			"removeEmpty": true,
+			"removeUnusedAtRules": false,
+			"restructureRules": false,
+			"skipProperties": ""
+		}
+	},
+	"sourceMap": false
+};
+
+
 let IS_FIREFOX = false;
 let IS_CHROME = false;
 let FIREFOX_VERSION = 0;
