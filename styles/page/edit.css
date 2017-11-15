@@ -34,7 +34,7 @@
 .left-section {
 	width: calc(100% - 290px);
 }
-#sections .mdl-card {
+.left-section .code-area {
 	margin-bottom: 10px;
 }
 .right-section {
@@ -175,41 +175,6 @@
 	padding-top: 0;
 }
 
-/* applies-to */
-.applies-to {
-	display: flex;
-}
-.applies-to label {
-	flex: auto;
-	margin-top: 0.2rem;
-	padding-top: 10px;
-}
-.applies-to ul {
-	flex: auto;
-	flex-grow: 99;
-	margin: 0;
-	padding: 0;
-}
-.applies-to li {
-	display: flex;
-	list-style-type: none;
-	align-items: center;
-	padding-top: 5px;
-	padding-bottom: 5px;
-}
-.applies-to li > * {
-	margin-left: 0.35rem;
-}
-.applies-to li .applies-value {
-	flex-grow: 99;
-}
-.applies-to li .mdl-textfield {
-	padding-top: 1px;
-	padding-bottom: 1px;
-}
-.applies-to li .mdl-textfield__label::after {
-	bottom: 7px;
-}
 /************ help popup ************/
 #help-popup {
 	top: 3rem;
