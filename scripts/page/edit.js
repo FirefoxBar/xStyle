@@ -27,6 +27,15 @@ Array.prototype.rotate = function(amount) { // negative amount == rotate left
 
 Object.defineProperty(Array.prototype, "last", {get: function() { return this[this.length - 1]; }});
 
+// dirty
+function setDirty(is) {
+	if (is === isDirty) {
+		return;
+	}
+	isDirty = is;
+	updateTitle();
+}
+
 // reroute handling to nearest editor when keypress resolves to one of these commands
 var hotkeyRerouter = {
 	commands: {
@@ -361,8 +370,7 @@ function autocompletePicked(cm) {
 }
 
 function indicateCodeChange(cm) {
-	isDirty = true;
-	updateTitle();
+	setDirty(true);
 	updateLintReport(cm);
 }
 
@@ -970,6 +978,7 @@ function initWithStyle(style) {
 
 	let cm = document.getElementById('code').CodeMirror;
 	cm.setValue(style.code);
+	setDirty(false);
 	reCalculatePanelPosition();
 	initHooks();
 
@@ -1197,10 +1206,7 @@ function save() {
 		sections: null,
 		advanced: {"item": {}, "saved": {}}
 	};
-	// debug code
-	// let advanced = getPageAdvanced();
-	// let advanced = {"aaa":{"type":"dropdown","title":"A A A","option":{"adasda":{"title":"ASDASDA","value":""}}}};
-	let advanced = null;
+	let advanced = getPageAdvanced();
 	if (advanced) {
 		request.advanced.item = advanced;
 		for (let k in advanced) {
@@ -1280,7 +1286,7 @@ function getPageAdvanced() {
 
 function saveComplete(style) {
 	styleId = style.id;
-
+	setDirty(false);
 	// Go from new style URL to edit style URL
 	if (!location.href.includes("id=")) {
 		history.replaceState({}, document.title, "edit.html?id=" + style.id);
