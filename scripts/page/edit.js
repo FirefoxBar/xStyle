@@ -1226,7 +1226,21 @@ function save() {
 			request.sections = parseMozillaFormat(output.styles);
 			browser.runtime.sendMessage(request).then(saveComplete);
 		});
+	}).catch((e) => {
+		alert("Error: " + e.message + "\nAt line " + e.line + " column " + e.column);
 	});
+}
+
+function saveComplete(style) {
+	styleId = style.id;
+	setDirty(false);
+	// Go from new style URL to edit style URL
+	if (!location.href.includes("id=")) {
+		history.replaceState({}, document.title, "edit.html?id=" + style.id);
+		document.getElementById("heading").innerHTML = t("editStyleHeading");
+	}
+	showToast(t('saveComplete'));
+	updateTitle();
 }
 
 function getPageAdvanced() {
@@ -1284,17 +1298,6 @@ function getPageAdvanced() {
 	return items;
 }
 
-function saveComplete(style) {
-	styleId = style.id;
-	setDirty(false);
-	// Go from new style URL to edit style URL
-	if (!location.href.includes("id=")) {
-		history.replaceState({}, document.title, "edit.html?id=" + style.id);
-		document.getElementById("heading").innerHTML = t("editStyleHeading");
-	}
-	showToast(t('saveComplete'));
-	updateTitle();
-}
 
 function showKeyMapHelp() {
 	var keyMap = mergeKeyMaps({}, prefs.get("editor.keyMap"), CodeMirror.defaults.extraKeys);

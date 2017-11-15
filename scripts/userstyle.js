@@ -338,13 +338,17 @@ function applyAdvanced(content, item, saved) {
 
 // Compile less to css
 function compileLess(content) {
-	return new Promise((resolve) => {
+	return new Promise((resolve, reject) => {
 		if (typeof(less) === 'undefined') {
 			resolve(content);
 			return;
 		}
 		less.render(content, function (e, output) {
-			resolve(output.css);
+			if (e) {
+				reject(e);
+			} else {
+				resolve(output.css);
+			}
 		});
 	});
 }
