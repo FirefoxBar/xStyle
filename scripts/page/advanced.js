@@ -189,9 +189,8 @@ function onSaveClick() {
 	compileLess(code).then((css) => {
 		// Minify CSS
 		new CleanCSS(CleanCSSOptions).minify(css, function(error, output) {
-			// style.sections = parseMozillaFormatTest(output.styles);
-			// browser.runtime.sendMessage(style);
-			// showToast(t('saveComplete'));
+			request.sections = parseMozillaFormat(output.styles);
+			browser.runtime.sendMessage(request).then(saveComplete);
 		});
 	});
 }
