@@ -2,18 +2,16 @@
 
 var appliesToId = 999; // use of template
 
+const DIRTY_TITLE = "* $";
+
 let advanceBox = null;
 let advancedId = 0;
 let advancedSaved = {};
 let initAdvancedEditor = true;
 var styleId = null;
-var dirty = {}; // only the actually dirty items here
+let isDirty = false;
 var editors = []; // array of all CodeMirror instances
 var saveSizeOnClose;
-var useHistoryBack; // use browser history back when "back to manage" is clicked
-
-// Chrome pre-34
-Element.prototype.matches = Element.prototype.matches || Element.prototype.webkitMatchesSelector;
 
 // Chrome pre-41 polyfill
 Element.prototype.closest = Element.prototype.closest || function(selector) {
@@ -58,66 +56,6 @@ var hotkeyRerouter = {
 
 function showToast(message) {
 	document.getElementById('toast').MaterialSnackbar.showSnackbar({"message": message});
-}
-
-function onChange(event) {
-	var node = event.target;
-	if ("savedValue" in node) {
-		var currentValue = "checkbox" === node.type ? node.checked : node.value;
-		setCleanItem(node, node.savedValue === currentValue);
-	} else {
-		// the manually added section's applies-to is dirty only when the value is non-empty
-		setCleanItem(node, node.localName != "input" || !node.value.trim());
-		delete node.savedValue; // only valid when actually saved
-	}
-	updateTitle();
-}
-
-// Set .dirty on stylesheet contributors that have changed
-function setDirtyClass(node, isDirty) {
-	node.classList.toggle("dirty", isDirty);
-}
-
-function setCleanItem(node, isClean) {
-	if (!node.id) {
-		node.id = Date.now().toString(32).substr(-6);
-	}
-
-	if (isClean) {
-		delete dirty[node.id];
-		// code sections have .CodeMirror property
-		if (node.CodeMirror) {
-			node.savedValue = node.CodeMirror.changeGeneration();
-		} else {
-			node.savedValue = "checkbox" === node.type ? node.checked : node.value;
-		}
-	} else {
-		dirty[node.id] = true;
-	}
-
-	setDirtyClass(node, !isClean);
-}
-
-function isCleanGlobal() {
-	var clean = Object.keys(dirty).length == 0;
-	setDirtyClass(document.body, !clean);
-	return clean;
-}
-
-function setCleanGlobal() {
-	document.querySelectorAll("#header, #sections > div").forEach(setCleanSection);
-	dirty = {}; // forget the dirty applies-to ids from a deleted section after the style was saved
-}
-
-function setCleanSection(section) {
-	section.querySelectorAll(".style-contributor").forEach((node) => { setCleanItem(node, true) });
-
-	// #header section has no codemirror
-	var cm = section.CodeMirror;
-	if (cm) {
-		section.savedValue = cm.changeGeneration();
-		indicateCodeChange(cm);
-	}
 }
 
 function initCodeMirror() {
@@ -423,26 +361,10 @@ function autocompletePicked(cm) {
 }
 
 function indicateCodeChange(cm) {
-	var section = cm.getSection();
-	setCleanItem(section, cm.isClean(section.savedValue));
+	isDirty = true;
 	updateTitle();
 	updateLintReport(cm);
 }
-
-function getSectionForChild(e) {
-	return e.closest("#sections > div");
-}
-
-function getSections() {
-	return document.querySelectorAll("#sections > div");
-}
-
-// remind Chrome to repaint a previously invisible editor box by toggling any element's transform
-// this bug is present in some versions of Chrome (v37-40 or something)
-document.addEventListener("scroll", (event) => {
-	var style = document.getElementById("name").style;
-	style.webkitTransform = style.webkitTransform ? "" : "scale(1)";
-});
 
 // Shift-Ctrl-Wheel scrolls entire page even when mouse is over a code editor
 document.addEventListener("wheel", (event) => {
@@ -452,131 +374,6 @@ document.addEventListener("wheel", (event) => {
 		event.preventDefault();
 	}
 });
-
-function addAppliesTo(list, name, value) {
-	var showingEverything = list.querySelector(".applies-to-everything") != null;
-	// blow away "Everything" if it's there
-	if (showingEverything) {
-		list.removeChild(list.firstChild);
-	}
-	var e;
-	if (name && value) {
-		e = template.appliesTo.cloneNode(true);
-		e.querySelector("[name=applies-type]").value = name;
-		e.querySelector("[name=applies-value]").value = value;
-		e.querySelector(".remove-applies-to").addEventListener("click", removeAppliesTo, false);
-	} else if (showingEverything || list.hasChildNodes()) {
-		e = template.appliesTo.cloneNode(true);
-		if (list.hasChildNodes()) {
-			e.querySelector("[name=applies-type]").value = list.querySelector("li:last-child [name='applies-type']").value;
-		}
-		e.querySelector(".remove-applies-to").addEventListener("click", removeAppliesTo, false);
-	} else {
-		e = template.appliesToEverything.cloneNode(true);
-	}
-	e.querySelector(".add-applies-to").addEventListener("click", function() {
-		addAppliesTo(this.parentNode.parentNode);
-	}, false);
-	if (e.querySelector(".mdl-textfield") && typeof(componentHandler) !== 'undefined') {
-		e.querySelector('.mdl-textfield input').setAttribute('id', 'appliesTo-' + appliesToId);
-		e.querySelector('.mdl-textfield label').setAttribute('for', 'appliesTo-' + appliesToId);
-		componentHandler.upgradeElement(e.querySelector(".mdl-textfield"), 'MaterialTextfield');
-		appliesToId++;
-	}
-	list.appendChild(e);
-	reCalculatePanelPosition();
-}
-
-function addSection(event, section) {
-	var div = template.section.cloneNode(true);
-	div.querySelector(".applies-to-help").addEventListener("click", showAppliesToHelp, false);
-	div.querySelector(".remove-section").addEventListener("click", removeSection, false);
-	div.querySelector(".add-section").addEventListener("click", addSection, false);
-	div.querySelector(".beautify-section").addEventListener("click", beautify);
-
-	var codeElement = div.querySelector(".code");
-	var appliesTo = div.querySelector(".applies-to-list");
-	var appliesToAdded = false;
-
-	if (section) {
-		codeElement.value = section.code;
-		for (var i in propertyToCss) {
-			if (section[i]) {
-				section[i].forEach((url) => {
-					addAppliesTo(appliesTo, propertyToCss[i], url);
-					appliesToAdded = true;
-				});
-			}
-		}
-	}
-	if (!appliesToAdded) {
-		addAppliesTo(appliesTo);
-	}
-
-	appliesTo.addEventListener("change", onChange);
-	appliesTo.addEventListener("input", onChange);
-
-	var sections = document.getElementById("sections");
-	if (event) {
-		var clickedSection = getSectionForChild(event.target);
-		sections.insertBefore(div, clickedSection.nextElementSibling);
-		var newIndex = getSections().indexOf(clickedSection) + 1;
-		var cm = setupCodeMirror(codeElement, newIndex);
-		makeSectionVisible(cm);
-		cm.focus()
-		renderLintReport();
-	} else {
-		sections.appendChild(div);
-		var cm = setupCodeMirror(codeElement);
-	}
-
-	div.CodeMirror = cm;
-	setCleanSection(div);
-	reCalculatePanelPosition();
-	return div;
-}
-
-function removeAppliesTo(event) {
-	var appliesTo = event.target.parentNode,
-		appliesToList = appliesTo.parentNode;
-	removeAreaAndSetDirty(appliesTo);
-	if (!appliesToList.hasChildNodes()) {
-		addAppliesTo(appliesToList);
-	}
-	reCalculatePanelPosition();
-}
-
-function removeSection(event) {
-	var section = getSectionForChild(event.target);
-	var cm = section.CodeMirror;
-	removeAreaAndSetDirty(section);
-	editors.splice(editors.indexOf(cm), 1);
-	renderLintReport();
-	if (getSections().length === 0) {
-		addSection(null, {"code": ""});
-	}
-	reCalculatePanelPosition();
-}
-
-function removeAreaAndSetDirty(area) {
-	var contributors = area.querySelectorAll('.style-contributor');
-	if(!contributors.length){
-		setCleanItem(area, false);
-	}
-	contributors.some((node) => {
-		if (node.savedValue) {
-			// it's a saved section, so make it dirty and stop the enumeration
-			setCleanItem(area, false);
-			return true;
-		} else {
-			// it's an empty section, so undirty the applies-to items,
-			// otherwise orphaned ids would keep the style dirty
-			setCleanItem(node, true);
-		}
-	});
-	updateTitle();
-	area.parentNode.removeChild(area);
-}
 
 function makeSectionVisible(cm) {
 	let isAdvanced = typeof(cm.isAdvanced) !== 'undefined' ? cm.isAdvanced : (() => {
@@ -695,10 +492,6 @@ function setupGlobalSearch() {
 		var rxQuery = typeof state.query == "object"
 			? state.query : stringAsRegExp(state.query, shouldIgnoreCase(state.query) ? "i" : "");
 
-		if (document.activeElement && document.activeElement.name == "applies-value"
-			&& searchAppliesTo(activeCM)) {
-			return;
-		}
 		for (var i=0, cm=activeCM; i < editors.length; i++) {
 			state = updateState(cm);
 			if (!cm.hasFocus()) {
@@ -715,38 +508,11 @@ function setupGlobalSearch() {
 				state.posTo = CodeMirror.Pos(state.posFrom.line, state.posFrom.ch);
 				originalCommand[reverse ? "findPrev" : "findNext"](cm);
 				return;
-			} else if (!reverse && searchAppliesTo(cm)) {
-				return;
-			}
-			cm = editors[(editors.indexOf(cm) + (reverse ? -1 + editors.length : 1)) % editors.length];
-			if (reverse && searchAppliesTo(cm)) {
-				return;
 			}
 		}
 		// nothing found so far, so call the original search with wrap-around
 		originalCommand[reverse ? "findPrev" : "findNext"](activeCM);
 
-		function searchAppliesTo(cm) {
-			var inputs = [].slice.call(cm.getSection().querySelectorAll(".applies-value"));
-			if (reverse) {
-				inputs = inputs.reverse();
-			}
-			inputs.splice(0, inputs.indexOf(document.activeElement) + 1);
-			return inputs.some((input) => {
-				var match = rxQuery.exec(input.value);
-				if (match) {
-					input.focus();
-					var end = match.index + match[0].length;
-					// scroll selected part into view in long inputs,
-					// works only outside of current event handlers chain, hence timeout=0
-					setTimeout(() => {
-						input.setSelectionRange(end, end);
-						input.setSelectionRange(match.index, end)
-					}, 0);
-					return true;
-				}
-			});
-		}
 	}
 
 	function findPrev(cm) {
@@ -868,12 +634,7 @@ function nextPrevEditor(cm, direction) {
 
 function getEditorInSight(nearbyElement) {
 	// priority: 1. associated CM for applies-to element 2. last active if visible 3. first visible
-	var cm;
-	if (nearbyElement && nearbyElement.className.includes("applies-")) {
-		cm = getSectionForChild(nearbyElement).CodeMirror;
-	} else {
-		cm = editors.lastActive;
-	}
+	let cm = editors.lastActive;
 	if (!cm || offscreenDistance(cm) > 0) {
 		var sorted = editors
 			.map((cm, index) => {
@@ -903,6 +664,7 @@ function getEditorInSight(nearbyElement) {
 }
 
 function updateLintReport(cm, delay) {
+	return; //TODO
 	if (delay == 0) {
 		// immediately show pending csslint messages in onbeforeunload and save
 		update.call(cm);
@@ -978,6 +740,7 @@ function updateLintReport(cm, delay) {
 }
 
 function renderLintReport(someBlockChanged) {
+	return; //TODO
 	let container = document.getElementById("lint");
 	let content = container.children[1];
 	let label = t("sectionCode");
@@ -1074,6 +837,7 @@ function toggleLintReport() {
 }
 
 function beautify(event) {
+	return; //TODO
 	if (exports.css_beautify) { // thanks to csslint's definition of 'exports'
 		doBeautify();
 	} else {
@@ -1152,15 +916,15 @@ function beautify(event) {
 
 function init() {
 	var params = getParams();
+	// init code editor
+	
+	let codeElement = document.getElementById('code');
+	let cm = setupCodeMirror(codeElement);
+	codeElement.CodeMirror = cm;
+	reCalculatePanelPosition();
+
 	if (!params.id) { // match should be 2 - one for the whole thing, one for the parentheses
 		// This is an add
-		var section = {code: ""}
-		for (var i in CssToProperty) {
-			if (params[i]) {
-				section[CssToProperty[i]] = [params[i]];
-			}
-		}
-		addSection(null, section);
 		// default to enabled
 		document.getElementById("enabled").checked = true;
 		document.getElementById("heading").innerHTML = t("addStyleTitle");
@@ -1203,30 +967,10 @@ function initWithStyle(style) {
 		componentHandler.upgradeElement(document.getElementById("enabled").parentElement, 'MaterialCheckbox');
 		componentHandler.upgradeElement(document.getElementById("enabled").parentElement.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
 	}
-	// if this was done in response to an update, we need to clear existing sections
-	getSections().forEach((div) => {
-		div.remove();
-	});
-	let sections = style.advanced.css.length > 0 ? style.advanced.css : style.sections;
-	let queue = sections.length ? sections : [{code: ""}];
-	let queueStart = new Date().getTime();
-	// after 100ms the sections will be added asynchronously
-	while (new Date().getTime() - queueStart <= 100 && queue.length) {
-		processQueue();
-	}
-	function processQueue() {
-		if (queue.length) {
-			add();
-			setTimeout(processQueue, 0);
-		}
-	};
-	function add() {
-		var sectionDiv = addSection(null, queue.shift());
-		maximizeCodeHeight(sectionDiv, !queue.length);
-		updateLintReport(sectionDiv.CodeMirror, prefs.get("editor.lintDelay"));
-		reCalculatePanelPosition();
-	}
 
+	let cm = document.getElementById('code').CodeMirror;
+	cm.setValue(style.code);
+	reCalculatePanelPosition();
 	initHooks();
 
 	if (Object.keys(style.advanced.item).length > 0) {
@@ -1269,13 +1013,7 @@ function initWithStyle(style) {
 }
 
 function initHooks() {
-	document.querySelectorAll("#header .style-contributor").forEach((node) => {
-		node.addEventListener("change", onChange);
-		node.addEventListener("input", onChange);
-	});
-	document.getElementById("to-mozilla").addEventListener("click", showMozillaFormat, false);
-	document.getElementById("from-mozilla").addEventListener("click", fromMozillaFormat);
-	document.getElementById("beautify").addEventListener("click", beautify);
+	// document.getElementById("beautify").addEventListener("click", beautify);
 	document.getElementById("save-link").addEventListener("click", save, false);
 	document.getElementById("keyMap-help").addEventListener("click", showKeyMapHelp, false);
 	document.getElementById("lint-help").addEventListener("click", showLintHelp);
@@ -1289,7 +1027,6 @@ function initHooks() {
 	}
 
 	setupGlobalSearch();
-	setCleanGlobal();
 	updateTitle();
 }
 
@@ -1434,108 +1171,21 @@ function createAdvancedImage(key, title, items) {
 	return n;
 }
 
-
-function maximizeCodeHeight(sectionDiv, isLast) {
-	var cm = sectionDiv.CodeMirror;
-	var stats = maximizeCodeHeight.stats = maximizeCodeHeight.stats || {totalHeight: 0, deltas: []};
-	if (!stats.cmActualHeight) {
-		stats.cmActualHeight = getComputedHeight(cm.display.wrapper);
-	}
-	if (!stats.sectionMarginTop) {
-		stats.sectionMarginTop = parseFloat(getComputedStyle(sectionDiv).marginTop);
-	}
-	var sectionTop = sectionDiv.getBoundingClientRect().top - stats.sectionMarginTop;
-	if (!stats.firstSectionTop) {
-		stats.firstSectionTop = sectionTop;
-	}
-	var extrasHeight = getComputedHeight(sectionDiv) - stats.cmActualHeight;
-	var cmMaxHeight = window.innerHeight - extrasHeight - sectionTop - stats.sectionMarginTop;
-	var cmDesiredHeight = cm.display.sizer.clientHeight + 2*cm.defaultTextHeight();
-	var cmGrantableHeight = Math.max(stats.cmActualHeight, Math.min(cmMaxHeight, cmDesiredHeight));
-	stats.deltas.push(cmGrantableHeight - stats.cmActualHeight);
-	stats.totalHeight += cmGrantableHeight + extrasHeight;
-	if (!isLast) {
-		return;
-	}
-	stats.totalHeight += stats.firstSectionTop;
-	if (stats.totalHeight <= window.innerHeight) {
-		editors.forEach((cm, index) => {
-			cm.setSize(null, stats.deltas[index] + stats.cmActualHeight);
-		});
-		return;
-	}
-	// scale heights to fill the gap between last section and bottom edge of the window
-	var sections = document.getElementById("sections");
-	var available = window.innerHeight - sections.getBoundingClientRect().bottom -
-		parseFloat(getComputedStyle(sections).marginBottom);
-	if (available <= 0) {
-		return;
-	}
-	var totalDelta = stats.deltas.reduce((sum, d) => {
-		return sum + d;
-	}, 0);
-	var q = available / totalDelta;
-	var baseHeight = stats.cmActualHeight - stats.sectionMarginTop;
-	stats.deltas.forEach((delta, index) => {
-		editors[index].setSize(null, baseHeight + Math.floor(q * delta));
-	});
-}
-
 function updateTitle() {
-	var DIRTY_TITLE = "* $";
-
 	var name = document.getElementById("name").value;
-	var clean = isCleanGlobal();
 	var title = styleId === null ? t("addStyleTitle") : t('editStyleTitle', [name]);
-	document.title = clean ? title : DIRTY_TITLE.replace("$", title);
-}
-
-function validate() {
-	var name = document.getElementById("name").value;
-	if (name == "") {
-		return t("styleMissingName");
-	}
-	// validate the regexps
-	if (document.querySelectorAll(".applies-to-list").some((list) => {
-		return list.childNodes.some((li) => {
-			if (li.className == template.appliesToEverything.className) {
-				return false;
-			}
-			var valueElement = li.querySelector("[name=applies-value]");
-			var type = li.querySelector("[name=applies-type]").value;
-			var value = valueElement.value;
-			if (type && value) {
-				if (type == "regexp") {
-					try {
-						new RegExp(value);
-					} catch (ex) {
-						valueElement.focus();
-						return true;
-					}
-				}
-			}
-			return false;
-		});
-	})) {
-		return t("styleBadRegexp");
-	}
-	return null;
+	document.title = isDirty ? DIRTY_TITLE.replace("$", title) : title;
 }
 
 function save() {
-	updateLintReport(null, 0);
+	// updateLintReport(null, 0);
 
 	// save the contents of the CodeMirror editors back into the textareas
 	for (var i=0; i < editors.length; i++) {
 		editors[i].save();
 	}
 
-	var error = validate();
-	if (error) {
-		alert(error);
-		return;
-	}
-	let sections = getSectionsHashes();
+	let code = document.getElementById('code').value;
 	let request = {
 		method: "saveStyle",
 		id: styleId,
@@ -1543,16 +1193,16 @@ function save() {
 		name: document.getElementById("name").value,
 		enabled: document.getElementById("enabled").checked,
 		updateUrl: document.getElementById("update-url").value,
-		code: "",
+		code: code,
 		sections: null,
 		advanced: {"item": {}, "saved": {}}
 	};
 	// debug code
 	// let advanced = getPageAdvanced();
-	let advanced = {"aaa":{"type":"dropdown","title":"A A A","option":{"adasda":{"title":"ASDASDA","value":""}}}};
+	// let advanced = {"aaa":{"type":"dropdown","title":"A A A","option":{"adasda":{"title":"ASDASDA","value":""}}}};
+	let advanced = null;
 	if (advanced) {
 		request.advanced.item = advanced;
-		request.css = sections;
 		for (let k in advanced) {
 			// init saved
 			// 1. if the original style is set, the original setting is used
@@ -1562,36 +1212,17 @@ function save() {
 		}
 		// merge the global variable
 		advancedSaved = deepCopy(request.advanced.saved);
-		let _code = applyAdvanced(sections.code, advanced, request.advanced.saved);
-		compileLess(_code).then((css) => {
-			// Minify CSS
-			new CleanCSS(CleanCSSOptions).minify(css, function(error, output) {
-				console.log(output.styles);
-				request.sections = parseMozillaFormat(output.styles);
-				console.log(request.sections);
-				// browser.runtime.sendMessage(request).then(saveComplete);
-			});
-		});
-	} else {
-		request.sections = sections;
-		// browser.runtime.sendMessage(request).then(saveComplete);
+		code = applyAdvanced(code, advanced, request.advanced.saved);
 	}
+	compileLess(code).then((css) => {
+		// Minify CSS
+		new CleanCSS(CleanCSSOptions).minify(css, function(error, output) {
+			request.sections = parseMozillaFormat(output.styles);
+			browser.runtime.sendMessage(request).then(saveComplete);
+		});
+	});
 }
 
-function getSectionsHashes() {
-	var sections = [];
-	getSections().forEach((div) => {
-		var meta = getMeta(div);
-		var code = div.CodeMirror.getValue();
-		if (/^\s*$/.test(code) && Object.keys(meta).length == 0) {
-			return;
-		}
-		meta.code = code;
-		sections.push(meta);
-	});
-	// test
-	return sections[0];
-}
 function getPageAdvanced() {
 	if (advanceBox.childNodes.length === 0) {
 		return null;
@@ -1647,122 +1278,16 @@ function getPageAdvanced() {
 	return items;
 }
 
-
-function getMeta(e) {
-	var meta = {urls: [], urlPrefixes: [], domains: [], regexps: []};
-	e.querySelector(".applies-to-list").childNodes.forEach((li) => {
-		if (li.className == template.appliesToEverything.className) {
-			return;
-		}
-		var type = li.querySelector("[name=applies-type]").value;
-		var value = li.querySelector("[name=applies-value]").value;
-		if (type && value) {
-			var property = CssToProperty[type];
-			meta[property].push(value);
-		}
-	});
-	return meta;
-}
-
 function saveComplete(style) {
 	styleId = style.id;
-	setCleanGlobal();
 
 	// Go from new style URL to edit style URL
 	if (!location.href.includes("id=")) {
 		history.replaceState({}, document.title, "edit.html?id=" + style.id);
-		document.getElementById("contentHeading").innerHTML = t("editStyleHeading");
 		document.getElementById("heading").innerHTML = t("editStyleHeading");
 	}
 	showToast(t('saveComplete'));
 	updateTitle();
-}
-
-function showMozillaFormat() {
-	var popup = showCodeMirrorPopup(t("styleMozillaFormatExport"), "", {readOnly: true});
-	popup.codebox.setValue(toMozillaFormat());
-	popup.codebox.execCommand("selectAll");
-}
-
-function toMozillaFormat() {
-	return getSectionsHashes().map((section) => {
-		var cssMds = [];
-		for (var i in propertyToCss) {
-			if (section[i]) {
-				cssMds = cssMds.concat(section[i].map(function (v){
-					return propertyToCss[i] + "(\"" + v.replace(/\\/g, "\\\\") + "\")";
-				}));
-			}
-		}
-		return cssMds.length ? "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}" : section.code;
-	}).join("\n\n");
-}
-
-function fromMozillaFormat() {
-	var popup = showCodeMirrorPopup(t("styleFromMozillaFormatPrompt"), tHTML("<div>\
-		<button name='import-append' i18n-text='importAppendLabel' i18n-title='importAppendTooltip'></button>\
-		<button name='import-replace' i18n-text='importReplaceLabel' i18n-title='importReplaceTooltip'></button>\
-		</div>").innerHTML);
-
-	var contents = popup.querySelector(".contents");
-	contents.insertBefore(popup.codebox.display.wrapper, contents.firstElementChild);
-	popup.codebox.focus();
-
-	popup.querySelector("[name='import-append']").addEventListener("click", doImport);
-	popup.querySelector("[name='import-replace']").addEventListener("click", doImport);
-
-	popup.codebox.on("change", () => {
-		clearTimeout(popup.mozillaTimeout);
-		popup.mozillaTimeout = setTimeout(() => {
-			popup.classList.toggle("ready", trimNewLines(popup.codebox.getValue()));
-		}, 100);
-	});
-
-	function doImport() {
-		var replaceOldStyle = this.name == "import-replace";
-		popup.querySelector(".close-icon").click();
-		var mozStyle = trimNewLines(popup.codebox.getValue());
-		var firstAddedCM;
-		var sections = parseMozillaFormat(mozStyle);
-		for (let s of sections) {
-			doAddSection(s);
-		}
-
-		function doAddSection(section) {
-			if (!firstAddedCM) {
-				if (!initFirstSection(section)) {
-					return;
-				}
-			}
-			// don't add empty sections
-			if (!(section.code || section.urls || section.urlPrefixes || section.domains || section.regexps)) {
-				return;
-			}
-			setCleanItem(addSection(null, section), false);
-			firstAddedCM = firstAddedCM || editors.last;
-		}
-		// do onetime housekeeping as the imported text is confirmed to be a valid style
-		function initFirstSection(section) {
-			if (!section.code) {
-				return false;
-			}
-			if (replaceOldStyle) {
-				editors.slice(0).reverse().forEach((cm) => {
-					removeSection({target: cm.getSection().firstElementChild});
-				});
-			} else if (!editors.last.getValue()) {
-				// nuke the last blank section
-				if (editors.last.getSection().querySelector(".applies-to-everything")) {
-					removeSection({target: editors.last.getSection()});
-				}
-			}
-			return true;
-		}
-	}
-}
-
-function showAppliesToHelp() {
-	showHelp(t("appliesLabel"), t("appliesHelp"));
 }
 
 function showKeyMapHelp() {
@@ -1938,7 +1463,7 @@ function getComputedHeight(el) {
 
 window.onbeforeunload = () => {
 	document.activeElement.blur();
-	if (isCleanGlobal()) {
+	if (!isDirty) {
 		return;
 	}
 	updateLintReport(null, 0);

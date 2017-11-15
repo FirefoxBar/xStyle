@@ -56,45 +56,6 @@
 	<link rel="stylesheet" href="styles/page/edit.css"/>
 	<style id="font-style"></style>
 
-	<template data-id="appliesTo">
-		<li>
-			<select name="applies-type" class="applies-type style-contributor">
-				<option value="url" i18n-text="appliesUrlOption"></option>
-				<option value="url-prefix" i18n-text="appliesUrlPrefixOption"></option>
-				<option value="domain" i18n-text="appliesDomainOption"></option>
-				<option value="regexp" i18n-text="appliesRegexpOption"></option>
-			</select>
-			<div class="mdl-textfield applies-value style-contributor">
-				<input class="mdl-textfield__input" type="text" name="applies-value">
-				<label class="mdl-textfield__label">Applies to</label>
-			</div>
-			<button class="mdl-button mdl-js-button mdl-js-ripple-effect remove-applies-to" i18n-text="appliesRemove"></button>
-			<button class="mdl-button mdl-js-button mdl-js-ripple-effect add-applies-to" i18n-text="appliesAdd"></button>
-		</li>
-	</template>
-	<template data-id="appliesToEverything">
-		<li class="applies-to-everything" i18n-html="appliesToEverything">
-			<button class="mdl-button mdl-js-button mdl-js-ripple-effect add-applies-to" i18n-text="appliesSpecify"></button>
-		</li>
-	</template>
-	<template data-id="section">
-		<div class="mdl-card mdl-shadow--2dp">
-			<div class="mdl-card__supporting-text">
-				<textarea class="code"></textarea>
-				<div class="applies-to">
-					<label i18n-text="appliesLabel">
-						<i id="lint-help" class="material-icons help-button applies-to-help" i18n-title="helpAlt">help_outline</i>
-					</label>
-					<ul class="applies-to-list"></ul>
-				</div>
-			</div>
-			<div class="mdl-card__actions mdl-card--border">
-				<button class="remove-section mdl-button mdl-js-button mdl-js-ripple-effect" i18n-text="sectionRemove"></button>
-				<button class="add-section mdl-button mdl-js-button mdl-js-ripple-effect" i18n-text="sectionAdd"></button>
-				<button class="beautify-section mdl-button mdl-js-button mdl-js-ripple-effect" i18n-text="styleBeautify"></button>
-			</div>
-		</div>
-	</template>
 	<template data-id="find">
 		<span i18n-text="search">: <input type="text" class="CodeMirror-search-field">
 			<span class="CodeMirror-search-hint">(<span i18n-text="searchRegexp"></span>)</span>
@@ -251,7 +212,11 @@
 	<main class="mdl-layout__content">
 		<div class="page-content">
 			<div class="left-section">
-				<section id="sections"></section>
+				<div class="mdl-card mdl-shadow--2dp">
+					<div class="mdl-card__supporting-text">
+						<textarea id="code" class="code"></textarea>
+					</div>
+				</div>
 				<!-- advanced -->
 				<div id="advanced-box" class="mdl-card mdl-shadow--2dp close">
 					<div class="mdl-card__title mdl-card--expand">
