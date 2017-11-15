@@ -1,6 +1,6 @@
 function getDatabase() {
 	return new Promise((resolve, reject) => {
-		let dbOpenRequest = window.indexedDB.open("xstyle", 3);
+		let dbOpenRequest = window.indexedDB.open("xstyle", 4);
 		dbOpenRequest.onsuccess = function(e) {
 			resolve(e.target.result);
 		};
@@ -18,6 +18,9 @@ function getDatabase() {
 				}
 				if (event.oldVersion < 3) {
 					upgradeTo3();
+				}
+				if (event.oldVersion < 4) {
+					upgradeTo4();
 				}
 			}
 		};
@@ -721,6 +724,39 @@ function upgradeTo3() {
 					s.lastModified = new Date().getTime();
 					os.put(s);
 				}
+				cursor.continue();
+			}
+		};
+	});
+}
+function upgradeTo4() {
+	getDatabase().then((db) => {
+		let tx = db.transaction(["styles"], "readwrite");
+		let os = tx.objectStore("styles");
+		os.openCursor().onsuccess = function(e) {
+			let cursor = e.target.result;
+			if (cursor) {
+				let s = cursor.value;
+				s.id = cursor.key;
+				let codeSections = null;
+				if (s.advanced.css.length) {
+					codeSections = s.advanced.css;
+				} else {
+					codeSections = s.sections;
+				}
+				s.code = codeSections.map((section) => {
+					var cssMds = [];
+					for (var i in propertyToCss) {
+						if (section[i]) {
+							cssMds = cssMds.concat(section[i].map(function (v){
+								return propertyToCss[i] + "(\"" + v.replace(/\\/g, "\\\\") + "\")";
+							}));
+						}
+					}
+					return cssMds.length ? "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}" : section.code;
+				}).join("\n\n");
+				delete s.advanced.css;
+				os.put(s);
 				cursor.continue();
 			}
 		};
