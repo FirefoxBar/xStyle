@@ -263,7 +263,7 @@ function updateFontStyle() {
 function setupCodeMirror(textarea, index, isAdvanced) {
 	var cm = CodeMirror.fromTextArea(textarea, {
 		lineNumbers: true,
-		mode : "css",
+		mode : "text/x-less",
 		extraKeys : {
 			'Ctrl-K' : function (cm, event) {
 				cm.state.colorpicker.popup_color_picker();
@@ -846,6 +846,8 @@ function toggleLintReport() {
 }
 
 function beautify(event) {
+	let undoButton = null;
+	let options = prefs.get("editor.beautify");
 	// csslint has exports, so use it
 	if (exports.css_beautify) {
 		initBeautify();
@@ -854,8 +856,6 @@ function beautify(event) {
 		script.src = "third-party/beautify/beautify-css.js";
 		script.onload = initBeautify;
 	}
-	let undoButton = null;
-	let options = prefs.get("editor.beautify");
 	function initBeautify() {
 		var tabs = prefs.get("editor.indentWithTabs");
 		options.indent_size = tabs ? 1 : prefs.get("editor.tabSize");
