@@ -279,7 +279,7 @@ function onLoadFromFileClick(){
 }
 
 function onInstallFromFileClick(){
-	loadFromFile('.json,.css', true).then((result) => {
+	loadFromFile('.json,.css,.less', true).then((result) => {
 		if (result.length > 1) {
 			let installed = 0;
 			for (let f of result) {
@@ -311,64 +311,18 @@ function onInstallFromFileClick(){
 					return;
 				}
 				filetype = filetype[1].toLowerCase();
-				let json = null;
-				switch (filetype) {
-					case 'json':
-						json = JSON.parse(rawText);
-						delete json.id;
-						if (Object.keys(json.advanced.item).length > 0) {
-							let saved = {};
-							for (let k in json.advanced.item) {
-								saved[k] = typeof(json.advanced.item[k].default) === 'undefined' ? Object.keys(json.advanced.item[k].option)[0] : json.advanced.item[k].default;
-							}
-							json.advanced.saved = saved;
-							json.sections = applyAdvanced(json.advanced.css, json.advanced.item, json.advanced.saved);
-						}
-						break;
-					case 'css':
-						if (trimNewLines(rawText).indexOf('/* ==UserStyle==') === 0) {
-							// is .user.css
-							let meta = parseUCMeta(trimNewLines(rawText.match(/\/\* ==UserStyle==([\s\S]+)==\/UserStyle== \*\//)[1]));
-							let body = trimNewLines(rawText.replace(/\/\* ==UserStyle==([\s\S]+)==\/UserStyle== \*\//, ''));
-							json = {
-								"name": meta.name,
-								"updateUrl": meta.updateUrl || null,
-								"md5Url": meta.md5Url || null,
-								"url": meta.url || null,
-								"author": meta.author || null,
-								"originalMd5": meta.originalMd5 || null
-							};
-							if (Object.keys(meta.advanced).length > 0) {
-								let saved = {};
-								for (let k in meta.advanced) {
-									saved[k] = typeof(meta.advanced[k].default) === 'undefined' ? Object.keys(meta.advanced[k].option)[0] : meta.advanced[k].default;
-								}
-								json.advanced = {"item": meta.advanced, "saved": saved, "css": parseMozillaFormat(body)};
-								json.sections = applyAdvanced(json.advanced.css, json.advanced.item, json.advanced.saved);
-							} else {
-								json.advanced = {"item": {}, "saved": {}, "css": []};
-								json.sections = parseMozillaFormat(body);
-							}
-						} else {
-							// is a normal css file
-							let styleName = filename.match(/^(.*?)\./)[1].replace(/([_\-])/g, ' ');
-							styleName = styleName[0].toUpperCase() + styleName.substr(1);
-							json = {
-								"name": styleName,
-								"updateUrl": null,
-								"md5Url": null,
-								"url": null,
-								"author": null,
-								"originalMd5": null,
-								"sections": parseMozillaFormat(rawText)
-							};
-						}
-						break;
-					default:
-						resolve(false);
-						return;
+				if (filetype !== 'json' && filetype !== 'css' && filetype !== 'less') {
+					resolve(false);
+					return;
 				}
-				installStyle(json).then(resolve);
+				parseStyleFile(rawText).then((json) => {
+					if (!json.name || json.name === '') {
+						// If style have no name, create a name from file name
+						let styleName = filename.match(/^(.*?)\./)[1].replace(/([_\-])/g, ' ');
+						json.name = styleName[0].toUpperCase() + styleName.substr(1);
+					}
+					installStyle(json).then(resolve);
+				});
 			});
 		}
 	});

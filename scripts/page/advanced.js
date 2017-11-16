@@ -187,9 +187,8 @@ function onSaveClick() {
 	style.method = "saveStyle";
 	let code = applyAdvanced(style.code, advanced, request.advanced.saved);
 	compileLess(code).then((css) => {
-		// Minify CSS
-		new CleanCSS(CleanCSSOptions).minify(css, function(error, output) {
-			request.sections = parseMozillaFormat(output.styles);
+		compileCss(css).then((r) => {
+			request.sections = r;
 			browser.runtime.sendMessage(request).then(saveComplete);
 		});
 	});

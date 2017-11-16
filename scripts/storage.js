@@ -179,6 +179,9 @@ function installStyle(json) {
 	if (typeof(json.lastModified) === 'undefined') {
 		json.lastModified = new Date().getTime();
 	}
+	if (typeof(json.type) === 'undefined') {
+		json.type = 'less';
+	}
 	if (json.url) {
 		return new Promise((resolve) => {
 			getStyles({url: json.url}).then((response) => {
@@ -738,6 +741,7 @@ function upgradeTo4() {
 			if (cursor) {
 				let s = cursor.value;
 				s.id = cursor.key;
+				s.type = 'less';
 				let codeSections = null;
 				if (s.advanced.css.length) {
 					codeSections = s.advanced.css;

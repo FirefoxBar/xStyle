@@ -148,7 +148,7 @@ function parseMozillaFormat(css) {
 }
 
 // Parse meta information of .user.css format
-function parseUCMeta(f) {
+function parseStyleMeta(f) {
 	let alias = {"updateURL": "updateUrl", "md5URL": "md5Url", "homepageURL": "url", "originalMD5": "originalMd5"};
 	let oneRegexp = /@(name|homepageURL|updateURL|md5URL|originalMD5|author|advanced)([ \t]+)(.*)/;
 	let advancedRegexp = /^(text|color|image|dropdown)([ \t]+)(.*?)([ \t]+)"(.*?)"([ \t]+)(.*)/;
@@ -255,6 +255,7 @@ function updateStyleFullCode(style) {
 			"author": style.author || null,
 			"originalMd5": null,
 			"advanced": style.advanced,
+			"code": rawCss,
 			"sections": applyAdvanced(rawCss, style.advanced.item, style.advanced.saved)
 		};
 		if (md5 !== null) {
@@ -352,6 +353,144 @@ function compileLess(content) {
 		});
 	});
 }
+
+// Convect css to a special format for storage
+function compileCss(css, options) {
+	if (options === undefined) {
+		options = CleanCSSOptions;
+	}
+	// Minify CSS
+	return new Promise((resolve, reject) => {
+		new CleanCSS(options).minify(css, function(error, output) {
+			if (!output) {
+				reject(error);
+			} else {
+				resolve(parseMozillaFormat(output.styles));
+			}
+		});
+	});
+}
+
+// Parse a style file
+function parseStyleFile(code, options) {
+	if (options === undefined) {
+		options = {};
+	}
+	return new Promise((resolve, reject) => {
+		let result = {
+			type: "less",
+			lastModified: new Date().getTime(),
+			name: "",
+			enabled: 1,
+			updateUrl: "",
+			code: "",
+			sections: null,
+			advanced: {"item": {}, "saved": {}}
+		};
+		const finishParse = () => {
+			for (const k in options) {
+				finishParse[k] = options[k];
+			}
+			resolve(result);
+		};
+		code = trimNewLines(code);
+		if (code.indexOf('/* ==UserStyle==') === 0) {
+			// user css file
+			let meta = parseStyleMeta(trimNewLines(code.match(/\/\* ==UserStyle==([\s\S]+)==\/UserStyle== \*\//)[1]));
+			let body = trimNewLines(code.replace(/\/\* ==UserStyle==([\s\S]+)==\/UserStyle== \*\//, ''));
+			result.code = body;
+			// Advanced
+			if (Object.keys(meta.advanced).length > 0) {
+				result.advanced.item = meta.advanced;
+				let saved = {};
+				for (let k in meta.advanced) {
+					saved[k] = typeof(meta.advanced[k].default) === 'undefined' ? Object.keys(meta.advanced[k].option)[0] : meta.advanced[k].default;
+				}
+				result.advanced.saved = saved;
+				body = applyAdvanced(body, meta.advanced, saved);
+			}
+			if (meta.type === 'less') {
+				// less
+				compileLess(body).then((css) => {
+					compileCss(css).then((sections) => {
+						result.sections = sections;
+						finishParse();
+					});
+				}).catch((e) => {
+					reject("Error: " + e.message + "\nAt line " + e.line + " column " + e.column);
+				});
+			} else {
+				// normal css
+				compileCss(body).then((sections) => {
+					result.sections = sections;
+					finishParse();
+				});
+			}
+		} else {
+			// json file or normal css file
+			try {
+				let json = JSON.parse(code);
+				result.name = json.name;
+				result.updateUrl = json.updateUrl || "";
+				result.code = typeof(json.code) === 'undefined' ? ((codeSections) => {
+					return codeSections.map((section) => {
+						var cssMds = [];
+						for (var i in propertyToCss) {
+							if (section[i]) {
+								cssMds = cssMds.concat(section[i].map(function (v){
+									return propertyToCss[i] + "(\"" + v.replace(/\\/g, "\\\\") + "\")";
+								}));
+							}
+						}
+						return cssMds.length ? "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}" : section.code;
+					}).join("\n\n");
+				})(json.advanced.css.length > 0 ? json.advanced.css : json.sections) : json.code;
+				let body = result.code;
+				if (json.advanced.css.length > 0) {
+					result.advanced.item = json.advanced.item;
+					let saved = {};
+					for (let k in meta.advanced) {
+						saved[k] = typeof(meta.advanced[k].default) === 'undefined' ? Object.keys(meta.advanced[k].option)[0] : meta.advanced[k].default;
+					}
+					result.advanced.saved = saved;
+					body = applyAdvanced(body, json.advanced.item, saved);
+				}
+				if (json.type === 'less') {
+					// less
+					compileLess(body).then((css) => {
+						compileCss(css).then((sections) => {
+							result.sections = sections;
+							finishParse();
+						});
+					}).catch((e) => {
+						reject("Error: " + e.message + "\nAt line " + e.line + " column " + e.column);
+					});
+				} else {
+					// normal css
+					compileCss(body).then((sections) => {
+						result.sections = sections;
+						finishParse();
+					});
+				}
+			} catch (e) {
+				result.code = code;
+				let body = result.code;
+				if (typeof(options.advanced) !== 'undefined' && Object.keys(options.advanced.item).length > 0) {
+					let saved = {};
+					for (let k in options.advanced.item) {
+						saved[k] = typeof(options.advanced.item[k].default) === 'undefined' ? Object.keys(options.advanced.item[k].option)[0] : options.advanced.item[k].default;
+					}
+					body = applyAdvanced(body, options.advanced.item, saved);
+				}
+				compileCss(body).then((sections) => {
+					result.sections = sections;
+					finishParse();
+				});
+			}
+		}
+	});
+}
+
 // two json is equal or not
 function jsonEquals(a, b, property) {
 	var aProp = a[property], typeA = getType(aProp);

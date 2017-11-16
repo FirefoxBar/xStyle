@@ -1,21 +1,20 @@
-let fs_api_url = window.location.protocol + "//freestyler.ws/api/v2/";
+const FS_API_URL = window.location.protocol + "//freestyler.ws/api/v2/";
 function fsInstall () {
 	let style_id = window.location.href.match(/style\/(\d+)\//)[1];
 	let param = JSON.parse(getMeta('xstyle-fs-param'));
 	let styleName = trimNewLines(document.querySelector('h1[itemprop="name"]').innerHTML);
 	if (confirm(browser.i18n.getMessage('styleInstall', [styleName]))) {
-		let css = getURL(fs_api_url + 'get_css.php?json=' + encodeURIComponent(JSON.stringify([{"id": style_id, "params": param}])));
-		let info = getURL(fs_api_url + 'get_styles_info.php?json=' + encodeURIComponent(JSON.stringify([style_id])));
+		let css = getURL(FS_API_URL + 'get_css.php?json=' + encodeURIComponent(JSON.stringify([{"id": style_id, "params": param}])));
+		let info = getURL(FS_API_URL + 'get_styles_info.php?json=' + encodeURIComponent(JSON.stringify([style_id])));
 		Promise.all([css, info]).then((result) => {
 			let styleInfo = JSON.parse(result[1])[0];
-			let style = {
+			parseStyleFile(result[0], {
 				"name": styleInfo.name,
 				"url": styleInfo.url,
-				"author": styleInfo.author.name,
-				"advanced": {"item": {}, "saved": {}, "css": []},
-				"sections": parseMozillaFormat(result[0])
-			};
-			styleInstallByCode(style);
+				"author": styleInfo.author.name
+			}).then((style) => {
+				styleInstallByCode(style);
+			});
 		});
 	}
 }

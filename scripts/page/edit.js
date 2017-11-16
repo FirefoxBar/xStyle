@@ -1197,6 +1197,7 @@ function save() {
 	let code = document.getElementById('code').value;
 	let request = {
 		method: "saveStyle",
+		type: "less",
 		id: styleId,
 		lastModified: new Date().getTime(),
 		name: document.getElementById("name").value,
@@ -1221,9 +1222,8 @@ function save() {
 		code = applyAdvanced(code, advanced, request.advanced.saved);
 	}
 	compileLess(code).then((css) => {
-		// Minify CSS
-		new CleanCSS(CleanCSSOptions).minify(css, function(error, output) {
-			request.sections = parseMozillaFormat(output.styles);
+		compileCss(css).then((sections) => {
+			request.sections = sections;
 			browser.runtime.sendMessage(request).then(saveComplete);
 		});
 	}).catch((e) => {
@@ -1231,6 +1231,9 @@ function save() {
 	});
 }
 
+function saveError(error) {
+	alert(error);
+}
 function saveComplete(style) {
 	styleId = style.id;
 	setDirty(false);

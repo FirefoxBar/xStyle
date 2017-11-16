@@ -24,7 +24,7 @@ function initWithStyle(style) {
 	document.getElementById("author").value = style.author || '';
 	document.getElementById("updateUrl").value = style.updateUrl || '';
 	document.getElementById("md5Url").value = style.md5Url || '';
-	document.getElementById("originalMd5").value = style.originalMd5 || md5(JSON.stringify(style.sections));
+	document.getElementById("originalMd5").value = style.originalMd5 || md5(style.code);
 	document.getElementById("url").value = style.url || "https://ext.firefoxcn.net/xstyle/md5namespace/" + document.getElementById("originalMd5").value;
 	//material
 	if (typeof(componentHandler) !== 'undefined') {
@@ -40,13 +40,14 @@ function initWithStyle(style) {
 function doExport() {
 	var result = {
 		"name": document.getElementById("name").value,
+		"type": "less",
 		"updateUrl": document.getElementById("updateUrl").value || null,
 		"md5Url": document.getElementById("md5Url").value || null,
 		"originalMd5": document.getElementById("originalMd5").value || null,
 		"url": document.getElementById("url").value || null,
 		"author": document.getElementById("author").value || null,
-		"advanced": window.style.advanced || {"item": {}, "saved": {}, "css": []},
-		"sections": window.style.sections
+		"code": window.style.code,
+		"advanced": window.style.advanced || {"item": {}, "saved": {}}
 	};
 	// remove saved
 	result.saved = {};
@@ -79,6 +80,7 @@ function exportAsUsercss() {
 	}
 	var content = "/* ==UserStyle==\n";
 	content += "@name " + style.name + "\n";
+	content += "@type " + style.type + "\n";
 	if (style.url) {
 		content += "@homepageURL " + style.url + "\n";
 	}
@@ -137,7 +139,7 @@ function exportAsUsercss() {
 		}
 		return cssMds.length ? "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}" : section.code;
 	}).join("\n\n");
-	saveAsFile(content.trim(), 'xstyle-' + style.originalMd5 + '.user.css');
+	saveAsFile(content.trim(), 'xstyle-' + style.originalMd5 + '.user.less');
 }
 
 document.addEventListener("DOMContentLoaded", () => {
