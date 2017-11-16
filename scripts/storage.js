@@ -455,14 +455,14 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 		"editor.keyMap":
 			navigator.appVersion.indexOf("Windows") > 0 ? "sublime" : "default",
 		"editor.theme": "default", // CSS theme
-		"editor.beautify": { // CSS beautifier
-			selector_separator_newline: true,
-			newline_before_open_brace: false,
-			newline_after_open_brace: true,
-			newline_between_properties: true,
-			newline_before_close_brace: true,
-			newline_between_rules: false,
-			end_with_newline: false
+		"editor.beautify": { // CSS beautifier{
+			"indent_size": 1,
+			"indent_char": "\t",
+			"space_around_selector_separator": true,
+			"selector_separator_newline": true,
+			"end_with_newline": false,
+			"newline_between_rules": true,
+			"space_around_selector_separator": true
 		},
 		"editor.lintDelay": 500, // lint gutter marker update delay, ms
 		"editor.lintReportDelay": 4500, // lint report update delay, ms

@@ -320,13 +320,7 @@
 	white-space: nowrap;
 	font-family: monospace;
 }
-.beautify-options div {
-	float: left;
-}
-.beautify-options div[newline="true"] + div {
-	clear: left;
-}
-.beautify-options div[newline="true"] + div span[indent] {
+.beautify-options div.left-padding {
 	padding-left: 2rem;
 }
 .beautify-options:after {

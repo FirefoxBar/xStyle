@@ -846,80 +846,62 @@ function toggleLintReport() {
 }
 
 function beautify(event) {
-	return; //TODO
-	if (exports.css_beautify) { // thanks to csslint's definition of 'exports'
-		doBeautify();
+	// csslint has exports, so use it
+	if (exports.css_beautify) {
+		initBeautify();
 	} else {
 		var script = document.head.appendChild(document.createElement("script"));
 		script.src = "third-party/beautify/beautify-css.js";
-		script.onload = doBeautify;
+		script.onload = initBeautify;
 	}
-	function doBeautify() {
+	let undoButton = null;
+	let options = prefs.get("editor.beautify");
+	function initBeautify() {
 		var tabs = prefs.get("editor.indentWithTabs");
-		var options = prefs.get("editor.beautify");
 		options.indent_size = tabs ? 1 : prefs.get("editor.tabSize");
 		options.indent_char = tabs ? "\t" : " ";
 
-		var section = getSectionForChild(event.target);
-		var scope = section ? [section.CodeMirror] : editors;
-
 		showHelp(t("styleBeautify"), "<div class='beautify-options'>" +
-			optionHtml(".selector1,", "selector_separator_newline") +
-			optionHtml(".selector2,", "newline_before_open_brace") +
-			optionHtml("{", "newline_after_open_brace") +
-			optionHtml("border: none;", "newline_between_properties", true) +
-			optionHtml("display: block;", "newline_before_close_brace", true) +
-			optionHtml("}", "newline_between_rules") +
-			"</div>" +
+			"<div>.selector1,<select data-option='selector_separator_newline'>" +
+				"<option" + (options.selector_separator_newline ? "" : " selected") + ">&nbsp;</option>" +
+				"<option" + (options.selector_separator_newline ? " selected" : "") + ">\\n</option>" +
+			"</select></div><div>.selector2 {</div>" +
+			"<div class='left-padding'>border: none;</div>" +
+			"<div class='left-padding'>display: block;</div>" +
+			"<div>}<select data-option='newline_between_rules'>" +
+				"<option" + (options.newline_between_rules ? "" : " selected") + ">&nbsp;</option>" +
+				"<option" + (options.newline_between_rules ? " selected" : "") + ">\\n</option>" +
+			"</select></div>" +
 			"<div><button role='undo'></button></div>");
 
-		var undoButton = document.querySelector("#help-popup button[role='undo']");
-		undoButton.textContent = t(scope.length == 1 ? "undo" : "undoGlobal");
+		undoButton = document.querySelector("#help-popup button[role='undo']");
+		undoButton.textContent = t("undoGlobal");
 		undoButton.addEventListener("click", () => {
 			var undoable = false;
-			scope.forEach((cm) => {
-				if (cm.beautifyChange && cm.beautifyChange[cm.changeGeneration()]) {
-					delete cm.beautifyChange[cm.changeGeneration()];
-					cm.undo();
-					undoable |= cm.beautifyChange[cm.changeGeneration()];
-				}
+			editors.forEach((cm) => {
+				cm.undo();
 			});
 			undoButton.disabled = !undoable;
-		});
-
-		scope.forEach((cm) => {
-			setTimeout(() => {
-				var text = cm.getValue();
-				var newText = exports.css_beautify(text, options);
-				if (newText != text) {
-					if (!cm.beautifyChange || !cm.beautifyChange[cm.changeGeneration()]) {
-						// clear the list if last change wasn't a css-beautify
-						cm.beautifyChange = {};
-					}
-					cm.setValue(newText);
-					cm.beautifyChange[cm.changeGeneration()] = true;
-					undoButton.disabled = false;
-				}
-			}, 0);
 		});
 
 		document.querySelector(".beautify-options").addEventListener("change", (event) => {
 			var value = event.target.selectedIndex > 0;
 			options[event.target.dataset.option] = value;
 			prefs.set("editor.beautify", options);
-			event.target.parentNode.setAttribute("newline", value.toString());
 			doBeautify();
 		});
 
-		function optionHtml(label, optionName, indent) {
-			var value = options[optionName];
-			return "<div newline='" + value.toString() + "'>" +
-				"<span" + (indent ? " indent" : "") + ">" + label + "</span>" +
-				"<select data-option='" + optionName + "'>" +
-					"<option" + (value ? "" : " selected") + ">&nbsp;</option>" +
-					"<option" + (value ? " selected" : "") + ">\\n</option>" +
-				"</select></div>";
-		}
+		doBeautify();
+	}
+	function doBeautify() {
+		editors.forEach((cm) => {
+			var text = cm.getValue();
+			var newText = exports.css_beautify(text, options);
+			if (newText != text) {
+				cm.setValue(newText);
+				// undoButton.disabled = false;
+			}
+		});
 	}
 }
 
@@ -1023,7 +1005,7 @@ function initWithStyle(style) {
 }
 
 function initHooks() {
-	// document.getElementById("beautify").addEventListener("click", beautify);
+	document.getElementById("beautify").addEventListener("click", beautify);
 	document.getElementById("save-link").addEventListener("click", save, false);
 	document.getElementById("keyMap-help").addEventListener("click", showKeyMapHelp, false);
 	document.getElementById("lint-help").addEventListener("click", showLintHelp);
