@@ -64,6 +64,14 @@
 	width: 100%;
 	display: block;
 }
+#style-panel #save-link .loading {
+	width: 20px;
+	height: 20px;
+	margin-left: 8px;
+}
+#style-panel #save-link.saving .loading {
+	display: inline-block;
+}
 #editor-panel .mdl-textfield {
 	padding-bottom: 1px;
 }

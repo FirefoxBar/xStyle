@@ -12,6 +12,7 @@ var styleId = null;
 let isDirty = false;
 var editors = []; // array of all CodeMirror instances
 var saveSizeOnClose;
+let isSaving = false;
 
 // Chrome pre-41 polyfill
 Element.prototype.closest = Element.prototype.closest || function(selector) {
@@ -1187,6 +1188,13 @@ function updateTitle() {
 }
 
 function save() {
+	if (isSaving) {
+		return;
+	}
+	// show loading
+	isSaving = true;
+	document.getElementById("save-link").classList.add('saving');
+
 	// updateLintReport(null, 0);
 
 	// save the contents of the CodeMirror editors back into the textareas
@@ -1232,9 +1240,13 @@ function save() {
 }
 
 function saveError(error) {
+	isSaving = false;
+	document.getElementById("save-link").classList.remove('saving');
 	alert(error);
 }
 function saveComplete(style) {
+	isSaving = false;
+	document.getElementById("save-link").classList.remove('saving');
 	styleId = style.id;
 	setDirty(false);
 	// Go from new style URL to edit style URL
