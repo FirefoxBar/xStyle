@@ -21,38 +21,72 @@
 		"unlimitedStorage"
 	],
 	"background": {
-		"scripts": ["scripts/browser-polyfill.js", "scripts/common.js", "scripts/messaging.js", "scripts/userstyle.js", "scripts/storage.js", "scripts/background.js"]
+		"scripts": [
+			"scripts/browser-polyfill.js",
+			"scripts/common.js",
+			"scripts/messaging.js",
+			"scripts/userstyle.js",
+			"scripts/storage.js",
+			"scripts/background.js"
+		]
 	},
 	"content_scripts": [
 		{
 			"matches": ["<all_urls>"],
 			"run_at": "document_start",
 			"all_frames": true,
-			"js": ["scripts/browser-polyfill.js", "scripts/inject/apply.js"]
+			"js": [
+				"scripts/browser-polyfill.js",
+				"scripts/inject/apply.js"
+			]
 		},
 		{
 			"matches": ["http://userstyles.org/*", "https://userstyles.org/*"],
 			"run_at": "document_end",
 			"all_frames": false,
-			"js": ["scripts/browser-polyfill.js", "scripts/common.js", "scripts/userstyle.js", "scripts/inject/install.js", "scripts/inject/userstyles.org.js"]
+			"js": [
+				"scripts/browser-polyfill.js",
+				"scripts/common.js",
+				"scripts/userstyle.js",
+				"third-party/less/less.min.js",
+				"third-party/clean-css/clean-css.min.js",
+				"scripts/inject/install.js",
+				"scripts/inject/userstyles.org.js"
+			]
 		},
 		{
 			"matches": ["http://freestyler.ws/*", "https://freestyler.ws/*"],
 			"run_at": "document_end",
 			"all_frames": false,
-			"js": ["scripts/browser-polyfill.js", "scripts/common.js", "scripts/userstyle.js", "scripts/inject/install.js", "scripts/inject/freestyler.ws.js"]
+			"js": [
+				"scripts/browser-polyfill.js",
+				"scripts/common.js",
+				"scripts/userstyle.js",
+				"third-party/less/less.min.js",
+				"third-party/clean-css/clean-css.min.js",
+				"scripts/inject/install.js",
+				"scripts/inject/freestyler.ws.js"
+			]
 		},
 		{
 			"matches": ["http://*.firefoxcn.net/*", "https://*.firefoxcn.net/*", "https://*.github.io/*", "https://*.oschina.io/*"],
 			"run_at": "document_end",
 			"all_frames": false,
-			"js": ["scripts/browser-polyfill.js", "scripts/common.js", "scripts/userstyle.js", "scripts/inject/install.js"]
+			"js": [
+				"scripts/browser-polyfill.js",
+				"scripts/common.js",
+				"scripts/userstyle.js",
+				"scripts/inject/install.js"
+			]
 		},
 		{
 			"matches": ["https://login.microsoftonline.com/*", "https://ext.firefoxcn.net/*"],
 			"run_at": "document_start",
 			"all_frames": false,
-			"js": ["scripts/browser-polyfill.js", "scripts/inject/cloud.js"]
+			"js": [
+				"scripts/browser-polyfill.js",
+				"scripts/inject/cloud.js"
+			]
 		}
 	],
 	"update_url": "https://ext.firefoxcn.net/xstyle/install/update.xml",

@@ -47,10 +47,10 @@ function doExport() {
 		"url": document.getElementById("url").value || null,
 		"author": document.getElementById("author").value || null,
 		"code": window.style.code,
-		"advanced": window.style.advanced || {"item": {}, "saved": {}}
+		"advanced": window.style.advanced || {"item": {}}
 	};
 	// remove saved
-	result.saved = {};
+	delete result.advanced.saved;
 	// Copy md5 to clipboard
 	if (IS_CHROME || FIREFOX_VERSION >= 51) {
 		var copyText = document.createElement("input");
@@ -71,7 +71,7 @@ function exportAsJson() {
 	if (Object.keys(style.advanced.item).length > 0) {
 		delete style.sections;
 	}
-	saveAsFile(JSON.stringify(style), 'xstyle-' + style.originalMd5 + '.json');
+	saveAsFile(JSON.stringify(style, null, "\t"), 'xstyle-' + style.originalMd5 + '.json');
 }
 function exportAsUsercss() {
 	var style = doExport();
@@ -94,9 +94,7 @@ function exportAsUsercss() {
 	if (style.author) {
 		content += "@author " + style.author + "\n";
 	}
-	let sections = null;
 	if (Object.keys(style.advanced.item).length > 0) {
-		sections = style.advanced.css;
 		for (let k in style.advanced.item) {
 			let item = style.advanced.item[k];
 			content += "@advanced " + item.type + ' ' + k + ' "' + item.title.replace(/"/g, '%22') + '" ';
@@ -124,21 +122,9 @@ function exportAsUsercss() {
 			}
 			content += "\n";
 		}
-	} else {
-		sections = style.sections;
 	}
 	content += "==/UserStyle== */\n\n";
-	content += sections.map((section) => {
-		var cssMds = [];
-		for (var i in propertyToCss) {
-			if (section[i]) {
-				cssMds = cssMds.concat(section[i].map(function (v){
-					return propertyToCss[i] + "(\"" + v.replace(/\\/g, "\\\\") + "\")";
-				}));
-			}
-		}
-		return cssMds.length ? "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}" : section.code;
-	}).join("\n\n");
+	content += style.code;
 	saveAsFile(content.trim(), 'xstyle-' + style.originalMd5 + '.user.less');
 }
 
