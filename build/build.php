@@ -3,7 +3,7 @@ define('EXTENSION_DIR', realpath(__DIR__ . '/..'));
 require('config.php');
 require('CrxBuild.php');
 require('XpiBuild.php');
-$exclude = ['.git', '.vscode', 'build', 'manifest', '.gitignore', 'README.md', 'manifest.json', 'manifest_t.json'];
+$exclude = ['.git', '.vscode', 'build', 'manifest', '.gitignore', 'README.md', 'LICENSE', 'manifest.json', 'manifest_t.json'];
 
 // init file list
 $filelist = ['file' => [], 'dir' => []];

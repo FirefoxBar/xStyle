@@ -73,13 +73,13 @@ function initCodeMirror() {
 	var isWindowsOS = navigator.appVersion.includes("Windows");
 	// default option values
 	shallowMerge(CM.defaults, {
-		mode: 'css',
+		mode: 'text/x-less',
 		lineNumbers: true,
 		lineWrapping: true,
 		foldGutter: true,
 		gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],
 		matchBrackets: true,
-		lint: {getAnnotations: CodeMirror.lint.css, delay: prefs.get("editor.lintDelay")},
+		lint: {getAnnotations: CodeMirror.lint.stylelint, delay: prefs.get("editor.lintDelay")},
 		lintReportDelay: prefs.get("editor.lintReportDelay"),
 		styleActiveLine: true,
 		theme: "default",
@@ -673,7 +673,7 @@ function getEditorInSight(nearbyElement) {
 }
 
 function updateLintReport(cm, delay) {
-	return; //TODO
+	// return; //TODO
 	if (delay == 0) {
 		// immediately show pending csslint messages in onbeforeunload and save
 		update.call(cm);
@@ -749,7 +749,7 @@ function updateLintReport(cm, delay) {
 }
 
 function renderLintReport(someBlockChanged) {
-	return; //TODO
+	// return; //TODO
 	let container = document.getElementById("lint");
 	let content = container.children[1];
 	let label = t("sectionCode");
@@ -848,13 +848,18 @@ function toggleLintReport() {
 function beautify(event) {
 	let undoButton = null;
 	let options = prefs.get("editor.beautify");
-	// csslint has exports, so use it
-	if (exports.css_beautify) {
-		initBeautify();
+	let css_beautify = window.css_beautify;
+	if (css_beautify === undefined) {
+		if (typeof(exports) !== 'undefined' && typeof(exports.css_beautify) !== 'undefined') {
+			css_beautify = exports.css_beautify;
+			initBeautify();
+		} else {
+			var script = document.head.appendChild(document.createElement("script"));
+			script.src = "third-party/beautify/beautify-css.js";
+			script.onload = beautify;
+		}
 	} else {
-		var script = document.head.appendChild(document.createElement("script"));
-		script.src = "third-party/beautify/beautify-css.js";
-		script.onload = initBeautify;
+		initBeautify();
 	}
 	function initBeautify() {
 		var tabs = prefs.get("editor.indentWithTabs");
@@ -896,7 +901,7 @@ function beautify(event) {
 	function doBeautify() {
 		editors.forEach((cm) => {
 			var text = cm.getValue();
-			var newText = exports.css_beautify(text, options);
+			var newText = css_beautify(text, options);
 			if (newText != text) {
 				cm.setValue(newText);
 				// undoButton.disabled = false;
@@ -1177,7 +1182,7 @@ function save() {
 	isSaving = true;
 	document.getElementById("save-link").classList.add('saving');
 
-	// updateLintReport(null, 0);
+	updateLintReport(null, 0);
 
 	// save the contents of the CodeMirror editors back into the textareas
 	for (var i=0; i < editors.length; i++) {
@@ -1380,11 +1385,11 @@ function showKeyMapHelp() {
 }
 
 function showLintHelp() {
-	showHelp(t("issues"), t("issuesHelp") + "<ul>" +
-		CSSLint.getRules().map((rule) => {
-			return "<li><b>" + rule.name + "</b><br>" + rule.desc + "</li>";
-		}).join("") + "</ul>"
-	);
+	// showHelp(t("issues"), t("issuesHelp") + "<ul>" +
+		// CSSLint.getRules().map((rule) => {
+			// return "<li><b>" + rule.name + "</b><br>" + rule.desc + "</li>";
+		// }).join("") + "</ul>"
+	// );
 }
 
 function showHelp(title, text) {
