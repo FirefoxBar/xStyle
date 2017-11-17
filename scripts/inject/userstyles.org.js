@@ -105,7 +105,7 @@ function readImage(file) {
 }
 function getAdvanced() {
 	let removePrefix = (v) => {
-		return v.replace(/^ik-/, '');
+		return v.replace(/^ik-/, '').replace(/([^a-zA-Z0-9\-_]+)/g, '_');
 	};
 	return new Promise((resolve) => {
 		let advanced = {"item": {}, "saved": {}};
