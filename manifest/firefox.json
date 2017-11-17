@@ -1,14 +1,13 @@
 {
 	"applications": {
 		"gecko": {
-			"id": "__appid__",
-			"update_url": "https://ext.firefoxcn.net/xstyle/install/update.json",
+			"id": "",
 			"strict_min_version": "49.0"
 		}
 	},
 	"name": "__MSG_extName__",
 	"short_name": "__MSG_extName__",
-	"version": "__version__",
+	"version": "",
 	"description": "__MSG_description__",
 	"homepage_url": "http://team.firefoxcn.net",
 	"manifest_version": 2,
