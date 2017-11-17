@@ -389,7 +389,7 @@ function parseStyleFile(code, options) {
 		};
 		const finishParse = () => {
 			for (const k in options) {
-				finishParse[k] = options[k];
+				result[k] = options[k];
 			}
 			resolve(result);
 		};
