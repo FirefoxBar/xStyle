@@ -1097,7 +1097,6 @@ function createAdvancedDropdown(key, title, items) {
 		if (initAdvancedEditor) {
 			m.CodeMirror = setupCodeMirror(m.querySelector('textarea'), null, true);
 		}
-		setCleanSection(m);
 	});
 	if (items) {
 		for (let k in items) {
@@ -1112,7 +1111,6 @@ function createAdvancedDropdown(key, title, items) {
 			if (initAdvancedEditor) {
 				m.CodeMirror = setupCodeMirror(m.querySelector('textarea'), null, true);
 			}
-			setCleanSection(m);
 		}
 	}
 	n.querySelectorAll('.mdl-textfield').forEach((e) => {
