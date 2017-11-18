@@ -149,28 +149,32 @@ document.addEventListener("stylishUpdate", usoInstall, false);
 // Fix a uso bug
 if (IS_CHROME) {
 	let src = document.createElement('script');
-	src.innerHTML = ';(function() {\
+	src.innerHTML = '(function() {\
+		let fixObserver = new MutationObserver(function(mutations) {\
+			checkInstallButton();\
+		});\
 		function checkInstallButton() {\
-			if (document.getElementById("install_style_button")) {\
-				if (document.getElementById("install_style_button").getAttribute("data-xstyle")) {\
-					return true;\
+			let buttons = ["install_style_button", "update_style_button"];\
+			let inited = 0;\
+			for (let btnId of buttons) {\
+				if (document.getElementById(btnId)) {\
+					inited++;\
+					if (document.getElementById(btnId).getAttribute("data-xstyle")) {\
+						continue;\
+					}\
+					document.getElementById(btnId).setAttribute("data-xstyle", 1);\
+					document.getElementById(btnId).addEventListener("click", function() {\
+						let newEvent = new CustomEvent("stylishInstall", {detail: null});\
+						document.dispatchEvent(newEvent);\
+					});\
 				}\
-				document.getElementById("install_style_button").setAttribute("data-xstyle", 1);\
-				document.getElementById("install_style_button").addEventListener("click", function() {\
-					let newEvent = new CustomEvent("stylishInstall", {detail: null});\
-					document.dispatchEvent(newEvent);\
-				});\
-				return true;\
-			} else {\
-				return false;\
+			}\
+			if (inited === buttons.length) {\
+				fixObserver.disconnect();\
+				fixObserver = null;\
 			}\
 		}\
-		if (!checkInstallButton()) {\
-			let fixObserver = new MutationObserver(function(mutations) {\
-				checkInstallButton();\
-			});\
-			fixObserver.observe(document.body, {childList: true});\
-		}\
-	})()';
+		fixObserver.observe(document.body, {childList: true, subtree: true});\
+	})();';
 	document.body.appendChild(src);
 }
