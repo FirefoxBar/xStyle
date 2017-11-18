@@ -13,15 +13,7 @@ function getDatabase() {
 				// Installed
 				event.target.result.createObjectStore("styles", {keyPath: 'id', autoIncrement: true});
 			} else {
-				if (event.oldVersion < 2) {
-					upgradeTo2();
-				}
-				if (event.oldVersion < 3) {
-					upgradeTo3();
-				}
-				if (event.oldVersion < 4) {
-					upgradeTo4();
-				}
+				upgradeToNewest();
 			}
 		};
 	});
@@ -176,12 +168,7 @@ function saveStyle(o) {
 
 // Install a style, check its url
 function installStyle(json) {
-	if (typeof(json.lastModified) === 'undefined') {
-		json.lastModified = new Date().getTime();
-	}
-	if (typeof(json.type) === 'undefined') {
-		json.type = 'less';
-	}
+	json = updateStyleFormat(json);
 	if (json.url) {
 		return new Promise((resolve) => {
 			getStyles({url: json.url}).then((response) => {
@@ -696,7 +683,7 @@ function getSync() {
 
 
 // Upgrade functions
-function upgradeTo2() {
+function upgradeToNewest() {
 	getDatabase().then((db) => {
 		let tx = db.transaction(["styles"], "readwrite");
 		let os = tx.objectStore("styles");
@@ -705,63 +692,7 @@ function upgradeTo2() {
 			if (cursor) {
 				let s = cursor.value;
 				s.id = cursor.key;
-				if (!s.advanced) {
-					s.advanced = {"item": {}, "saved": {}, "css": []};
-					os.put(s);
-				}
-				cursor.continue();
-			}
-		};
-	});
-}
-function upgradeTo3() {
-	getDatabase().then((db) => {
-		let tx = db.transaction(["styles"], "readwrite");
-		let os = tx.objectStore("styles");
-		os.openCursor().onsuccess = function(e) {
-			let cursor = e.target.result;
-			if (cursor) {
-				let s = cursor.value;
-				s.id = cursor.key;
-				if (!s.lastModified) {
-					s.lastModified = new Date().getTime();
-					os.put(s);
-				}
-				cursor.continue();
-			}
-		};
-	});
-}
-function upgradeTo4() {
-	getDatabase().then((db) => {
-		let tx = db.transaction(["styles"], "readwrite");
-		let os = tx.objectStore("styles");
-		os.openCursor().onsuccess = function(e) {
-			let cursor = e.target.result;
-			if (cursor) {
-				let s = cursor.value;
-				s.id = cursor.key;
-				s.type = 'less';
-				let codeSections = null;
-				if (s.advanced.css.length) {
-					codeSections = s.advanced.css;
-				} else {
-					codeSections = s.sections;
-				}
-				s.code = codeSections.map((section) => {
-					var cssMds = [];
-					for (var i in propertyToCss) {
-						if (section[i]) {
-							cssMds = cssMds.concat(section[i].map(function (v){
-								return propertyToCss[i] + "(\"" + v.replace(/\\/g, "\\\\") + "\")";
-							}));
-						}
-					}
-					return cssMds.length ? "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}" : section.code;
-				}).join("\n\n");
-				// less compatibility
-				s.code = cssToLess(s.code);
-				delete s.advanced.css;
+				s = updateStyleFormat(s);
 				os.put(s);
 				cursor.continue();
 			}

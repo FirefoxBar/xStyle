@@ -442,51 +442,9 @@ function parseStyleFile(code, options) {
 			}
 		} else {
 			// json file or normal css file
+			let json = null;
 			try {
-				let json = JSON.parse(code);
-				result.name = json.name;
-				result.updateUrl = json.updateUrl || "";
-				result.code = typeof(json.code) === 'undefined' ? ((codeSections) => {
-					return codeSections.map((section) => {
-						var cssMds = [];
-						for (var i in propertyToCss) {
-							if (section[i]) {
-								cssMds = cssMds.concat(section[i].map(function (v){
-									return propertyToCss[i] + "(\"" + v.replace(/\\/g, "\\\\") + "\")";
-								}));
-							}
-						}
-						return cssMds.length ? "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}" : section.code;
-					}).join("\n\n");
-				})(json.advanced.css.length > 0 ? json.advanced.css : json.sections) : json.code;
-				let body = result.code;
-				if (json.advanced.css.length > 0) {
-					result.advanced.item = json.advanced.item;
-					let saved = {};
-					for (let k in json.advanced.item) {
-						saved[k] = getAdvancedSaved(k, json.advanced.item);
-					}
-					result.advanced.saved = saved;
-					body = applyAdvanced(body, json.advanced.item, saved);
-				}
-				if (json.type === 'less') {
-					// less
-					compileLess(body).then((css) => {
-						compileCss(css).then((sections) => {
-							result.sections = sections;
-							finishParse();
-						});
-					}).catch((e) => {
-						reject("Error: " + e.message + "\nAt line " + e.line + " column " + e.column);
-					});
-				} else {
-					// normal css
-					result.code = cssToLess(result.code);
-					compileCss(body).then((sections) => {
-						result.sections = sections;
-						finishParse();
-					});
-				}
+				json = JSON.parse(code);
 			} catch (e) {
 				result.code = cssToLess(code);
 				let body = code;
@@ -501,10 +459,93 @@ function parseStyleFile(code, options) {
 					result.sections = sections;
 					finishParse();
 				});
+				return;
+			}
+			// json file, continue
+			result.name = json.name;
+			result.updateUrl = json.updateUrl || "";
+			result.code = typeof(json.code) === 'undefined' ? ((codeSections) => {
+				return codeSections.map((section) => {
+					var cssMds = [];
+					for (var i in propertyToCss) {
+						if (section[i]) {
+							cssMds = cssMds.concat(section[i].map(function (v){
+								return propertyToCss[i] + "(\"" + v.replace(/\\/g, "\\\\") + "\")";
+							}));
+						}
+					}
+					return cssMds.length ? "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}" : section.code;
+				}).join("\n\n");
+			})(json.advanced.css.length > 0 ? json.advanced.css : json.sections) : json.code;
+			let body = result.code;
+			if (json.advanced.css.length > 0) {
+				result.advanced.item = json.advanced.item;
+				let saved = {};
+				for (let k in json.advanced.item) {
+					saved[k] = getAdvancedSaved(k, json.advanced.item);
+				}
+				result.advanced.saved = saved;
+				body = applyAdvanced(body, json.advanced.item, saved);
+			}
+			if (json.type === 'less') {
+				// less
+				compileLess(body).then((css) => {
+					compileCss(css).then((sections) => {
+						result.sections = sections;
+						finishParse();
+					});
+				}).catch((e) => {
+					reject("Error: " + e.message + "\nAt line " + e.line + " column " + e.column);
+				});
+			} else {
+				// normal css
+				result.code = cssToLess(result.code);
+				compileCss(body).then((sections) => {
+					result.sections = sections;
+					finishParse();
+				});
 			}
 		}
 	});
 }
+
+// Update style to newest format
+function updateStyleFormat(s) {
+	// version 2
+	if (!s.advanced) {
+		s.advanced = {"item": {}, "saved": {}};
+	}
+	// version 3
+	if (!s.lastModified) {
+		s.lastModified = new Date().getTime();
+	}
+	// version 4
+	if (!s.type) {
+		s.type = 'less';
+		let codeSections = null;
+		if (typeof(s.advanced.css) !== 'undefined' && s.advanced.css.length) {
+			codeSections = s.advanced.css;
+		} else {
+			codeSections = s.sections;
+		}
+		s.code = codeSections.map((section) => {
+			var cssMds = [];
+			for (var i in propertyToCss) {
+				if (section[i]) {
+					cssMds = cssMds.concat(section[i].map(function (v){
+						return propertyToCss[i] + "(\"" + v.replace(/\\/g, "\\\\") + "\")";
+					}));
+				}
+			}
+			return cssMds.length ? "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}" : section.code;
+		}).join("\n\n");
+		// less compatibility
+		s.code = cssToLess(s.code);
+		delete s.advanced.css;
+	}
+	return s;
+}
+
 
 // two json is equal or not
 function jsonEquals(a, b, property) {
