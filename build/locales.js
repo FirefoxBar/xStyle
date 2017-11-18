@@ -70,14 +70,14 @@ function writeOneLanguage(obj, lang, default_language) {
 			}
 		}
 		addPlaceholders(newObj);
-		fs.writeFile(outputDir + "/" + lang + "/message.json", new Buffer(JSON.stringify(newObj)), resolve);
+		fs.writeFile(outputDir + "/" + lang + "/messages.json", new Buffer(JSON.stringify(newObj)), resolve);
 	});
 }
 // Get default language
 requestTransifex('project/' + config.transifex.project + '/resource/messages/translation/' + default_language_name + '/')
 .then(r => {
 	let default_language = ksort(JSON.parse(r.content));
-	fs.writeFile(buildDir + "/output/message.json", new Buffer(JSON.stringify(default_language, null, "\t")));
+	fs.writeFile(buildDir + "/output/messages.json", new Buffer(JSON.stringify(default_language, null, "\t")));
 	writeOneLanguage(default_language, default_language_name).then(() => {
 		console.log("Write default language ok");
 	});
