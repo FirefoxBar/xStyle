@@ -759,6 +759,8 @@ function upgradeTo4() {
 					}
 					return cssMds.length ? "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}" : section.code;
 				}).join("\n\n");
+				// less compatibility
+				s.code = cssToLess(s.code);
 				delete s.advanced.css;
 				os.put(s);
 				cursor.continue();

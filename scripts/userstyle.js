@@ -222,6 +222,13 @@ function parseStyleMeta(f) {
 	return result;
 }
 
+
+// less compatibility
+function cssToLess(code) {
+	code = code.replace(/calc\((.*?)\)(!imp| !im|;|[ ]?\}|\n)/g, 'calc(~"$1")$2');
+	return code;
+}
+
 // check md5 for update
 function checkStyleUpdateMd5(style) {
 	return new Promise((resolve) => {
@@ -239,29 +246,12 @@ function checkStyleUpdateMd5(style) {
 
 // update a style
 function updateStyleFullCode(style) {
-	let update = (style, serverJson) => {
+	const update = (style, serverJson) => {
 		// update everything but name
 		delete serverJson.name;
 		serverJson.id = style.id;
 		serverJson.method = "saveStyle";
 		browser.runtime.sendMessage(serverJson);
-	};
-	let saveOneStyle = (style, rawCss, md5) => {
-		let toSave = {
-			"name": style.name,
-			"updateUrl": style.updateUrl,
-			"md5Url": style.md5Url || null,
-			"url": style.url || null,
-			"author": style.author || null,
-			"originalMd5": null,
-			"advanced": style.advanced,
-			"code": rawCss,
-			"sections": applyAdvanced(rawCss, style.advanced.item, style.advanced.saved)
-		};
-		if (md5 !== null) {
-			toSave.originalMd5 = md5;
-		}
-		update(style, toSave);
 	};
 	if (!style.updateUrl) {
 		return;
@@ -272,36 +262,37 @@ function updateStyleFullCode(style) {
 		let style_id = style.md5Url.match(/\/(\d+)\.md5/)[1];
 		getURL('https://userstyles.org/api/v1/styles/' + style_id).then((responseText) => {
 			let serverJson = JSON.parse(responseText);
-			let rawCss = parseMozillaFormat(serverJson.css);
+			let rawCss = serverJson.css;
 			getURL(style.md5Url).then((md5) => {
-				saveOneStyle(style, rawCss, md5);
+				parseStyleFile(rawCss, {
+					"name": style.name,
+					"md5Url": style.md5Url || null,
+					"url": style.url || null,
+					"author": style.author || null,
+					"originalMd5": md5
+				}).then((toSave) => {
+					update(style, toSave);
+				});
 			});
 		});
 	} else {
 		// not uso
-		getURL(updateUrl).then((responseText) => {
-			let serverJson = null;
-			try {
-				serverJson = JSON.parse(responseText);
-			} catch (e) {
-				// is mozilla format, not json
-				if (style.md5Url) {
-					getURL(style.md5Url).then((md5) => {
-						saveOneStyle(style, responseText, md5);
-					});
-				} else {
-					saveOneStyle(style, responseText, null);
-				}
-				return;
+		getURL(updateUrl)
+		.then(responseText => parseStyleFile(responseText, {
+			"name": style.name,
+			"advanced": {
+				"saved": style.advanced.saved
 			}
-			// if it is json, continue
-			if (typeof(serverJson.advanced) !== 'undefined') {
-				serverJson.advanced.saved = style.advanced.saved;
+		}))
+		.then((toSave) => {
+			if (style.md5Url) {
+				getURL(style.md5Url).then((md5) => {
+					toSave.originalMd5 = md5;
+					update(style, toSave);
+				});
+			} else {
+				update(style, toSave);
 			}
-			if (Object.keys(style.advanced.saved).length > 0) {
-				serverJson.sections = applyAdvanced(style.advanced.css, style.advanced.item, style.advanced.saved);
-			}
-			update(style, serverJson);
 		});
 	}
 }
@@ -389,9 +380,31 @@ function parseStyleFile(code, options) {
 		};
 		const finishParse = () => {
 			for (const k in options) {
-				result[k] = options[k];
+				if (typeof(options[k]) === 'object') {
+					if (typeof(result[k]) === 'undefined') {
+						result[k] = {};
+					}
+					for (const kk in options[k]) {
+						result[k][kk] = options[k][kk];
+					}
+				} else {
+					result[k] = options[k];
+				}
 			}
 			resolve(result);
+		};
+		const getAdvancedSaved = (k, items) => {
+			// init saved
+			// 1. if the original style is set, the original setting is used
+			// 2. if the type of this one is text or color, the default is used
+			// 3. if the type of this one is dropdown or image, the first option is used
+			return (typeof(options.advanced) !== 'undefined' && typeof(options.advanced[k]) !== 'undefined' ? 
+				options.advanced[k] : 
+				(typeof(items[k].default) === 'undefined' ? 
+					Object.keys(items[k].option)[0] : 
+					items[k].default
+				)
+			);
 		};
 		code = trimNewLines(code);
 		if (code.indexOf('/* ==UserStyle==') === 0) {
@@ -404,7 +417,7 @@ function parseStyleFile(code, options) {
 				result.advanced.item = meta.advanced;
 				let saved = {};
 				for (let k in meta.advanced) {
-					saved[k] = typeof(meta.advanced[k].default) === 'undefined' ? Object.keys(meta.advanced[k].option)[0] : meta.advanced[k].default;
+					saved[k] = getAdvancedSaved(k, meta.advanced);
 				}
 				result.advanced.saved = saved;
 				body = applyAdvanced(body, meta.advanced, saved);
@@ -421,6 +434,7 @@ function parseStyleFile(code, options) {
 				});
 			} else {
 				// normal css
+				result.code = cssToLess(result.code);
 				compileCss(body).then((sections) => {
 					result.sections = sections;
 					finishParse();
@@ -449,8 +463,8 @@ function parseStyleFile(code, options) {
 				if (json.advanced.css.length > 0) {
 					result.advanced.item = json.advanced.item;
 					let saved = {};
-					for (let k in meta.advanced) {
-						saved[k] = typeof(meta.advanced[k].default) === 'undefined' ? Object.keys(meta.advanced[k].option)[0] : meta.advanced[k].default;
+					for (let k in json.advanced.item) {
+						saved[k] = getAdvancedSaved(k, json.advanced.item);
 					}
 					result.advanced.saved = saved;
 					body = applyAdvanced(body, json.advanced.item, saved);
@@ -467,18 +481,19 @@ function parseStyleFile(code, options) {
 					});
 				} else {
 					// normal css
+					result.code = cssToLess(result.code);
 					compileCss(body).then((sections) => {
 						result.sections = sections;
 						finishParse();
 					});
 				}
 			} catch (e) {
-				result.code = code;
-				let body = result.code;
+				result.code = cssToLess(code);
+				let body = code;
 				if (typeof(options.advanced) !== 'undefined' && Object.keys(options.advanced.item).length > 0) {
 					let saved = {};
 					for (let k in options.advanced.item) {
-						saved[k] = typeof(options.advanced.item[k].default) === 'undefined' ? Object.keys(options.advanced.item[k].option)[0] : options.advanced.item[k].default;
+						saved[k] = getAdvancedSaved(k, options.advanced.item);
 					}
 					body = applyAdvanced(body, options.advanced.item, saved);
 				}

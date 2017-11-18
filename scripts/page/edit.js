@@ -1050,7 +1050,9 @@ function initAdvancedEvents() {
 			};
 			function updateAdvanced() {
 				let e = list.shift();
-				e.CodeMirror.refresh();
+				if (e.CodeMirror) {
+					e.CodeMirror.refresh();
+				}
 			}
 		} else {
 			box.classList.add('close');
@@ -1271,7 +1273,11 @@ function save() {
 			browser.runtime.sendMessage(request).then(saveComplete);
 		});
 	}).catch((e) => {
-		alert("Error: " + e.message + "\nAt line " + e.line + " column " + e.column);
+		let error = "Error: " + e.message + "\nAt line " + e.line + " column " + e.column + "\nCode:\n";
+		e.extract.forEach((c) => {
+			error += c.replace(/\t/g, '    ') + "\n";
+		});
+		saveError(error.trim());
 	});
 }
 
