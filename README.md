@@ -45,17 +45,17 @@ You can also help us translate this extension on [Transifex](https://www.transif
 
 ## Licenses
 
-Copyright status of the "third-party/codemirror" directory, see [third-party/codemirror/LICENSE](third-party/codemirror/LICENSE).
-
-Copyright status of the "scripts/browser-polyfill.js" is [MPL 2.0](http://mozilla.org/MPL/2.0/).
-
-Copyright status of the "third-party/csslint/csslint.js" is [MIT](https://github.com/CSSLint/csslint/blob/master/LICENSE).
-
-Copyright status of the "third-party/colorpicker" directory is [MIT](https://github.com/easylogic/codemirror-colorpicker/blob/master/LICENSE).
-
-Copyright status of the "third-party/mdl" directory is [Apache 2.0](https://github.com/google/material-design-lite/blob/mdl-1.x/LICENSE).
-
-Copyright status of the "third-party/material-design-icons" directory is [Apache 2.0](https://github.com/google/material-design-icons/blob/master/LICENSE).
+| File/Directory | LICENSE | GitHub |
+| ----- | ----- | ----- |
+| third-party/codemirror | [MIT](third-party/codemirror/LICENSE) | [codemirror/CodeMirror](https://github.com/codemirror/CodeMirror) |
+| scripts/browser-polyfill.js | [MPL 2.0](http://mozilla.org/MPL/2.0/) | [mozilla/webextension-polyfill](https://github.com/mozilla/webextension-polyfill) |
+| third-party/colorpicker | [MIT](https://github.com/easylogic/codemirror-colorpicker/blob/master/LICENSE) | [easylogic/codemirror-colorpicker](https://github.com/easylogic/codemirror-colorpicker) |
+| third-party/mdl | [Apache 2.0](https://github.com/google/material-design-lite/blob/mdl-1.x/LICENSE) | [google/material-design-lite](https://github.com/google/material-design-lite) |
+| third-party/material-design-icons | [Apache 2.0](https://github.com/google/material-design-icons/blob/master/LICENSE) | [google/material-design-icons](https://github.com/google/material-design-icons) |
+| third-party/beautify | [MIT](https://github.com/beautify-web/js-beautify/blob/master/LICENSE) | [beautify-web/js-beautify](https://github.com/beautify-web/js-beautify) |
+| third-party/clean-css | [MIT](https://github.com/jakubpawlowicz/clean-css/blob/master/LICENSE) | [jakubpawlowicz/clean-css](https://github.com/jakubpawlowicz/clean-css) |
+| third-party/less | [Apache 2.0](https://github.com/less/less.js/blob/3.x/LICENSE) | [less/less.js](https://github.com/less/less.js) |
+| third-party/stylelint | [MIT](https://github.com/stylelint/stylelint/blob/master/LICENSE) | [stylelint/stylelint](https://github.com/stylelint/stylelint) |
 
 **Everything else:**
 
@@ -63,4 +63,4 @@ Copyright © 2005-2014 [Jason Barnabe](https://github.com/JasonBarnabe)
 
 Copyright © 2017 [FirefoxBar Team](http://team.firefoxcn.net)
 
-Open source material is licensed under [GPLv3](COPYING).
+Open source licensed under [GPLv3](COPYING).
