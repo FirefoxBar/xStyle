@@ -34,9 +34,9 @@ function ksort(obj) {
 			i++;
 		}
 		if (k1[i] === k2[i]) {
-			return i < (k1.length - 1);
+			return i < (k1.length - 1) ? 1 : -1;
 		} else {
-			return k1[i].charCodeAt() > k2[i].charCodeAt();
+			return k1[i].charCodeAt() > k2[i].charCodeAt() ? 1 : -1;
 		}
 	});
 	let result = {};
@@ -73,6 +73,7 @@ function writeOneLanguage(obj, lang, default_language) {
 		fs.writeFile(outputDir + "/" + lang + "/messages.json", new Buffer(JSON.stringify(newObj)), resolve);
 	});
 }
+
 // Get default language
 requestTransifex('project/' + config.transifex.project + '/resource/messages/translation/' + default_language_name + '/')
 .then(r => {
