@@ -121,13 +121,15 @@ function createZip(output, fileList) {
 	});
 }
 readDir(rootDir).then((fileList) => {
+	console.log('Scanned all files');
 	createZip(BaseOutput, fileList).then(() => {
+		console.log('Created base zip file');
 		// Build chrome extension
 		let crx_default_zip = new AdmZip(BaseOutput);
 		let crx_default_manifest = deepCopy(FirefoxManifest);
 		crx_default_manifest.version = config.ext.version;
 		crx_default_manifest.update_url = config.ext.crx.update;
-		crx_default_manifest.addFile('manifest.json', new Buffer(JSON.stringify(xpi_amo_manifest)));
+		crx_default_zip.addFile('manifest.json', new Buffer(JSON.stringify(crx_default_manifest)));
 		crx_default_zip.writeZip(ChromeOutput + config.ext.filename.replace(/\{VERSION\}/g, config.ext.version) + '.zip');
 		const crx_default = new ChromeExt({
 			codebase: config.ext.crx.download_url.replace(/\{VERSION\}/g, config.ext.version),
@@ -146,7 +148,7 @@ readDir(rootDir).then((fileList) => {
 		let crx_storet_manifest = deepCopy(FirefoxManifest);
 		crx_store_manifest.version = config.ext.version;
 		crx_store_manifest.update_url = config.ext.crx.update;
-		crx_store_manifest.addFile('manifest.json', new Buffer(JSON.stringify(xpi_amo_manifest)));
+		crx_store_zip.addFile('manifest.json', new Buffer(JSON.stringify(crx_store_manifest)));
 		crx_store_zip.writeZip(outputDir + 'chrome.zip');
 		console.log('Build chrome webstore version finished');
 		// Build default firefox extension
@@ -156,7 +158,7 @@ readDir(rootDir).then((fileList) => {
 		xpi_default_manifest.version = config.ext.version;
 		xpi_default_manifest.applications.gecko.id = config.ext.gecko.default;
 		xpi_default_manifest.applications.gecko.update_url = config.ext.gecko.update;
-		xpi_default_manifest.addFile('manifest.json', new Buffer(JSON.stringify(xpi_default_manifest)));
+		xpi_default.addFile('manifest.json', new Buffer(JSON.stringify(xpi_default_manifest)));
 		xpi_default.writeZip(xpi_default_path);
 		console.log('Build firefox version finished');
 		// Sign
@@ -186,7 +188,7 @@ readDir(rootDir).then((fileList) => {
 		let xpi_amo_manifest = deepCopy(FirefoxManifest);
 		xpi_amo_manifest.version = config.ext.version;
 		xpi_amo_manifest.applications.gecko.id = config.ext.gecko.default;
-		xpi_amo_manifest.addFile('manifest.json', new Buffer(JSON.stringify(xpi_amo_manifest)));
+		xpi_amo.addFile('manifest.json', new Buffer(JSON.stringify(xpi_amo_manifest)));
 		xpi_amo.writeZip(FirefoxOutput + config.ext.filename.replace(/\{VERSION\}/g, config.ext.version) + '-amo.xpi');
 		console.log('Build firefox version finished');
 	});
