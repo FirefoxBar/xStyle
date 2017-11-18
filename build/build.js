@@ -94,40 +94,30 @@ function createZip(output, fileList) {
 	return new Promise((resolve) => {
 		let f_output = fs.createWriteStream(output);
 		let archive = new AdmZip();
-		archive.compressing = 0;
 		fileList.forEach((f) => {
 			if (!f.fullpath.includes('third-party') && getFileExt(f.fullpath) === 'js') {
-				archive.compressing++;
-				fs.readFile(f.fullpath, {flag: 'r', encoding: 'utf-8'}, function (err, data) {
-					archive.addFile(
-						f.path,
-						new Buffer(uglify.minify(data, { compress: true, mangle: true}).code)
-					);
-					archive.compressing--;
-					checkFinish();
-				});
+				archive.addFile(
+					f.path,
+					new Buffer(
+						uglify.minify(
+							fs.readFileSync(f.fullpath, 'utf-8'),
+							{ compress: true, mangle: true}
+						).code
+					)
+				);
 			} else if (!f.fullpath.includes('third-party') && getFileExt(f.fullpath) === 'css') {
-				archive.compressing++;
-				fs.readFile(f.fullpath, {flag: 'r', encoding: 'utf-8'}, function (err, data) {
-					archive.addFile(
-						f.path,
-						new Buffer(new cleancss(CleanCSSOptions).minify(data).styles)
-					);
-					archive.compressing--;
-					checkFinish();
-				});
+				archive.addFile(
+					f.path,
+					new Buffer(
+						new cleancss(CleanCSSOptions).minify(fs.readFileSync(f.fullpath, 'utf-8')).styles
+					)
+				);
 			} else {
-				archive.addLocalFile(f.fullpath, f.path);
+				archive.addFile(f.path, fs.readFileSync(f.fullpath));
 			}
 		});
-		checkFinish();
-		function checkFinish() {
-			console.log(archive.compressing);
-			if (archive.compressing === 0) {
-				archive.writeZip(output);
-				resolve();
-			}
-		}
+		archive.writeZip(output);
+		resolve();
 	});
 }
 readDir(rootDir).then((fileList) => {
