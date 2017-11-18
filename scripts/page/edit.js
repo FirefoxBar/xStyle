@@ -79,7 +79,7 @@ function initCodeMirror() {
 		foldGutter: true,
 		gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],
 		matchBrackets: true,
-		lint: {getAnnotations: CodeMirror.lint.stylelint, delay: prefs.get("editor.lintDelay")},
+		lint: {getAnnotations: CodeMirror.lint.stylelint, delay: prefs.get("editor.lintDelay"), async: true},
 		lintReportDelay: prefs.get("editor.lintReportDelay"),
 		styleActiveLine: true,
 		theme: "default",
@@ -257,6 +257,9 @@ function updateFontStyle() {
 	var name = prefs.get("editor.fontName");
 	var size = parseInt(prefs.get("editor.fontSize"));
 	document.getElementById('font-style').innerHTML = '.CodeMirror, #advanced textarea { font-size: ' + size.toString() + 'px !important;font-family: "' + name + '" !important; line-height: ' + (size + 6).toString() + 'px !important; } .codemirror-colorview { height:' + (size - 2).toString() + 'px;width:' + (size - 2).toString() + 'px; }';
+	if (document.getElementById('code').CodeMirror) {
+		document.getElementById('code').CodeMirror.refresh();
+	}
 }
 
 // replace given textarea with the CodeMirror editor
@@ -673,7 +676,6 @@ function getEditorInSight(nearbyElement) {
 }
 
 function updateLintReport(cm, delay) {
-	// return; //TODO
 	if (delay == 0) {
 		// immediately show pending csslint messages in onbeforeunload and save
 		update.call(cm);
@@ -749,7 +751,6 @@ function updateLintReport(cm, delay) {
 }
 
 function renderLintReport(someBlockChanged) {
-	// return; //TODO
 	let container = document.getElementById("lint");
 	let content = container.children[1];
 	let label = t("sectionCode");
@@ -789,7 +790,7 @@ function renderLintReport(someBlockChanged) {
 					newContent.insertBefore(newBlock, firstAdvanced);
 				}
 			}
-			let html = "<p class='label-title'>" + (cmIsAdvanced ? aLabel : label) + index.toString() + " (" + cm.state.lint.marked.length + ")<i class='material-icons'>keyboard_arrow_up</i></p>" + cm.state.lint.html;
+			let html = "<p class='label-title'>" + (cmIsAdvanced ? aLabel + index.toString() : label) + " (" + cm.state.lint.marked.length + ")<i class='material-icons'>keyboard_arrow_up</i></p>" + cm.state.lint.html;
 			newBlock.setAttribute('data-advanced', cmIsAdvanced ? 1 : 0);
 			newBlock.innerHTML = html;
 			newBlock.cm = cm;
@@ -971,41 +972,8 @@ function initWithStyle(style) {
 	initHooks();
 
 	if (Object.keys(style.advanced.item).length > 0) {
-		if (Object.keys(style.advanced.item).length > prefs.get('editor.initAdvanced')) {
-			initAdvancedEditor = false;
-		}
 		advancedSaved = style.advanced.saved;
-		let advancedItems = style.advanced.item;
-		let advancedQueue = Object.keys(advancedItems);
-		let advancedQueueStart = new Date().getTime();
-		// after 200ms the advanced will be added asynchronously
-		while (new Date().getTime() - advancedQueueStart <= 200 && advancedQueue.length) {
-			processAdvancedQueue();
-		}
-		function processAdvancedQueue() {
-			if (advancedQueue.length) {
-				addAdvanced();
-				setTimeout(processAdvancedQueue, 0);
-			}
-		};
-		function addAdvanced() {
-			let k = advancedQueue.shift();
-			switch (advancedItems[k].type) {
-				case 'dropdown':
-					createAdvancedDropdown(k, advancedItems[k].title, advancedItems[k].option);
-					break;
-				case 'text':
-					createAdvancedText(k, advancedItems[k].title, advancedItems[k].default);
-					break;
-				case 'image':
-					createAdvancedImage(k, advancedItems[k].title, advancedItems[k].option);
-					break;
-				case 'color':
-					createAdvancedColor(k, advancedItems[k].title, advancedItems[k].default);
-					break;
-			}
-			delete advancedItems[k];
-		}
+		initAdvanced(style.advanced.item);
 	}
 }
 
@@ -1027,6 +995,89 @@ function initHooks() {
 	updateTitle();
 }
 
+function initAdvanced(adv) {
+	if (Object.keys(adv).length > prefs.get('editor.initAdvanced')) {
+		initAdvancedEditor = false;
+	}
+	let queue = Object.keys(adv);
+	let queueStart = new Date().getTime();
+	// after 200ms the advanced will be added asynchronously
+	while (new Date().getTime() - queueStart <= 200 && queue.length) {
+		processQueue();
+	}
+	function processQueue() {
+		if (queue.length) {
+			addAdvanced();
+			setTimeout(processQueue, 0);
+		}
+	};
+	function addAdvanced() {
+		let k = queue.shift();
+		switch (adv[k].type) {
+			case 'dropdown':
+				createAdvancedDropdown(k, adv[k].title, adv[k].option);
+				break;
+			case 'text':
+				createAdvancedText(k, adv[k].title, adv[k].default);
+				break;
+			case 'image':
+				createAdvancedImage(k, adv[k].title, adv[k].option);
+				break;
+			case 'color':
+				createAdvancedColor(k, adv[k].title, adv[k].default);
+				break;
+		}
+		delete adv[k];
+	}
+}
+function initAdvancedEvents() {
+	// toggle advanced
+	document.getElementById('toggle-advanced').addEventListener('click', () => {
+		let box = document.getElementById('advanced-box');
+		if (box.classList.contains('close')) {
+			box.classList.remove('close');
+			let list = Array.prototype.slice.call(box.querySelectorAll('.dropdown-item'));
+			let queueStart = new Date().getTime();
+			// after 100ms the advanced will be updated asynchronously
+			while (new Date().getTime() - queueStart <= 100 && list.length) {
+				processQueue();
+			}
+			function processQueue() {
+				if (list.length) {
+					updateAdvanced();
+					setTimeout(processQueue, 0);
+				}
+			};
+			function updateAdvanced() {
+				let e = list.shift();
+				e.CodeMirror.refresh();
+			}
+		} else {
+			box.classList.add('close');
+		}
+	});
+	// Advanced add
+	document.querySelector('.advanced-add-dropdown').addEventListener('click', () => {
+		let n = createAdvancedDropdown();
+		let evt = document.createEvent("MouseEvents");
+		evt.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+		evt.initEvent("click", false, false);
+		n.querySelector('.add').dispatchEvent(evt);
+	});
+	document.querySelector('.advanced-add-image').addEventListener('click', () => {
+		let n = createAdvancedImage();
+		let evt = document.createEvent("MouseEvents");
+		evt.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+		evt.initEvent("click", false, false);
+		n.querySelector('.add').dispatchEvent(evt);
+	});
+	document.querySelector('.advanced-add-text').addEventListener('click', () => {
+		createAdvancedText();
+	});
+	document.querySelector('.advanced-add-color').addEventListener('click', () => {
+		createAdvancedColor();
+	});
+}
 function createAdvancedText(k, title, value) {
 	let n = template.advancedText.cloneNode(true);
 	if (k) {
@@ -1495,50 +1546,6 @@ document.addEventListener("DOMContentLoaded", () => {
 		reCalculatePanelPosition();
 	});
 	reCalculatePanelPosition();
-	// toggle advanced
-	document.getElementById('toggle-advanced').addEventListener('click', () => {
-		let box = document.getElementById('advanced-box');
-		if (box.classList.contains('close')) {
-			box.classList.remove('close');
-			let list = Array.prototype.slice.call(box.querySelectorAll('.dropdown-item'));
-			let queueStart = new Date().getTime();
-			// after 100ms the advanced will be updated asynchronously
-			while (new Date().getTime() - queueStart <= 100 && list.length) {
-				processQueue();
-			}
-			function processQueue() {
-				if (list.length) {
-					updateAdvanced();
-					setTimeout(processQueue, 0);
-				}
-			};
-			function updateAdvanced() {
-				let e = list.shift();
-				e.CodeMirror.refresh();
-			}
-		} else {
-			box.classList.add('close');
-		}
-	});
-	// Advanced add
-	document.querySelector('.advanced-add-dropdown').addEventListener('click', () => {
-		let n = createAdvancedDropdown();
-		let evt = document.createEvent("MouseEvents");
-		evt.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-		evt.initEvent("click", false, false);
-		n.querySelector('.add').dispatchEvent(evt);
-	});
-	document.querySelector('.advanced-add-image').addEventListener('click', () => {
-		let n = createAdvancedImage();
-		let evt = document.createEvent("MouseEvents");
-		evt.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-		evt.initEvent("click", false, false);
-		n.querySelector('.add').dispatchEvent(evt);
-	});
-	document.querySelector('.advanced-add-text').addEventListener('click', () => {
-		createAdvancedText();
-	});
-	document.querySelector('.advanced-add-color').addEventListener('click', () => {
-		createAdvancedColor();
-	});
+	// init advanced
+	initAdvancedEvents();
 });

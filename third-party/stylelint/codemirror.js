@@ -41,16 +41,15 @@ let config = (defaultSeverity => ({
   }
 }))({severity: 'warning'});
 
-CodeMirror.registerHelper('lint', 'stylelint', (code) => {
+CodeMirror.registerHelper('lint', 'stylelint', (code, callback) => {
 	stylelint.lint({
 		code,
 		config: config,
 	}).then(({results}) => {
-		console.log(results);
 		if (!results[0]) {
-			return [];
+			callback([]);
 		}
-		return results[0].warnings.map(warning => ({
+		callback(results[0].warnings.map(warning => ({
 			from: CodeMirror.Pos(warning.line - 1, warning.column - 1),
 			to: CodeMirror.Pos(warning.line - 1, warning.column),
 			message: warning.text
@@ -59,7 +58,7 @@ CodeMirror.registerHelper('lint', 'stylelint', (code) => {
 				.replace(/\s*\([^(]+\)$/, ''), // strip the rule,
 			rule: warning.text.replace(/^.*?\s*\(([^(]+)\)$/, '$1'),
 			severity : warning.severity
-		}));
+		})));
 	})
 });
 

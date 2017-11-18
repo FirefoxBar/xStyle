@@ -256,17 +256,20 @@
 }
 
 /************ lint ************/
-#lint {
-	display: none;
+#issue-panel {
 	color: #888;
+	padding-left: 0;
+	padding-right: 0;
 }
-#lint .title {
+#issue-panel .title {
+	padding-left: 16px;
+	padding-right: 16px;
 	font-size: 16px;
 }
-#lint .help-button {
+#issue-panel .help-button {
 	margin-left: 10px;
 }
-#lint .code-list > div .mdl-list {
+#issue-panel .code-list > div .mdl-list {
 	margin-top: 0;
 	margin-bottom: 0;
 	padding-top: 0;
@@ -274,16 +277,16 @@
 	font-size: 14px;
 	display: none;
 }
-#lint .code-list > div.show .mdl-list {
+#issue-panel .code-list > div.show .mdl-list {
 	display: block;
 }
-#lint .code-list > div .label-title {
+#issue-panel .code-list > div .label-title {
 	font-size: 15px;
 	margin-bottom: 0;
-	padding: 8px 0;
+	padding: 8px 16px;
 	cursor: pointer;
 }
-#lint .code-list > div .label-title .material-icons {
+#issue-panel .code-list > div .label-title .material-icons {
 	transition: .2s;
 	transform: rotate(180deg);
 	float: right;
@@ -291,27 +294,27 @@
 	-moz-user-select: none;
 	-webkit-user-select: none;
 }
-#lint .code-list > div.show .label-title .material-icons {
+#issue-panel .code-list > div.show .label-title .material-icons {
 	transform: rotate(0);
 }
-#lint li {
-	padding: 8px 4px;
+#issue-panel li {
+	padding: 8px 16px;
 	height: 56px;
 	cursor: pointer;
 }
-#lint li:hover {
+#issue-panel li:hover {
 	background-color: rgba(50, 50, 50, 0.1);
 }
-#lint .mdl-list__item-primary-content {
+#issue-panel .mdl-list__item-primary-content {
 	width: 100%;
 }
-#lint .mdl-list__item-sub-title {
+#issue-panel .mdl-list__item-sub-title {
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	width: 100%;
 }
-#lint .severity {
+#issue-panel .severity {
 	padding-right: 5px;
 }
 
