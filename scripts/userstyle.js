@@ -23,15 +23,11 @@ function parseMozillaFormat(css) {
 		currentIndex++;
 		// Jump to next
 		let nextMoz = findMozDocument(mozStyle, currentIndex)
-		let nextComment = mozStyle.indexOf('/*', currentIndex);
-		if (nextComment === -1){
-			nextComment = nextMoz;
-		}
 		let nextQuote = mozStyle.indexOf('"', currentIndex);
 		if (nextQuote === -1){
 			nextQuote = nextMoz;
 		}
-		currentIndex = Math.min(nextMoz, nextComment, nextQuote);
+		currentIndex = Math.min(nextMoz, nextQuote);
 		if (currentIndex < 0) {
 			parseOneSection(mozStyle.substr(lastIndex));
 			break;
@@ -48,16 +44,9 @@ function parseMozillaFormat(css) {
 		allSection.splice(0, 1);
 	}
 	return allSection;
-	// find @-moz-document(space) or @-moz-document(\n)
+	// find @-moz-document(space)
 	function findMozDocument(str, index) {
-		let min = -1;
-		for (let i = 0; i < docParams.length; i++) {
-			let t = str.indexOf(docParams[i], index || 0);
-			if (t >= 0 && (min === -1 || min > t)) {
-				min = t;
-			}
-		}
-		return min;
+		return str.indexOf('@-moz-document ', index || 0);
 	}
 	function ignoreSomeCodes(f, index) {
 		// ignore quotation marks
@@ -78,7 +67,7 @@ function parseMozillaFormat(css) {
 		return index;
 	}
 	function parseOneSection(f) {
-		f = f.replace('@-moz-document', '');
+		f = trimNewLines(f.replace('@-moz-document', ''));
 		if (f === '') {
 			return;
 		}
@@ -92,7 +81,7 @@ function parseMozillaFormat(css) {
 		while (true) {
 			let i = 0;
 			do {
-				f = trimNewLines(f).replace(/^,/, '').replace(/^\/\*(.*?)\*\//, '');
+				f = trimNewLines(f).replace(/^,/, '');
 				if (i++ > 30) {
 					console.error(f.substr(0, 20));
 					throw new Error("Timeout. May be is not a legitimate CSS");
@@ -109,23 +98,23 @@ function parseMozillaFormat(css) {
 				section[aType].push(aValue);
 			}
 		}
-		// split this section
-		let index = 0;
-		let leftCount = 0;
-		while (index < f.length - 1) {
-			index = ignoreSomeCodes(f, index);
-			if (f[index] === '{') {
-				leftCount++;
-			} else if (f[index] === '}') {
-				leftCount--;
-			}
-			index++;
-			if (leftCount <= 0) {
-				break;
-			}
-		}
 		if (f[0] === '{') {
-			section.code = trimNewLines(f.substr(1, index - 2));
+			// split this section
+			let index = 0;
+			let leftCount = 0;
+			while (index < f.length - 1) {
+				index = ignoreSomeCodes(f, index);
+				if (f[index] === '{') {
+					leftCount++;
+				} else if (f[index] === '}') {
+					leftCount--;
+				}
+				index++;
+				if (leftCount <= 0) {
+					break;
+				}
+			}
+			section.code = trimNewLines(f.substr(1, index - 1));
 			if (index < f.length - 1) {
 				allSection[0].code += "\n" + trimNewLines(f.substr(index));
 			}
