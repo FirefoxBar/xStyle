@@ -185,11 +185,13 @@ function onSaveClick() {
 	let style = window.style;
 	style.advanced.saved = settings;
 	style.method = "saveStyle";
-	let code = applyAdvanced(style.code, advanced, request.advanced.saved);
-	compileLess(code).then((css) => {
-		compileCss(css).then((r) => {
-			request.sections = r;
-			browser.runtime.sendMessage(request).then(saveComplete);
+	let code = applyAdvanced(style.code, style.advanced.item, style.advanced.saved);
+	compileLess(code)
+	.then(css => compileCss(css))
+	.then((r) => {
+		style.sections = r;
+		browser.runtime.sendMessage(style).then(() => {
+			showToast(t('saveComplete'));
 		});
 	});
 }
