@@ -67,6 +67,7 @@ function parseMozillaFormat(css) {
 		return index;
 	}
 	function parseOneSection(f) {
+		const matchReg = /^(url|url-prefix|domain|regexp)([ \t]*)\((['"]?)(.+?)\3\)/;
 		f = trimNewLines(f.replace('@-moz-document', ''));
 		if (f === '') {
 			return;
@@ -83,17 +84,17 @@ function parseMozillaFormat(css) {
 			do {
 				f = trimNewLines(f).replace(/^,/, '');
 				if (i++ > 30) {
-					console.error(f.substr(0, 20));
+					console.error(f.substr(0, 50));
 					throw new Error("Timeout. May be is not a legitimate CSS");
 				}
-			} while (!/^(url|url-prefix|domain|regexp)\((['"]?)(.+?)\2\)/.test(f) && f[0] !== '{');
-			let m = f.match(/^(url|url-prefix|domain|regexp)\((['"]?)(.+?)\2\)/);
+			} while (!matchReg.test(f) && f[0] !== '{');
+			let m = f.match(matchReg);
 			if (!m) {
 				break;
 			}
 			f = f.replace(m[0], '');
 			let aType = CssToProperty[m[1]];
-			let aValue = aType != "regexps" ? m[3] : m[3].replace(/\\\\/g, "\\");
+			let aValue = aType != "regexps" ? m[4] : m[4].replace(/\\\\/g, "\\");
 			if (section[aType].indexOf(aValue) < 0) {
 				section[aType].push(aValue);
 			}
