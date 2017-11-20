@@ -1056,7 +1056,7 @@ function initAdvancedEvents() {
 					updateAdvanced();
 					setTimeout(processQueue, 0);
 				}
-			};
+			}
 			function updateAdvanced() {
 				let e = list.shift();
 				if (e.CodeMirror) {
@@ -1066,6 +1066,7 @@ function initAdvancedEvents() {
 		} else {
 			box.classList.add('close');
 		}
+		reCalculatePanelPosition();
 	});
 	// Advanced add
 	document.querySelector('.advanced-add-dropdown').addEventListener('click', () => {
