@@ -14,6 +14,35 @@ var editors = []; // array of all CodeMirror instances
 var saveSizeOnClose;
 let isSaving = false;
 
+const stylelintConfig = (defaultSeverity => ({
+	syntax: 'postcss-less',
+	// see https://stylelint.io/user-guide/rules/
+	rules: {
+		'at-rule-no-unknown': [true, defaultSeverity],
+		'block-no-empty': [true, defaultSeverity],
+		'color-no-invalid-hex': [true, defaultSeverity],
+		'declaration-block-no-duplicate-properties': [true, {
+			'ignore': ['consecutive-duplicates-with-different-values'],
+			'severity': 'warning'
+		}],
+		'declaration-block-no-shorthand-property-overrides': [true, defaultSeverity],
+		'font-family-no-duplicate-names': [true, defaultSeverity],
+		'function-calc-no-unspaced-operator': [true, defaultSeverity],
+		'function-linear-gradient-no-nonstandard-direction': [true, defaultSeverity],
+		'keyframe-declaration-no-important': [true, defaultSeverity],
+		'media-feature-name-no-unknown': [true, defaultSeverity],
+		'no-extra-semicolons': [true, defaultSeverity],
+		'no-invalid-double-slash-comments': [true, defaultSeverity],
+		'property-no-unknown': [true, defaultSeverity],
+		'selector-pseudo-class-no-unknown': [true, defaultSeverity],
+		'selector-pseudo-element-no-unknown': [true, defaultSeverity],
+		'selector-type-no-unknown': true, // for scss/less/stylus-lang
+		'shorthand-property-no-redundant-values': [true, defaultSeverity],
+		'string-no-newline': [true, defaultSeverity],
+		'unit-no-unknown': [true, defaultSeverity],
+	}
+}))({severity: 'warning'});
+
 // Chrome pre-41 polyfill
 Element.prototype.closest = Element.prototype.closest || function(selector) {
 	for (var e = this; e && !e.matches(selector); e = e.parentElement) {}
@@ -1450,11 +1479,11 @@ function showKeyMapHelp() {
 }
 
 function showLintHelp() {
-	// showHelp(t("issues"), t("issuesHelp") + "<ul>" +
-		// CSSLint.getRules().map((rule) => {
-			// return "<li><b>" + rule.name + "</b><br>" + rule.desc + "</li>";
-		// }).join("") + "</ul>"
-	// );
+	showHelp(t("issues"), t("issuesHelp") + "<ul>" +
+		Object.keys(stylelintConfig.rules).map((rule) => {
+			return '<li><a href="https://stylelint.io/user-guide/rules/' + rule + '/" target="_blank">' + rule + '</a></li>';
+		}).join("") + "</ul>"
+	);
 }
 
 function showHelp(title, text) {
