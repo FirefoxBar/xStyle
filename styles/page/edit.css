@@ -1,4 +1,11 @@
-
+#main-loading {
+	text-align: center;
+	padding-top: 20px;
+}
+#main-loading .mdl-spinner {
+	width: 100px;
+	height: 100px;
+}
 .page-content .half {
 	display: flex;
 	flex-direction: row;

@@ -36,6 +36,10 @@ function setDirty(is) {
 	isDirty = is;
 	updateTitle();
 }
+function setLoadingFinish() {
+	document.getElementById('main-loading').style.display = 'none';
+	document.getElementById('main-content').style.display = 'block';
+}
 
 // reroute handling to nearest editor when keypress resolves to one of these commands
 var hotkeyRerouter = {
@@ -934,6 +938,7 @@ function init() {
 			componentHandler.upgradeElement(document.getElementById("enabled").parentElement, 'MaterialCheckbox');
 			componentHandler.upgradeElement(document.getElementById("enabled").parentElement.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
 		}
+		setLoadingFinish();
 		return;
 	}
 	// This is an edit
@@ -965,10 +970,14 @@ function initWithStyle(style) {
 		componentHandler.upgradeElement(document.getElementById("enabled").parentElement.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
 	}
 
-	let cm = document.getElementById('code').CodeMirror;
-	cm.setValue(style.code);
-	setDirty(false);
-	reCalculatePanelPosition();
+	setTimeout(() => {
+		let cm = document.getElementById('code').CodeMirror;
+		cm.setValue(style.code);
+		setDirty(false);
+		setLoadingFinish();
+		reCalculatePanelPosition();
+	}, 100);
+
 	initHooks();
 
 	if (Object.keys(style.advanced.item).length > 0) {
