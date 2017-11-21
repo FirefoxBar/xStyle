@@ -38,6 +38,13 @@ function usoInstall () {
 			author = e.children[1].innerHTML;
 		}
 	});
+	const getValidKey = (k) => {
+		let key = k.replace(/([^a-zA-Z0-9\-_]+)/g, '_');
+		if (key.replace(/_/g, '') === '') {
+			key = 'u_' + encodeURIComponent(k).replace(/%/g, '');
+		}
+		return key;
+	};
 	if (confirm(browser.i18n.getMessage('styleInstall', [styleName]))) {
 		let queue = [getURL('https://userstyles.org/api/v1/styles/' + style_id), getURL(md5_url)];
 		if (hasAdvanced()) {
@@ -51,14 +58,14 @@ function usoInstall () {
 				advanced = results[2];
 				// Parse advanced
 				for (let i of serverJson.style_settings) {
-					const install_key = i.install_key.replace(/([^a-zA-Z0-9\-_]+)/g, '_');
+					const install_key = getValidKey(i.install_key);
 					advanced.item[install_key] = {"type": i.setting_type, "title": i.label};
 					switch (i.setting_type) {
 						case 'dropdown':
 						case 'image':
 							advanced.item[install_key].option = {};
 							for (let oneOption of i.style_setting_options) {
-								advanced.item[install_key].option[oneOption.install_key.replace(/([^a-zA-Z0-9\-_]+)/g, '_')] = {
+								advanced.item[install_key].option[getValidKey(oneOption.install_key)] = {
 									"title": oneOption.label,
 									"value": oneOption.value
 								};

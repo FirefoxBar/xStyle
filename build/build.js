@@ -18,6 +18,14 @@ const BaseOutput = outputDir + 'base.zip';
 const FirefoxOutput = outputDir + 'Firefox/';
 const ChromeOutput = outputDir + 'Chrome/';
 
+// Check dirs
+if (!fs.existsSync(FirefoxOutput)) {
+	fs.mkdirSync(FirefoxOutput);
+}
+if (!fs.existsSync(ChromeOutput)) {
+	fs.mkdirSync(ChromeOutput);
+}
+
 const ChromeManifest = require(rootDir + '/manifest/chrome.json');
 const FirefoxManifest = require(rootDir + '/manifest/firefox.json');
 

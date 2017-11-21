@@ -1004,6 +1004,7 @@ function initWithStyle(style) {
 		cm.setValue(style.code);
 		setDirty(false);
 		setLoadingFinish();
+		cm.refresh();
 		reCalculatePanelPosition();
 	}, 100);
 
