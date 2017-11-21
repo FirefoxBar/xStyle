@@ -112,7 +112,12 @@ function readImage(file) {
 }
 function getAdvanced() {
 	let removePrefix = (v) => {
-		return v.replace(/^ik-/, '').replace(/([^a-zA-Z0-9\-_]+)/g, '_');
+		let key = v.replace(/^ik-/, '');
+		if (key.replace(/([^a-zA-Z0-9\-_]+)/g, '') === '') {
+			return 'u_' + encodeURIComponent(key).replace(/%/g, '');
+		} else {
+			return key.replace(/([^a-zA-Z0-9\-_]+)/g, '_');
+		}
 	};
 	return new Promise((resolve) => {
 		let advanced = {"item": {}, "saved": {}};
