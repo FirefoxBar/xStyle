@@ -1310,6 +1310,8 @@ function save() {
 		compileCss(css).then((sections) => {
 			request.sections = sections;
 			browser.runtime.sendMessage(request).then(saveComplete);
+		}).catch(e => {
+			saveError(e);
 		});
 	}).catch((e) => {
 		let error = "Error: " + e.message + "\nAt line " + e.line + " column " + e.column + "\nCode:\n";

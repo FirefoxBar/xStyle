@@ -6,6 +6,7 @@ function parseMozillaFormat(css) {
 		"urlPrefixes": [],
 		"domains": [],
 		"regexps": [],
+		"exclude": [],
 		"code": ""
 	}];
 	let mozStyle = trimNewLines(css.replace(/@namespace url\((.*?)\);/g, ""));
@@ -67,7 +68,7 @@ function parseMozillaFormat(css) {
 		return index;
 	}
 	function parseOneSection(f) {
-		const matchReg = /^(url|url-prefix|domain|regexp)([ \t]*)\((['"]?)(.+?)\3\)/;
+		const matchReg = /^(url|url-prefix|domain|regexp|exclude)([ \t]*)\((['"]?)(.+?)\3\)/;
 		f = trimNewLines(f.replace('@-moz-document', ''));
 		if (f === '') {
 			return;
@@ -77,6 +78,7 @@ function parseMozillaFormat(css) {
 			"urlPrefixes": [],
 			"domains": [],
 			"regexps": [],
+			"exclude": [],
 			"code": ""
 		};
 		while (true) {
@@ -85,7 +87,7 @@ function parseMozillaFormat(css) {
 				f = trimNewLines(f).replace(/^,/, '');
 				if (i++ > 30) {
 					console.error(f.substr(0, 50));
-					throw new Error("Timeout. May be is not a legitimate CSS");
+					throw new Error("Parse timeout, maybe is not a legitimate CSS, please check console for more information");
 				}
 			} while (!matchReg.test(f) && f[0] !== '{');
 			let m = f.match(matchReg);
@@ -94,7 +96,7 @@ function parseMozillaFormat(css) {
 			}
 			f = f.replace(m[0], '');
 			let aType = CssToProperty[m[1]];
-			let aValue = aType != "regexps" ? m[4] : m[4].replace(/\\\\/g, "\\");
+			let aValue = (aType != "regexps" && aType != "exclude") ? m[4] : m[4].replace(/\\\\/g, "\\");
 			if (section[aType].indexOf(aValue) < 0) {
 				section[aType].push(aValue);
 			}
@@ -129,7 +131,7 @@ function parseMozillaFormat(css) {
 		if (!section.code) {
 			return;
 		}
-		if (!section.urls.length && !section.urlPrefixes.length && !section.domains.length && !section.regexps.length) {
+		if (!section.urls.length && !section.urlPrefixes.length && !section.domains.length && !section.regexps.length && !section.exclude) {
 			allSection[0].code += "\n" + section.code;
 		} else {
 			allSection.push(section);
@@ -346,7 +348,11 @@ function compileCss(css, options) {
 			if (!output) {
 				reject(error);
 			} else {
-				resolve(parseMozillaFormat(output.styles));
+				try {
+					resolve(parseMozillaFormat(output.styles));
+				} catch (e) {
+					reject(e);
+				}
 			}
 		});
 	});
@@ -518,6 +524,12 @@ function updateStyleFormat(s) {
 		} else {
 			codeSections = s.sections;
 		}
+		// Add exclude
+		for (let i in s.sections) {
+			if (typeof(s.sections[i].exclude) === 'undefined') {
+				s.sections[i].exclude = [];
+			}
+		}
 		s.code = codeSections.map((section) => {
 			var cssMds = [];
 			for (var i in propertyToCss) {
@@ -570,7 +582,7 @@ function codeIsEqual(a, b) {
 	if (a.length != b.length) {
 		return false;
 	}
-	var properties = ["code", "urlPrefixes", "urls", "domains", "regexps"];
+	var properties = ["code", "urlPrefixes", "urls", "domains", "regexps", "exclude"];
 	for (var i = 0; i < a.length; i++) {
 		var found = false;
 		for (var j = 0; j < b.length; j++) {

@@ -10,8 +10,8 @@ const XSTYLE_DUMP_FILE_NAME = "xstyle-{Y}-{m}-{d}_{H}.{i}.{s}" + XSTYLE_DUMP_FIL
 const XSTYLE_DEFAULT_SAVE_NAME = "xstyle-export" + XSTYLE_DUMP_FILE_EXT;
 
 // direct & reverse mapping of @-moz-document keywords and internal property names
-const propertyToCss = {urls: "url", urlPrefixes: "url-prefix", domains: "domain", regexps: "regexp"};
-const CssToProperty = {"url": "urls", "url-prefix": "urlPrefixes", "domain": "domains", "regexp": "regexps"};
+const propertyToCss = {"urls": "url", "urlPrefixes": "url-prefix", "domains": "domain", "regexps": "regexp", "exclude": "exclude"};
+const CssToProperty = {"url": "urls", "url-prefix": "urlPrefixes", "domain": "domains", "regexp": "regexps", "exclude": "exclude"};
 
 const CleanCSSOptions = {
 	"compatibility": "",

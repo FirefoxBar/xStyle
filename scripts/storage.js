@@ -142,7 +142,7 @@ function saveStyle(o) {
 			}
 			// Set other optional things to empty array if they're undefined
 			o.sections.forEach(function(section) {
-				["urls", "urlPrefixes", "domains", "regexps"].forEach(function(property) {
+				["urls", "urlPrefixes", "domains", "regexps", "exclude"].forEach(function(property) {
 					if (!section[property]) {
 						section[property] = [];
 					}
@@ -258,6 +258,24 @@ function getApplicableSections(style, url) {
 function sectionAppliesToUrl(section, url) {
 	if (!canStyle(url)) {
 		return false;
+	}
+	if (section.exclude && section.exclude.length > 0) {
+		if (section.exclude.some(function(exclude) {
+			if (exclude[0] != "^") {
+				exclude = "^" + exclude;
+			}
+			if (exclude[exclude.length - 1] != "$") {
+				exclude += "$";
+			}
+			var re = runTryCatch(function() { return new RegExp(exclude) });
+			if (re) {
+				return (re).test(url);
+			} else {
+				console.log(section.id + "'s exclude '" + exclude + "' is not valid");
+			}
+		})) {
+			return false;
+		}
 	}
 	if (section.urls.length == 0 && section.domains.length == 0 && section.urlPrefixes.length == 0 && section.regexps.length == 0) {
 		//console.log(section.id + " is global");
