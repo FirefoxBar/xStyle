@@ -1,3 +1,4 @@
 output
-config.php
-build.bat
+php
+node_modules
+config.json

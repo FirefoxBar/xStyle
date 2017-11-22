@@ -1,6 +1,6 @@
 function getDatabase() {
 	return new Promise((resolve, reject) => {
-		let dbOpenRequest = window.indexedDB.open("xstyle", 3);
+		let dbOpenRequest = window.indexedDB.open("xstyle", 4);
 		dbOpenRequest.onsuccess = function(e) {
 			resolve(e.target.result);
 		};
@@ -13,12 +13,7 @@ function getDatabase() {
 				// Installed
 				event.target.result.createObjectStore("styles", {keyPath: 'id', autoIncrement: true});
 			} else {
-				if (event.oldVersion < 2) {
-					upgradeTo2();
-				}
-				if (event.oldVersion < 3) {
-					upgradeTo3();
-				}
+				upgradeToNewest();
 			}
 		};
 	});
@@ -147,7 +142,7 @@ function saveStyle(o) {
 			}
 			// Set other optional things to empty array if they're undefined
 			o.sections.forEach(function(section) {
-				["urls", "urlPrefixes", "domains", "regexps"].forEach(function(property) {
+				["urls", "urlPrefixes", "domains", "regexps", "exclude"].forEach(function(property) {
 					if (!section[property]) {
 						section[property] = [];
 					}
@@ -173,9 +168,7 @@ function saveStyle(o) {
 
 // Install a style, check its url
 function installStyle(json) {
-	if (typeof(json.lastModified) === 'undefined') {
-		json.lastModified = new Date().getTime();
-	}
+	json = updateStyleFormat(json);
 	if (json.url) {
 		return new Promise((resolve) => {
 			getStyles({url: json.url}).then((response) => {
@@ -265,6 +258,24 @@ function getApplicableSections(style, url) {
 function sectionAppliesToUrl(section, url) {
 	if (!canStyle(url)) {
 		return false;
+	}
+	if (section.exclude && section.exclude.length > 0) {
+		if (section.exclude.some(function(exclude) {
+			if (exclude[0] != "^") {
+				exclude = "^" + exclude;
+			}
+			if (exclude[exclude.length - 1] != "$") {
+				exclude += "$";
+			}
+			var re = runTryCatch(function() { return new RegExp(exclude) });
+			if (re) {
+				return (re).test(url);
+			} else {
+				console.log(section.id + "'s exclude '" + exclude + "' is not valid");
+			}
+		})) {
+			return false;
+		}
 	}
 	if (section.urls.length == 0 && section.domains.length == 0 && section.urlPrefixes.length == 0 && section.regexps.length == 0) {
 		//console.log(section.id + " is global");
@@ -449,17 +460,17 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 		"editor.keyMap":
 			navigator.appVersion.indexOf("Windows") > 0 ? "sublime" : "default",
 		"editor.theme": "default", // CSS theme
-		"editor.beautify": { // CSS beautifier
-			selector_separator_newline: true,
-			newline_before_open_brace: false,
-			newline_after_open_brace: true,
-			newline_between_properties: true,
-			newline_before_close_brace: true,
-			newline_between_rules: false,
-			end_with_newline: false
+		"editor.beautify": { // CSS beautifier{
+			"indent_size": 1,
+			"indent_char": "\t",
+			"space_around_selector_separator": true,
+			"selector_separator_newline": true,
+			"end_with_newline": false,
+			"newline_between_rules": true,
+			"space_around_selector_separator": true
 		},
 		"editor.lintDelay": 500, // lint gutter marker update delay, ms
-		"editor.lintReportDelay": 4500, // lint report update delay, ms
+		"editor.lintReportDelay": 2000, // lint report update delay, ms
 		"editor.fontSize": 16, // font size
 		"editor.fontName": "sans-serif" // font size
 	};
@@ -690,7 +701,7 @@ function getSync() {
 
 
 // Upgrade functions
-function upgradeTo2() {
+function upgradeToNewest() {
 	getDatabase().then((db) => {
 		let tx = db.transaction(["styles"], "readwrite");
 		let os = tx.objectStore("styles");
@@ -699,28 +710,8 @@ function upgradeTo2() {
 			if (cursor) {
 				let s = cursor.value;
 				s.id = cursor.key;
-				if (!s.advanced) {
-					s.advanced = {"item": {}, "saved": {}, "css": []};
-					os.put(s);
-				}
-				cursor.continue();
-			}
-		};
-	});
-}
-function upgradeTo3() {
-	getDatabase().then((db) => {
-		let tx = db.transaction(["styles"], "readwrite");
-		let os = tx.objectStore("styles");
-		os.openCursor().onsuccess = function(e) {
-			let cursor = e.target.result;
-			if (cursor) {
-				let s = cursor.value;
-				s.id = cursor.key;
-				if (!s.lastModified) {
-					s.lastModified = new Date().getTime();
-					os.put(s);
-				}
+				s = updateStyleFormat(s);
+				os.put(s);
 				cursor.continue();
 			}
 		};

@@ -6,6 +6,7 @@ function parseMozillaFormat(css) {
 		"urlPrefixes": [],
 		"domains": [],
 		"regexps": [],
+		"exclude": [],
 		"code": ""
 	}];
 	let mozStyle = trimNewLines(css.replace(/@namespace url\((.*?)\);/g, ""));
@@ -23,15 +24,11 @@ function parseMozillaFormat(css) {
 		currentIndex++;
 		// Jump to next
 		let nextMoz = findMozDocument(mozStyle, currentIndex)
-		let nextComment = mozStyle.indexOf('/*', currentIndex);
-		if (nextComment === -1){
-			nextComment = nextMoz;
-		}
 		let nextQuote = mozStyle.indexOf('"', currentIndex);
 		if (nextQuote === -1){
 			nextQuote = nextMoz;
 		}
-		currentIndex = Math.min(nextMoz, nextComment, nextQuote);
+		currentIndex = Math.min(nextMoz, nextQuote);
 		if (currentIndex < 0) {
 			parseOneSection(mozStyle.substr(lastIndex));
 			break;
@@ -48,16 +45,9 @@ function parseMozillaFormat(css) {
 		allSection.splice(0, 1);
 	}
 	return allSection;
-	// find @-moz-document(space) or @-moz-document(\n)
+	// find @-moz-document(space)
 	function findMozDocument(str, index) {
-		let min = -1;
-		for (let i = 0; i < docParams.length; i++) {
-			let t = str.indexOf(docParams[i], index || 0);
-			if (t >= 0 && (min === -1 || min > t)) {
-				min = t;
-			}
-		}
-		return min;
+		return str.indexOf('@-moz-document ', index || 0);
 	}
 	function ignoreSomeCodes(f, index) {
 		// ignore quotation marks
@@ -75,16 +65,11 @@ function parseMozillaFormat(css) {
 				index++;
 			} while (f[index - 2] === '\\');
 		}
-		// ignore comments
-		if (f[index] === '/' && f[index + 1] === '*') {
-			index += 2;
-			index = f.indexOf('*/', index);
-			index ++;
-		}
 		return index;
 	}
 	function parseOneSection(f) {
-		f = f.replace('@-moz-document', '');
+		const matchReg = /^(url|url-prefix|domain|regexp|exclude)([ \t]*)\((['"]?)(.+?)\3\)/;
+		f = trimNewLines(f.replace('@-moz-document', ''));
 		if (f === '') {
 			return;
 		}
@@ -93,45 +78,46 @@ function parseMozillaFormat(css) {
 			"urlPrefixes": [],
 			"domains": [],
 			"regexps": [],
+			"exclude": [],
 			"code": ""
 		};
 		while (true) {
 			let i = 0;
 			do {
-				f = trimNewLines(f).replace(/^,/, '').replace(/^\/\*(.*?)\*\//, '');
+				f = trimNewLines(f).replace(/^,/, '');
 				if (i++ > 30) {
-					console.error(f.substr(0, 20));
-					throw new Error("Timeout. May be is not a legitimate CSS");
+					console.error(f.substr(0, 50));
+					throw new Error("Parse timeout, maybe is not a legitimate CSS, please check console for more information");
 				}
-			} while (!/^(url|url-prefix|domain|regexp)\((['"]?)(.+?)\2\)/.test(f) && f[0] !== '{');
-			let m = f.match(/^(url|url-prefix|domain|regexp)\((['"]?)(.+?)\2\)/);
+			} while (!matchReg.test(f) && f[0] !== '{');
+			let m = f.match(matchReg);
 			if (!m) {
 				break;
 			}
 			f = f.replace(m[0], '');
 			let aType = CssToProperty[m[1]];
-			let aValue = aType != "regexps" ? m[3] : m[3].replace(/\\\\/g, "\\");
+			let aValue = (aType != "regexps" && aType != "exclude") ? m[4] : m[4].replace(/\\\\/g, "\\");
 			if (section[aType].indexOf(aValue) < 0) {
 				section[aType].push(aValue);
 			}
 		}
-		// split this section
-		let index = 0;
-		let leftCount = 0;
-		while (index < f.length - 1) {
-			index = ignoreSomeCodes(f, index);
-			if (f[index] === '{') {
-				leftCount++;
-			} else if (f[index] === '}') {
-				leftCount--;
-			}
-			index++;
-			if (leftCount <= 0) {
-				break;
-			}
-		}
 		if (f[0] === '{') {
-			section.code = trimNewLines(f.substr(1, index - 2));
+			// split this section
+			let index = 0;
+			let leftCount = 0;
+			while (index < f.length - 1) {
+				index = ignoreSomeCodes(f, index);
+				if (f[index] === '{') {
+					leftCount++;
+				} else if (f[index] === '}') {
+					leftCount--;
+				}
+				index++;
+				if (leftCount <= 0) {
+					break;
+				}
+			}
+			section.code = trimNewLines(f.substr(1, index - 1));
 			if (index < f.length - 1) {
 				allSection[0].code += "\n" + trimNewLines(f.substr(index));
 			}
@@ -145,7 +131,7 @@ function parseMozillaFormat(css) {
 		if (!section.code) {
 			return;
 		}
-		if (!section.urls.length && !section.urlPrefixes.length && !section.domains.length && !section.regexps.length) {
+		if (!section.urls.length && !section.urlPrefixes.length && !section.domains.length && !section.regexps.length && !section.exclude) {
 			allSection[0].code += "\n" + section.code;
 		} else {
 			allSection.push(section);
@@ -154,7 +140,7 @@ function parseMozillaFormat(css) {
 }
 
 // Parse meta information of .user.css format
-function parseUCMeta(f) {
+function parseStyleMeta(f) {
 	let alias = {"updateURL": "updateUrl", "md5URL": "md5Url", "homepageURL": "url", "originalMD5": "originalMd5"};
 	let oneRegexp = /@(name|homepageURL|updateURL|md5URL|originalMD5|author|advanced)([ \t]+)(.*)/;
 	let advancedRegexp = /^(text|color|image|dropdown)([ \t]+)(.*?)([ \t]+)"(.*?)"([ \t]+)(.*)/;
@@ -228,6 +214,13 @@ function parseUCMeta(f) {
 	return result;
 }
 
+
+// less compatibility
+function cssToLess(code) {
+	code = code.replace(/calc\((.*?)\)(!imp| !im|;|[ ]?\}|\n)/g, 'calc(~"$1")$2');
+	return code;
+}
+
 // check md5 for update
 function checkStyleUpdateMd5(style) {
 	return new Promise((resolve) => {
@@ -245,28 +238,12 @@ function checkStyleUpdateMd5(style) {
 
 // update a style
 function updateStyleFullCode(style) {
-	let update = (style, serverJson) => {
+	const update = (style, serverJson) => {
 		// update everything but name
 		delete serverJson.name;
 		serverJson.id = style.id;
 		serverJson.method = "saveStyle";
 		browser.runtime.sendMessage(serverJson);
-	};
-	let saveOneStyle = (style, rawCss, md5) => {
-		let toSave = {
-			"name": style.name,
-			"updateUrl": style.updateUrl,
-			"md5Url": style.md5Url || null,
-			"url": style.url || null,
-			"author": style.author || null,
-			"originalMd5": null,
-			"advanced": style.advanced,
-			"sections": applyAdvanced(rawCss, style.advanced.item, style.advanced.saved)
-		};
-		if (md5 !== null) {
-			toSave.originalMd5 = md5;
-		}
-		update(style, toSave);
 	};
 	if (!style.updateUrl) {
 		return;
@@ -277,42 +254,43 @@ function updateStyleFullCode(style) {
 		let style_id = style.md5Url.match(/\/(\d+)\.md5/)[1];
 		getURL('https://userstyles.org/api/v1/styles/' + style_id).then((responseText) => {
 			let serverJson = JSON.parse(responseText);
-			let rawCss = parseMozillaFormat(serverJson.css);
+			let rawCss = serverJson.css;
 			getURL(style.md5Url).then((md5) => {
-				saveOneStyle(style, rawCss, md5);
+				parseStyleFile(rawCss, {
+					"name": style.name,
+					"md5Url": style.md5Url || null,
+					"url": style.url || null,
+					"author": style.author || null,
+					"originalMd5": md5
+				}).then((toSave) => {
+					update(style, toSave);
+				});
 			});
 		});
 	} else {
 		// not uso
-		getURL(updateUrl).then((responseText) => {
-			let serverJson = null;
-			try {
-				serverJson = JSON.parse(responseText);
-			} catch (e) {
-				// is mozilla format, not json
-				if (style.md5Url) {
-					getURL(style.md5Url).then((md5) => {
-						saveOneStyle(style, responseText, md5);
-					});
-				} else {
-					saveOneStyle(style, responseText, null);
-				}
-				return;
+		getURL(updateUrl)
+		.then(responseText => parseStyleFile(responseText, {
+			"name": style.name,
+			"advanced": {
+				"saved": style.advanced.saved
 			}
-			// if it is json, continue
-			if (typeof(serverJson.advanced) !== 'undefined') {
-				serverJson.advanced.saved = style.advanced.saved;
+		}))
+		.then((toSave) => {
+			if (style.md5Url) {
+				getURL(style.md5Url).then((md5) => {
+					toSave.originalMd5 = md5;
+					update(style, toSave);
+				});
+			} else {
+				update(style, toSave);
 			}
-			if (Object.keys(style.advanced.saved).length > 0) {
-				serverJson.sections = applyAdvanced(style.advanced.css, style.advanced.item, style.advanced.saved);
-			}
-			update(style, serverJson);
 		});
 	}
 }
 
 // Apply advanced to a style
-function applyAdvanced(css, item, saved) {
+function applyAdvanced(content, item, saved) {
 	const getValue = (k, v) => {
 		if (typeof(item[k]) === 'undefined') {
 			return null;
@@ -327,17 +305,6 @@ function applyAdvanced(css, item, saved) {
 				return typeof(item[k].option[v]) === 'undefined' ? v : item[k].option[v].value;
 		}
 	};
-	let content = css.map((section) => {
-		var cssMds = [];
-		for (var i in propertyToCss) {
-			if (section[i]) {
-				cssMds = cssMds.concat(section[i].map(function (v){
-					return propertyToCss[i] + "(\"" + v.replace(/\\/g, "\\\\") + "\")";
-				}));
-			}
-		}
-		return cssMds.length ? "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}" : section.code;
-	}).join("\n\n");
 	let isContinue = false;
 	do {
 		isContinue = false;
@@ -349,8 +316,238 @@ function applyAdvanced(css, item, saved) {
 			}
 		}
 	} while (isContinue);
-	return parseMozillaFormat(content);
+	return content;
 }
+
+
+// Compile less to css
+function compileLess(content) {
+	return new Promise((resolve, reject) => {
+		if (typeof(less) === 'undefined') {
+			resolve(content);
+			return;
+		}
+		less.render(content, function (e, output) {
+			if (e) {
+				reject(e);
+			} else {
+				resolve(output.css);
+			}
+		});
+	});
+}
+
+// Convect css to a special format for storage
+function compileCss(css, options) {
+	if (options === undefined) {
+		options = CleanCSSOptions;
+	}
+	// Minify CSS
+	return new Promise((resolve, reject) => {
+		new CleanCSS(options).minify(css, function(error, output) {
+			if (!output) {
+				reject(error);
+			} else {
+				try {
+					resolve(parseMozillaFormat(output.styles));
+				} catch (e) {
+					reject(e);
+				}
+			}
+		});
+	});
+}
+
+// Parse a style file
+function parseStyleFile(code, options) {
+	if (options === undefined) {
+		options = {};
+	}
+	return new Promise((resolve, reject) => {
+		let result = {
+			type: "less",
+			lastModified: new Date().getTime(),
+			name: "",
+			enabled: 1,
+			updateUrl: "",
+			code: "",
+			sections: null,
+			advanced: {"item": {}, "saved": {}}
+		};
+		const finishParse = () => {
+			for (const k in options) {
+				if (typeof(options[k]) === 'object') {
+					if (typeof(result[k]) === 'undefined') {
+						result[k] = {};
+					}
+					for (const kk in options[k]) {
+						result[k][kk] = options[k][kk];
+					}
+				} else {
+					result[k] = options[k];
+				}
+			}
+			resolve(result);
+		};
+		const getAdvancedSaved = (k, items) => {
+			// init saved
+			// 1. if the original style is set, the original setting is used
+			// 2. if the type of this one is text or color, the default is used
+			// 3. if the type of this one is dropdown or image, the first option is used
+			return (typeof(options.advanced) !== 'undefined' && typeof(options.advanced[k]) !== 'undefined' ? 
+				options.advanced[k] : 
+				(typeof(items[k].default) === 'undefined' ? 
+					Object.keys(items[k].option)[0] : 
+					items[k].default
+				)
+			);
+		};
+		code = trimNewLines(code);
+		if (code.indexOf('/* ==UserStyle==') === 0) {
+			// user css file
+			let meta = parseStyleMeta(trimNewLines(code.match(/\/\* ==UserStyle==([\s\S]+)==\/UserStyle== \*\//)[1]));
+			let body = trimNewLines(code.replace(/\/\* ==UserStyle==([\s\S]+)==\/UserStyle== \*\//, ''));
+			result.code = body;
+			// Advanced
+			if (Object.keys(meta.advanced).length > 0) {
+				result.advanced.item = meta.advanced;
+				let saved = {};
+				for (let k in meta.advanced) {
+					saved[k] = getAdvancedSaved(k, meta.advanced);
+				}
+				result.advanced.saved = saved;
+				body = applyAdvanced(body, meta.advanced, saved);
+			}
+			if (meta.type === 'less') {
+				// less
+				compileLess(body).then((css) => {
+					compileCss(css).then((sections) => {
+						result.sections = sections;
+						finishParse();
+					});
+				}).catch((e) => {
+					reject("Error: " + e.message + "\nAt line " + e.line + " column " + e.column);
+				});
+			} else {
+				// normal css
+				result.code = cssToLess(result.code);
+				compileCss(body).then((sections) => {
+					result.sections = sections;
+					finishParse();
+				});
+			}
+		} else {
+			// json file or normal css file
+			let json = null;
+			try {
+				json = JSON.parse(code);
+			} catch (e) {
+				result.code = cssToLess(code);
+				let body = code;
+				if (typeof(options.advanced) !== 'undefined' && Object.keys(options.advanced.item).length > 0) {
+					let saved = {};
+					for (let k in options.advanced.item) {
+						saved[k] = getAdvancedSaved(k, options.advanced.item);
+					}
+					body = applyAdvanced(body, options.advanced.item, saved);
+				}
+				compileCss(body).then((sections) => {
+					result.sections = sections;
+					finishParse();
+				});
+				return;
+			}
+			// json file, continue
+			result.name = json.name;
+			result.updateUrl = json.updateUrl || "";
+			result.code = typeof(json.code) === 'undefined' ? ((codeSections) => {
+				return codeSections.map((section) => {
+					var cssMds = [];
+					for (var i in propertyToCss) {
+						if (section[i]) {
+							cssMds = cssMds.concat(section[i].map(function (v){
+								return propertyToCss[i] + "(\"" + v.replace(/\\/g, "\\\\") + "\")";
+							}));
+						}
+					}
+					return cssMds.length ? "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}" : section.code;
+				}).join("\n\n");
+			})(json.advanced.css.length > 0 ? json.advanced.css : json.sections) : json.code;
+			let body = result.code;
+			if (json.advanced.css.length > 0) {
+				result.advanced.item = json.advanced.item;
+				let saved = {};
+				for (let k in json.advanced.item) {
+					saved[k] = getAdvancedSaved(k, json.advanced.item);
+				}
+				result.advanced.saved = saved;
+				body = applyAdvanced(body, json.advanced.item, saved);
+			}
+			if (json.type === 'less') {
+				// less
+				compileLess(body).then((css) => {
+					compileCss(css).then((sections) => {
+						result.sections = sections;
+						finishParse();
+					});
+				}).catch((e) => {
+					reject("Error: " + e.message + "\nAt line " + e.line + " column " + e.column);
+				});
+			} else {
+				// normal css
+				result.code = cssToLess(result.code);
+				compileCss(body).then((sections) => {
+					result.sections = sections;
+					finishParse();
+				});
+			}
+		}
+	});
+}
+
+// Update style to newest format
+function updateStyleFormat(s) {
+	// version 2
+	if (!s.advanced) {
+		s.advanced = {"item": {}, "saved": {}};
+	}
+	// version 3
+	if (!s.lastModified) {
+		s.lastModified = new Date().getTime();
+	}
+	// version 4
+	if (!s.type) {
+		s.type = 'less';
+		let codeSections = null;
+		if (typeof(s.advanced.css) !== 'undefined' && s.advanced.css.length) {
+			codeSections = s.advanced.css;
+		} else {
+			codeSections = s.sections;
+		}
+		// Add exclude
+		for (let i in s.sections) {
+			if (typeof(s.sections[i].exclude) === 'undefined') {
+				s.sections[i].exclude = [];
+			}
+		}
+		s.code = codeSections.map((section) => {
+			var cssMds = [];
+			for (var i in propertyToCss) {
+				if (section[i]) {
+					cssMds = cssMds.concat(section[i].map(function (v){
+						return propertyToCss[i] + "(\"" + v.replace(/\\/g, "\\\\") + "\")";
+					}));
+				}
+			}
+			return cssMds.length ? "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}" : section.code;
+		}).join("\n\n");
+		// less compatibility
+		s.code = cssToLess(s.code);
+		delete s.advanced.css;
+	}
+	return s;
+}
+
 
 // two json is equal or not
 function jsonEquals(a, b, property) {
@@ -385,7 +582,7 @@ function codeIsEqual(a, b) {
 	if (a.length != b.length) {
 		return false;
 	}
-	var properties = ["code", "urlPrefixes", "urls", "domains", "regexps"];
+	var properties = ["code", "urlPrefixes", "urls", "domains", "regexps", "exclude"];
 	for (var i = 0; i < a.length; i++) {
 		var found = false;
 		for (var j = 0; j < b.length; j++) {

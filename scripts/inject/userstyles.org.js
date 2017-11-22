@@ -38,23 +38,34 @@ function usoInstall () {
 			author = e.children[1].innerHTML;
 		}
 	});
+	const getValidKey = (k) => {
+		let key = k.replace(/([^a-zA-Z0-9\-_]+)/g, '_');
+		if (key.replace(/_/g, '') === '') {
+			key = 'u_' + encodeURIComponent(k).replace(/%/g, '');
+		}
+		return key;
+	};
 	if (confirm(browser.i18n.getMessage('styleInstall', [styleName]))) {
+		let queue = [getURL('https://userstyles.org/api/v1/styles/' + style_id), getURL(md5_url)];
 		if (hasAdvanced()) {
-			Promise.all([getURL('https://userstyles.org/api/v1/styles/' + style_id), getURL(md5_url), getAdvanced()]).then((results) => {
-				let serverJson = JSON.parse(results[0]);
-				let md5 = results[1];
-				let advanced = results[2];
-				advanced.css = parseMozillaFormat(serverJson.css);
+			queue.push(getAdvanced());
+		}
+		Promise.all(queue).then((results) => {
+			let serverJson = JSON.parse(results[0]);
+			let md5 = results[1];
+			let advanced = null;
+			if (hasAdvanced()) {
+				advanced = results[2];
 				// Parse advanced
 				for (let i of serverJson.style_settings) {
-					const install_key = i.install_key.replace(/([^a-zA-Z0-9\-_]+)/g, '_');
+					const install_key = getValidKey(i.install_key);
 					advanced.item[install_key] = {"type": i.setting_type, "title": i.label};
 					switch (i.setting_type) {
 						case 'dropdown':
 						case 'image':
 							advanced.item[install_key].option = {};
 							for (let oneOption of i.style_setting_options) {
-								advanced.item[install_key].option[oneOption.install_key.replace(/([^a-zA-Z0-9\-_]+)/g, '_')] = {
+								advanced.item[install_key].option[getValidKey(oneOption.install_key)] = {
 									"title": oneOption.label,
 									"value": oneOption.value
 								};
@@ -66,35 +77,21 @@ function usoInstall () {
 							break;
 					}
 				}
-				let style = {
-					"name": serverJson.name,
-					"updateUrl": 'https://userstyles.org/styles/' + style_id + '.css',
-					"md5Url": md5_url,
-					"url": getIdUrl(),
-					"author": author,
-					"originalMd5": md5,
-					"advanced": advanced,
-					"sections": applyAdvanced(advanced.css, advanced.item, advanced.saved)
-				};
+			} else {
+				advanced = {"item": {}, "saved": {}};
+			}
+			parseStyleFile(serverJson.css, {
+				"name": serverJson.name,
+				"updateUrl": 'https://userstyles.org/styles/' + style_id + '.css',
+				"md5Url": md5_url,
+				"url": getIdUrl(),
+				"author": author,
+				"originalMd5": md5,
+				"advanced": advanced
+			}).then((style) => {
 				styleInstallByCode(style);
 			});
-		} else {
-			Promise.all([getURL('https://userstyles.org/api/v1/styles/' + style_id), getURL(md5_url)]).then((results) => {
-				let serverJson = JSON.parse(results[0]);
-				let md5 = results[1];
-				let style = {
-					"name": serverJson.name,
-					"updateUrl": 'https://userstyles.org/styles/' + style_id + '.css',
-					"md5Url": md5_url,
-					"url": getIdUrl(),
-					"author": author,
-					"originalMd5": md5,
-					"advanced": {"item": {}, "saved": {}, "css": []},
-					"sections": parseMozillaFormat(serverJson.css)
-				};
-				styleInstallByCode(style);
-			});
-		}
+		});
 	}
 }
 
@@ -115,10 +112,15 @@ function readImage(file) {
 }
 function getAdvanced() {
 	let removePrefix = (v) => {
-		return v.replace(/^ik-/, '');
+		let key = v.replace(/^ik-/, '');
+		if (key.replace(/([^a-zA-Z0-9\-_]+)/g, '') === '') {
+			return 'u_' + encodeURIComponent(key).replace(/%/g, '');
+		} else {
+			return key.replace(/([^a-zA-Z0-9\-_]+)/g, '_');
+		}
 	};
 	return new Promise((resolve) => {
-		let advanced = {"item": {}, "saved": {}, "css": []};
+		let advanced = {"item": {}, "saved": {}};
 		let file_count = 0;
 		let area = document.getElementById('advancedsettings_area');
 		//select
@@ -159,26 +161,32 @@ document.addEventListener("stylishUpdate", usoInstall, false);
 // Fix a uso bug
 if (IS_CHROME) {
 	let src = document.createElement('script');
-	src.innerHTML = ';(function() {\
+	src.innerHTML = '(function() {\
+		let fixObserver = new MutationObserver(function(mutations) {\
+			checkInstallButton();\
+		});\
 		function checkInstallButton() {\
-			if (document.getElementById("install_style_button")) {\
-				document.getElementById("install_style_button").addEventListener("click", function() {\
-					let newEvent = new CustomEvent("stylishInstall", {detail: null});\
-					document.dispatchEvent(newEvent);\
-				});\
-				return true;\
-			} else {\
-				return false;\
+			let buttons = ["install_style_button", "update_style_button"];\
+			let inited = 0;\
+			for (let btnId of buttons) {\
+				if (document.getElementById(btnId)) {\
+					inited++;\
+					if (document.getElementById(btnId).getAttribute("data-xstyle")) {\
+						continue;\
+					}\
+					document.getElementById(btnId).setAttribute("data-xstyle", 1);\
+					document.getElementById(btnId).addEventListener("click", function() {\
+						let newEvent = new CustomEvent("stylishInstall", {detail: null});\
+						document.dispatchEvent(newEvent);\
+					});\
+				}\
+			}\
+			if (inited === buttons.length) {\
+				fixObserver.disconnect();\
+				fixObserver = null;\
 			}\
 		}\
-		if (!checkInstallButton()) {\
-			let fixObserver = new MutationObserver(function(mutations) {\
-				if (checkInstallButton()) {\
-					fixObserver.disconnect();\
-				}\
-			});\
-			fixObserver.observe(document.body, {childList: true});\
-		}\
-	})()';
+		fixObserver.observe(document.body, {childList: true, subtree: true});\
+	})();';
 	document.body.appendChild(src);
 }

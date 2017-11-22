@@ -1,4 +1,11 @@
-
+#main-loading {
+	text-align: center;
+	padding-top: 20px;
+}
+#main-loading .mdl-spinner {
+	width: 100px;
+	height: 100px;
+}
 .page-content .half {
 	display: flex;
 	flex-direction: row;
@@ -34,7 +41,7 @@
 .left-section {
 	width: calc(100% - 290px);
 }
-#sections .mdl-card {
+.left-section .code-area {
 	margin-bottom: 10px;
 }
 .right-section {
@@ -63,6 +70,14 @@
 #style-panel .mdl-button {
 	width: 100%;
 	display: block;
+}
+#style-panel #save-link .loading {
+	width: 20px;
+	height: 20px;
+	margin-left: 8px;
+}
+#style-panel #save-link.saving .loading {
+	display: inline-block;
 }
 #editor-panel .mdl-textfield {
 	padding-bottom: 1px;
@@ -175,41 +190,6 @@
 	padding-top: 0;
 }
 
-/* applies-to */
-.applies-to {
-	display: flex;
-}
-.applies-to label {
-	flex: auto;
-	margin-top: 0.2rem;
-	padding-top: 10px;
-}
-.applies-to ul {
-	flex: auto;
-	flex-grow: 99;
-	margin: 0;
-	padding: 0;
-}
-.applies-to li {
-	display: flex;
-	list-style-type: none;
-	align-items: center;
-	padding-top: 5px;
-	padding-bottom: 5px;
-}
-.applies-to li > * {
-	margin-left: 0.35rem;
-}
-.applies-to li .applies-value {
-	flex-grow: 99;
-}
-.applies-to li .mdl-textfield {
-	padding-top: 1px;
-	padding-bottom: 1px;
-}
-.applies-to li .mdl-textfield__label::after {
-	bottom: 7px;
-}
 /************ help popup ************/
 #help-popup {
 	top: 3rem;
@@ -283,17 +263,20 @@
 }
 
 /************ lint ************/
-#lint {
-	display: none;
+#issue-panel {
 	color: #888;
+	padding-left: 0;
+	padding-right: 0;
 }
-#lint .title {
+#issue-panel .title {
+	padding-left: 16px;
+	padding-right: 16px;
 	font-size: 16px;
 }
-#lint .help-button {
+#issue-panel .help-button {
 	margin-left: 10px;
 }
-#lint .code-list > div .mdl-list {
+#issue-panel .code-list > div .mdl-list {
 	margin-top: 0;
 	margin-bottom: 0;
 	padding-top: 0;
@@ -301,16 +284,16 @@
 	font-size: 14px;
 	display: none;
 }
-#lint .code-list > div.show .mdl-list {
+#issue-panel .code-list > div.show .mdl-list {
 	display: block;
 }
-#lint .code-list > div .label-title {
+#issue-panel .code-list > div .label-title {
 	font-size: 15px;
 	margin-bottom: 0;
-	padding: 8px 0;
+	padding: 8px 16px;
 	cursor: pointer;
 }
-#lint .code-list > div .label-title .material-icons {
+#issue-panel .code-list > div .label-title .material-icons {
 	transition: .2s;
 	transform: rotate(180deg);
 	float: right;
@@ -318,27 +301,27 @@
 	-moz-user-select: none;
 	-webkit-user-select: none;
 }
-#lint .code-list > div.show .label-title .material-icons {
+#issue-panel .code-list > div.show .label-title .material-icons {
 	transform: rotate(0);
 }
-#lint li {
-	padding: 8px 4px;
+#issue-panel li {
+	padding: 8px 16px;
 	height: 56px;
 	cursor: pointer;
 }
-#lint li:hover {
+#issue-panel li:hover {
 	background-color: rgba(50, 50, 50, 0.1);
 }
-#lint .mdl-list__item-primary-content {
+#issue-panel .mdl-list__item-primary-content {
 	width: 100%;
 }
-#lint .mdl-list__item-sub-title {
+#issue-panel .mdl-list__item-sub-title {
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	width: 100%;
 }
-#lint .severity {
+#issue-panel .severity {
 	padding-right: 5px;
 }
 
@@ -347,13 +330,7 @@
 	white-space: nowrap;
 	font-family: monospace;
 }
-.beautify-options div {
-	float: left;
-}
-.beautify-options div[newline="true"] + div {
-	clear: left;
-}
-.beautify-options div[newline="true"] + div span[indent] {
+.beautify-options div.left-padding {
 	padding-left: 2rem;
 }
 .beautify-options:after {

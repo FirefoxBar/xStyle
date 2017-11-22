@@ -1,0 +1,26 @@
+{
+	"ext": {
+		"version": "3.0.0",
+		"filename": "xstyle-{VERSION}",
+		"gecko": {
+			"default": "xstyle@addon.firefoxcn.net",
+			"amo": "xstyle-amo@addon.firefoxcn.net",
+			"update": "https://ext.firefoxcn.net/xstyle/install/update.json",
+			"download_url": "https://github.com/FirefoxBar/xStyle/releases/download/{VERSION}/xstyle-{VERSION}-signed.xpi"
+		},
+		"crx": {
+			"id": "dbbjndgnfkbjmciadekfomemdiledmam",
+			"update": "https://ext.firefoxcn.net/xstyle/install/update.xml",
+			"download_url": "https://github.com/FirefoxBar/xStyle/releases/download/{VERSION}/xstyle-{VERSION}.crx",
+			"key": "../xstyle.pem"
+		}
+	},
+	"amo": {
+		"user": "YOUR_AMO_USER",
+		"secret": "YOUR_AMO_SECRET"
+	},
+	"transifex": {
+		"user": "YOUR_TRANSIFEX_USER",
+		"token": "YOUR_TRANSIFEX_TOKEN"
+	}
+}

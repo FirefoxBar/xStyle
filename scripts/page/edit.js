@@ -2,19 +2,46 @@
 
 var appliesToId = 999; // use of template
 
+const DIRTY_TITLE = "* $";
+
 let advanceBox = null;
 let advancedId = 0;
 let advancedSaved = {};
 let initAdvancedEditor = true;
 var styleId = null;
-var dirty = {}; // only the actually dirty items here
+let isDirty = false;
 var editors = []; // array of all CodeMirror instances
 var saveSizeOnClose;
-var useHistoryBack; // use browser history back when "back to manage" is clicked
+let isSaving = false;
 
-
-// Chrome pre-34
-Element.prototype.matches = Element.prototype.matches || Element.prototype.webkitMatchesSelector;
+const stylelintConfig = (defaultSeverity => ({
+	syntax: 'postcss-less',
+	// see https://stylelint.io/user-guide/rules/
+	rules: {
+		'at-rule-no-unknown': [true, defaultSeverity],
+		'block-no-empty': [true, defaultSeverity],
+		'color-no-invalid-hex': [true, defaultSeverity],
+		'declaration-block-no-duplicate-properties': [true, {
+			'ignore': ['consecutive-duplicates-with-different-values'],
+			'severity': 'warning'
+		}],
+		'declaration-block-no-shorthand-property-overrides': [true, defaultSeverity],
+		'font-family-no-duplicate-names': [true, defaultSeverity],
+		'function-calc-no-unspaced-operator': [true, defaultSeverity],
+		'function-linear-gradient-no-nonstandard-direction': [true, defaultSeverity],
+		'keyframe-declaration-no-important': [true, defaultSeverity],
+		'media-feature-name-no-unknown': [true, defaultSeverity],
+		'no-extra-semicolons': [true, defaultSeverity],
+		'no-invalid-double-slash-comments': [true, defaultSeverity],
+		'property-no-unknown': [true, defaultSeverity],
+		'selector-pseudo-class-no-unknown': [true, defaultSeverity],
+		'selector-pseudo-element-no-unknown': [true, defaultSeverity],
+		'selector-type-no-unknown': true, // for scss/less/stylus-lang
+		'shorthand-property-no-redundant-values': [true, defaultSeverity],
+		'string-no-newline': [true, defaultSeverity],
+		'unit-no-unknown': [true, defaultSeverity],
+	}
+}))({severity: 'warning'});
 
 // Chrome pre-41 polyfill
 Element.prototype.closest = Element.prototype.closest || function(selector) {
@@ -29,6 +56,19 @@ Array.prototype.rotate = function(amount) { // negative amount == rotate left
 }
 
 Object.defineProperty(Array.prototype, "last", {get: function() { return this[this.length - 1]; }});
+
+// dirty
+function setDirty(is) {
+	if (is === isDirty) {
+		return;
+	}
+	isDirty = is;
+	updateTitle();
+}
+function setLoadingFinish() {
+	document.getElementById('main-loading').style.display = 'none';
+	document.getElementById('main-content').style.display = 'block';
+}
 
 // reroute handling to nearest editor when keypress resolves to one of these commands
 var hotkeyRerouter = {
@@ -61,78 +101,18 @@ function showToast(message) {
 	document.getElementById('toast').MaterialSnackbar.showSnackbar({"message": message});
 }
 
-function onChange(event) {
-	var node = event.target;
-	if ("savedValue" in node) {
-		var currentValue = "checkbox" === node.type ? node.checked : node.value;
-		setCleanItem(node, node.savedValue === currentValue);
-	} else {
-		// the manually added section's applies-to is dirty only when the value is non-empty
-		setCleanItem(node, node.localName != "input" || !node.value.trim());
-		delete node.savedValue; // only valid when actually saved
-	}
-	updateTitle();
-}
-
-// Set .dirty on stylesheet contributors that have changed
-function setDirtyClass(node, isDirty) {
-	node.classList.toggle("dirty", isDirty);
-}
-
-function setCleanItem(node, isClean) {
-	if (!node.id) {
-		node.id = Date.now().toString(32).substr(-6);
-	}
-
-	if (isClean) {
-		delete dirty[node.id];
-		// code sections have .CodeMirror property
-		if (node.CodeMirror) {
-			node.savedValue = node.CodeMirror.changeGeneration();
-		} else {
-			node.savedValue = "checkbox" === node.type ? node.checked : node.value;
-		}
-	} else {
-		dirty[node.id] = true;
-	}
-
-	setDirtyClass(node, !isClean);
-}
-
-function isCleanGlobal() {
-	var clean = Object.keys(dirty).length == 0;
-	setDirtyClass(document.body, !clean);
-	return clean;
-}
-
-function setCleanGlobal() {
-	document.querySelectorAll("#header, #sections > div").forEach(setCleanSection);
-	dirty = {}; // forget the dirty applies-to ids from a deleted section after the style was saved
-}
-
-function setCleanSection(section) {
-	section.querySelectorAll(".style-contributor").forEach((node) => { setCleanItem(node, true) });
-
-	// #header section has no codemirror
-	var cm = section.CodeMirror;
-	if (cm) {
-		section.savedValue = cm.changeGeneration();
-		indicateCodeChange(cm);
-	}
-}
-
 function initCodeMirror() {
 	var CM = CodeMirror;
 	var isWindowsOS = navigator.appVersion.includes("Windows");
 	// default option values
 	shallowMerge(CM.defaults, {
-		mode: 'css',
+		mode: 'text/x-less',
 		lineNumbers: true,
 		lineWrapping: true,
 		foldGutter: true,
 		gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],
 		matchBrackets: true,
-		lint: {getAnnotations: CodeMirror.lint.css, delay: prefs.get("editor.lintDelay")},
+		lint: {getAnnotations: CodeMirror.lint.stylelint, delay: prefs.get("editor.lintDelay"), async: true},
 		lintReportDelay: prefs.get("editor.lintReportDelay"),
 		styleActiveLine: true,
 		theme: "default",
@@ -310,13 +290,16 @@ function updateFontStyle() {
 	var name = prefs.get("editor.fontName");
 	var size = parseInt(prefs.get("editor.fontSize"));
 	document.getElementById('font-style').innerHTML = '.CodeMirror, #advanced textarea { font-size: ' + size.toString() + 'px !important;font-family: "' + name + '" !important; line-height: ' + (size + 6).toString() + 'px !important; } .codemirror-colorview { height:' + (size - 2).toString() + 'px;width:' + (size - 2).toString() + 'px; }';
+	if (document.getElementById('code').CodeMirror) {
+		document.getElementById('code').CodeMirror.refresh();
+	}
 }
 
 // replace given textarea with the CodeMirror editor
 function setupCodeMirror(textarea, index, isAdvanced) {
 	var cm = CodeMirror.fromTextArea(textarea, {
 		lineNumbers: true,
-		mode : "css",
+		mode : "text/x-less",
 		extraKeys : {
 			'Ctrl-K' : function (cm, event) {
 				cm.state.colorpicker.popup_color_picker();
@@ -402,6 +385,8 @@ function setupCodeMirror(textarea, index, isAdvanced) {
 		}
 	});
 
+	updateLintReport(cm);
+
 	return cm;
 }
 
@@ -424,26 +409,9 @@ function autocompletePicked(cm) {
 }
 
 function indicateCodeChange(cm) {
-	var section = cm.getSection();
-	setCleanItem(section, cm.isClean(section.savedValue));
-	updateTitle();
+	setDirty(true);
 	updateLintReport(cm);
 }
-
-function getSectionForChild(e) {
-	return e.closest("#sections > div");
-}
-
-function getSections() {
-	return document.querySelectorAll("#sections > div");
-}
-
-// remind Chrome to repaint a previously invisible editor box by toggling any element's transform
-// this bug is present in some versions of Chrome (v37-40 or something)
-document.addEventListener("scroll", (event) => {
-	var style = document.getElementById("name").style;
-	style.webkitTransform = style.webkitTransform ? "" : "scale(1)";
-});
 
 // Shift-Ctrl-Wheel scrolls entire page even when mouse is over a code editor
 document.addEventListener("wheel", (event) => {
@@ -453,131 +421,6 @@ document.addEventListener("wheel", (event) => {
 		event.preventDefault();
 	}
 });
-
-function addAppliesTo(list, name, value) {
-	var showingEverything = list.querySelector(".applies-to-everything") != null;
-	// blow away "Everything" if it's there
-	if (showingEverything) {
-		list.removeChild(list.firstChild);
-	}
-	var e;
-	if (name && value) {
-		e = template.appliesTo.cloneNode(true);
-		e.querySelector("[name=applies-type]").value = name;
-		e.querySelector("[name=applies-value]").value = value;
-		e.querySelector(".remove-applies-to").addEventListener("click", removeAppliesTo, false);
-	} else if (showingEverything || list.hasChildNodes()) {
-		e = template.appliesTo.cloneNode(true);
-		if (list.hasChildNodes()) {
-			e.querySelector("[name=applies-type]").value = list.querySelector("li:last-child [name='applies-type']").value;
-		}
-		e.querySelector(".remove-applies-to").addEventListener("click", removeAppliesTo, false);
-	} else {
-		e = template.appliesToEverything.cloneNode(true);
-	}
-	e.querySelector(".add-applies-to").addEventListener("click", function() {
-		addAppliesTo(this.parentNode.parentNode);
-	}, false);
-	if (e.querySelector(".mdl-textfield") && typeof(componentHandler) !== 'undefined') {
-		e.querySelector('.mdl-textfield input').setAttribute('id', 'appliesTo-' + appliesToId);
-		e.querySelector('.mdl-textfield label').setAttribute('for', 'appliesTo-' + appliesToId);
-		componentHandler.upgradeElement(e.querySelector(".mdl-textfield"), 'MaterialTextfield');
-		appliesToId++;
-	}
-	list.appendChild(e);
-	reCalculatePanelPosition();
-}
-
-function addSection(event, section) {
-	var div = template.section.cloneNode(true);
-	div.querySelector(".applies-to-help").addEventListener("click", showAppliesToHelp, false);
-	div.querySelector(".remove-section").addEventListener("click", removeSection, false);
-	div.querySelector(".add-section").addEventListener("click", addSection, false);
-	div.querySelector(".beautify-section").addEventListener("click", beautify);
-
-	var codeElement = div.querySelector(".code");
-	var appliesTo = div.querySelector(".applies-to-list");
-	var appliesToAdded = false;
-
-	if (section) {
-		codeElement.value = section.code;
-		for (var i in propertyToCss) {
-			if (section[i]) {
-				section[i].forEach((url) => {
-					addAppliesTo(appliesTo, propertyToCss[i], url);
-					appliesToAdded = true;
-				});
-			}
-		}
-	}
-	if (!appliesToAdded) {
-		addAppliesTo(appliesTo);
-	}
-
-	appliesTo.addEventListener("change", onChange);
-	appliesTo.addEventListener("input", onChange);
-
-	var sections = document.getElementById("sections");
-	if (event) {
-		var clickedSection = getSectionForChild(event.target);
-		sections.insertBefore(div, clickedSection.nextElementSibling);
-		var newIndex = getSections().indexOf(clickedSection) + 1;
-		var cm = setupCodeMirror(codeElement, newIndex);
-		makeSectionVisible(cm);
-		cm.focus()
-		renderLintReport();
-	} else {
-		sections.appendChild(div);
-		var cm = setupCodeMirror(codeElement);
-	}
-
-	div.CodeMirror = cm;
-	setCleanSection(div);
-	reCalculatePanelPosition();
-	return div;
-}
-
-function removeAppliesTo(event) {
-	var appliesTo = event.target.parentNode,
-		appliesToList = appliesTo.parentNode;
-	removeAreaAndSetDirty(appliesTo);
-	if (!appliesToList.hasChildNodes()) {
-		addAppliesTo(appliesToList);
-	}
-	reCalculatePanelPosition();
-}
-
-function removeSection(event) {
-	var section = getSectionForChild(event.target);
-	var cm = section.CodeMirror;
-	removeAreaAndSetDirty(section);
-	editors.splice(editors.indexOf(cm), 1);
-	renderLintReport();
-	if (getSections().length === 0) {
-		addSection(null, {"code": ""});
-	}
-	reCalculatePanelPosition();
-}
-
-function removeAreaAndSetDirty(area) {
-	var contributors = area.querySelectorAll('.style-contributor');
-	if(!contributors.length){
-		setCleanItem(area, false);
-	}
-	contributors.some((node) => {
-		if (node.savedValue) {
-			// it's a saved section, so make it dirty and stop the enumeration
-			setCleanItem(area, false);
-			return true;
-		} else {
-			// it's an empty section, so undirty the applies-to items,
-			// otherwise orphaned ids would keep the style dirty
-			setCleanItem(node, true);
-		}
-	});
-	updateTitle();
-	area.parentNode.removeChild(area);
-}
 
 function makeSectionVisible(cm) {
 	let isAdvanced = typeof(cm.isAdvanced) !== 'undefined' ? cm.isAdvanced : (() => {
@@ -696,10 +539,6 @@ function setupGlobalSearch() {
 		var rxQuery = typeof state.query == "object"
 			? state.query : stringAsRegExp(state.query, shouldIgnoreCase(state.query) ? "i" : "");
 
-		if (document.activeElement && document.activeElement.name == "applies-value"
-			&& searchAppliesTo(activeCM)) {
-			return;
-		}
 		for (var i=0, cm=activeCM; i < editors.length; i++) {
 			state = updateState(cm);
 			if (!cm.hasFocus()) {
@@ -716,38 +555,11 @@ function setupGlobalSearch() {
 				state.posTo = CodeMirror.Pos(state.posFrom.line, state.posFrom.ch);
 				originalCommand[reverse ? "findPrev" : "findNext"](cm);
 				return;
-			} else if (!reverse && searchAppliesTo(cm)) {
-				return;
-			}
-			cm = editors[(editors.indexOf(cm) + (reverse ? -1 + editors.length : 1)) % editors.length];
-			if (reverse && searchAppliesTo(cm)) {
-				return;
 			}
 		}
 		// nothing found so far, so call the original search with wrap-around
 		originalCommand[reverse ? "findPrev" : "findNext"](activeCM);
 
-		function searchAppliesTo(cm) {
-			var inputs = [].slice.call(cm.getSection().querySelectorAll(".applies-value"));
-			if (reverse) {
-				inputs = inputs.reverse();
-			}
-			inputs.splice(0, inputs.indexOf(document.activeElement) + 1);
-			return inputs.some((input) => {
-				var match = rxQuery.exec(input.value);
-				if (match) {
-					input.focus();
-					var end = match.index + match[0].length;
-					// scroll selected part into view in long inputs,
-					// works only outside of current event handlers chain, hence timeout=0
-					setTimeout(() => {
-						input.setSelectionRange(end, end);
-						input.setSelectionRange(match.index, end)
-					}, 0);
-					return true;
-				}
-			});
-		}
 	}
 
 	function findPrev(cm) {
@@ -869,12 +681,7 @@ function nextPrevEditor(cm, direction) {
 
 function getEditorInSight(nearbyElement) {
 	// priority: 1. associated CM for applies-to element 2. last active if visible 3. first visible
-	var cm;
-	if (nearbyElement && nearbyElement.className.includes("applies-")) {
-		cm = getSectionForChild(nearbyElement).CodeMirror;
-	} else {
-		cm = editors.lastActive;
-	}
+	let cm = editors.lastActive;
 	if (!cm || offscreenDistance(cm) > 0) {
 		var sorted = editors
 			.map((cm, index) => {
@@ -1018,7 +825,7 @@ function renderLintReport(someBlockChanged) {
 					newContent.insertBefore(newBlock, firstAdvanced);
 				}
 			}
-			let html = "<p class='label-title'>" + (cmIsAdvanced ? aLabel : label) + index.toString() + " (" + cm.state.lint.marked.length + ")<i class='material-icons'>keyboard_arrow_up</i></p>" + cm.state.lint.html;
+			let html = "<p class='label-title'>" + (cmIsAdvanced ? aLabel + index.toString() : label) + " (" + cm.state.lint.marked.length + ")<i class='material-icons'>keyboard_arrow_up</i></p>" + cm.state.lint.html;
 			newBlock.setAttribute('data-advanced', cmIsAdvanced ? 1 : 0);
 			newBlock.innerHTML = html;
 			newBlock.cm = cm;
@@ -1075,93 +882,81 @@ function toggleLintReport() {
 }
 
 function beautify(event) {
-	if (exports.css_beautify) { // thanks to csslint's definition of 'exports'
-		doBeautify();
+	let undoButton = null;
+	let options = prefs.get("editor.beautify");
+	let css_beautify = window.css_beautify;
+	if (css_beautify === undefined) {
+		if (typeof(exports) !== 'undefined' && typeof(exports.css_beautify) !== 'undefined') {
+			css_beautify = exports.css_beautify;
+			initBeautify();
+		} else {
+			var script = document.head.appendChild(document.createElement("script"));
+			script.src = "third-party/beautify/beautify-css.js";
+			script.onload = beautify;
+		}
 	} else {
-		var script = document.head.appendChild(document.createElement("script"));
-		script.src = "third-party/beautify/beautify-css.js";
-		script.onload = doBeautify;
+		initBeautify();
 	}
-	function doBeautify() {
+	function initBeautify() {
 		var tabs = prefs.get("editor.indentWithTabs");
-		var options = prefs.get("editor.beautify");
 		options.indent_size = tabs ? 1 : prefs.get("editor.tabSize");
 		options.indent_char = tabs ? "\t" : " ";
 
-		var section = getSectionForChild(event.target);
-		var scope = section ? [section.CodeMirror] : editors;
-
 		showHelp(t("styleBeautify"), "<div class='beautify-options'>" +
-			optionHtml(".selector1,", "selector_separator_newline") +
-			optionHtml(".selector2,", "newline_before_open_brace") +
-			optionHtml("{", "newline_after_open_brace") +
-			optionHtml("border: none;", "newline_between_properties", true) +
-			optionHtml("display: block;", "newline_before_close_brace", true) +
-			optionHtml("}", "newline_between_rules") +
-			"</div>" +
+			"<div>.selector1,<select data-option='selector_separator_newline'>" +
+				"<option" + (options.selector_separator_newline ? "" : " selected") + ">&nbsp;</option>" +
+				"<option" + (options.selector_separator_newline ? " selected" : "") + ">\\n</option>" +
+			"</select></div><div>.selector2 {</div>" +
+			"<div class='left-padding'>border: none;</div>" +
+			"<div class='left-padding'>display: block;</div>" +
+			"<div>}<select data-option='newline_between_rules'>" +
+				"<option" + (options.newline_between_rules ? "" : " selected") + ">&nbsp;</option>" +
+				"<option" + (options.newline_between_rules ? " selected" : "") + ">\\n</option>" +
+			"</select></div>" +
 			"<div><button role='undo'></button></div>");
 
-		var undoButton = document.querySelector("#help-popup button[role='undo']");
-		undoButton.textContent = t(scope.length == 1 ? "undo" : "undoGlobal");
+		undoButton = document.querySelector("#help-popup button[role='undo']");
+		undoButton.textContent = t("undoGlobal");
 		undoButton.addEventListener("click", () => {
 			var undoable = false;
-			scope.forEach((cm) => {
-				if (cm.beautifyChange && cm.beautifyChange[cm.changeGeneration()]) {
-					delete cm.beautifyChange[cm.changeGeneration()];
-					cm.undo();
-					undoable |= cm.beautifyChange[cm.changeGeneration()];
-				}
+			editors.forEach((cm) => {
+				cm.undo();
 			});
 			undoButton.disabled = !undoable;
-		});
-
-		scope.forEach((cm) => {
-			setTimeout(() => {
-				var text = cm.getValue();
-				var newText = exports.css_beautify(text, options);
-				if (newText != text) {
-					if (!cm.beautifyChange || !cm.beautifyChange[cm.changeGeneration()]) {
-						// clear the list if last change wasn't a css-beautify
-						cm.beautifyChange = {};
-					}
-					cm.setValue(newText);
-					cm.beautifyChange[cm.changeGeneration()] = true;
-					undoButton.disabled = false;
-				}
-			}, 0);
 		});
 
 		document.querySelector(".beautify-options").addEventListener("change", (event) => {
 			var value = event.target.selectedIndex > 0;
 			options[event.target.dataset.option] = value;
 			prefs.set("editor.beautify", options);
-			event.target.parentNode.setAttribute("newline", value.toString());
 			doBeautify();
 		});
 
-		function optionHtml(label, optionName, indent) {
-			var value = options[optionName];
-			return "<div newline='" + value.toString() + "'>" +
-				"<span" + (indent ? " indent" : "") + ">" + label + "</span>" +
-				"<select data-option='" + optionName + "'>" +
-					"<option" + (value ? "" : " selected") + ">&nbsp;</option>" +
-					"<option" + (value ? " selected" : "") + ">\\n</option>" +
-				"</select></div>";
-		}
+		doBeautify();
+	}
+	function doBeautify() {
+		editors.forEach((cm) => {
+			var text = cm.getValue();
+			var newText = css_beautify(text, options);
+			if (newText != text) {
+				cm.setValue(newText);
+				// undoButton.disabled = false;
+			}
+		});
 	}
 }
 
 function init() {
 	var params = getParams();
+	// init code editor
+	
+	let codeElement = document.getElementById('code');
+	let cm = setupCodeMirror(codeElement);
+	codeElement.CodeMirror = cm;
+	reCalculatePanelPosition();
+
 	if (!params.id) { // match should be 2 - one for the whole thing, one for the parentheses
 		// This is an add
-		var section = {code: ""}
-		for (var i in CssToProperty) {
-			if (params[i]) {
-				section[CssToProperty[i]] = [params[i]];
-			}
-		}
-		addSection(null, section);
 		// default to enabled
 		document.getElementById("enabled").checked = true;
 		document.getElementById("heading").innerHTML = t("addStyleTitle");
@@ -1174,6 +969,7 @@ function init() {
 			componentHandler.upgradeElement(document.getElementById("enabled").parentElement, 'MaterialCheckbox');
 			componentHandler.upgradeElement(document.getElementById("enabled").parentElement.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
 		}
+		setLoadingFinish();
 		return;
 	}
 	// This is an edit
@@ -1204,78 +1000,25 @@ function initWithStyle(style) {
 		componentHandler.upgradeElement(document.getElementById("enabled").parentElement, 'MaterialCheckbox');
 		componentHandler.upgradeElement(document.getElementById("enabled").parentElement.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
 	}
-	// if this was done in response to an update, we need to clear existing sections
-	getSections().forEach((div) => {
-		div.remove();
-	});
-	let sections = style.advanced.css.length > 0 ? style.advanced.css : style.sections;
-	let queue = sections.length ? sections : [{code: ""}];
-	let queueStart = new Date().getTime();
-	// after 100ms the sections will be added asynchronously
-	while (new Date().getTime() - queueStart <= 100 && queue.length) {
-		processQueue();
-	}
-	function processQueue() {
-		if (queue.length) {
-			add();
-			setTimeout(processQueue, 0);
-		}
-	};
-	function add() {
-		var sectionDiv = addSection(null, queue.shift());
-		maximizeCodeHeight(sectionDiv, !queue.length);
-		updateLintReport(sectionDiv.CodeMirror, prefs.get("editor.lintDelay"));
+
+	setTimeout(() => {
+		let cm = document.getElementById('code').CodeMirror;
+		cm.setValue(style.code);
+		setDirty(false);
+		setLoadingFinish();
+		cm.refresh();
 		reCalculatePanelPosition();
-	}
+	}, 100);
 
 	initHooks();
 
 	if (Object.keys(style.advanced.item).length > 0) {
-		if (Object.keys(style.advanced.item).length > prefs.get('editor.initAdvanced')) {
-			initAdvancedEditor = false;
-		}
 		advancedSaved = style.advanced.saved;
-		let advancedItems = style.advanced.item;
-		let advancedQueue = Object.keys(advancedItems);
-		let advancedQueueStart = new Date().getTime();
-		// after 200ms the advanced will be added asynchronously
-		while (new Date().getTime() - advancedQueueStart <= 200 && advancedQueue.length) {
-			processAdvancedQueue();
-		}
-		function processAdvancedQueue() {
-			if (advancedQueue.length) {
-				addAdvanced();
-				setTimeout(processAdvancedQueue, 0);
-			}
-		};
-		function addAdvanced() {
-			let k = advancedQueue.shift();
-			switch (advancedItems[k].type) {
-				case 'dropdown':
-					createAdvancedDropdown(k, advancedItems[k].title, advancedItems[k].option);
-					break;
-				case 'text':
-					createAdvancedText(k, advancedItems[k].title, advancedItems[k].default);
-					break;
-				case 'image':
-					createAdvancedImage(k, advancedItems[k].title, advancedItems[k].option);
-					break;
-				case 'color':
-					createAdvancedColor(k, advancedItems[k].title, advancedItems[k].default);
-					break;
-			}
-			delete advancedItems[k];
-		}
+		initAdvanced(style.advanced.item);
 	}
 }
 
 function initHooks() {
-	document.querySelectorAll("#header .style-contributor").forEach((node) => {
-		node.addEventListener("change", onChange);
-		node.addEventListener("input", onChange);
-	});
-	document.getElementById("to-mozilla").addEventListener("click", showMozillaFormat, false);
-	document.getElementById("from-mozilla").addEventListener("click", fromMozillaFormat);
 	document.getElementById("beautify").addEventListener("click", beautify);
 	document.getElementById("save-link").addEventListener("click", save, false);
 	document.getElementById("keyMap-help").addEventListener("click", showKeyMapHelp, false);
@@ -1290,10 +1033,95 @@ function initHooks() {
 	}
 
 	setupGlobalSearch();
-	setCleanGlobal();
 	updateTitle();
 }
 
+function initAdvanced(adv) {
+	if (Object.keys(adv).length > prefs.get('editor.initAdvanced')) {
+		initAdvancedEditor = false;
+	}
+	let queue = Object.keys(adv);
+	let queueStart = new Date().getTime();
+	// after 200ms the advanced will be added asynchronously
+	while (new Date().getTime() - queueStart <= 200 && queue.length) {
+		processQueue();
+	}
+	function processQueue() {
+		if (queue.length) {
+			addAdvanced();
+			setTimeout(processQueue, 0);
+		}
+	};
+	function addAdvanced() {
+		let k = queue.shift();
+		switch (adv[k].type) {
+			case 'dropdown':
+				createAdvancedDropdown(k, adv[k].title, adv[k].option);
+				break;
+			case 'text':
+				createAdvancedText(k, adv[k].title, adv[k].default);
+				break;
+			case 'image':
+				createAdvancedImage(k, adv[k].title, adv[k].option);
+				break;
+			case 'color':
+				createAdvancedColor(k, adv[k].title, adv[k].default);
+				break;
+		}
+		delete adv[k];
+	}
+}
+function initAdvancedEvents() {
+	// toggle advanced
+	document.getElementById('toggle-advanced').addEventListener('click', () => {
+		let box = document.getElementById('advanced-box');
+		if (box.classList.contains('close')) {
+			box.classList.remove('close');
+			let list = Array.prototype.slice.call(box.querySelectorAll('.dropdown-item'));
+			let queueStart = new Date().getTime();
+			// after 100ms the advanced will be updated asynchronously
+			while (new Date().getTime() - queueStart <= 100 && list.length) {
+				processQueue();
+			}
+			function processQueue() {
+				if (list.length) {
+					updateAdvanced();
+					setTimeout(processQueue, 0);
+				}
+			}
+			function updateAdvanced() {
+				let e = list.shift();
+				if (e.CodeMirror) {
+					e.CodeMirror.refresh();
+				}
+			}
+		} else {
+			box.classList.add('close');
+		}
+		reCalculatePanelPosition();
+	});
+	// Advanced add
+	document.querySelector('.advanced-add-dropdown').addEventListener('click', () => {
+		let n = createAdvancedDropdown();
+		let evt = document.createEvent("MouseEvents");
+		evt.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+		evt.initEvent("click", false, false);
+		n.querySelector('.add').dispatchEvent(evt);
+	});
+	document.querySelector('.advanced-add-image').addEventListener('click', () => {
+		let n = createAdvancedImage();
+		let evt = document.createEvent("MouseEvents");
+		evt.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+		evt.initEvent("click", false, false);
+		n.querySelector('.add').dispatchEvent(evt);
+	});
+	document.querySelector('.advanced-add-text').addEventListener('click', () => {
+		createAdvancedText();
+	});
+	document.querySelector('.advanced-add-color').addEventListener('click', () => {
+		createAdvancedColor();
+	});
+}
 function createAdvancedText(k, title, value) {
 	let n = template.advancedText.cloneNode(true);
 	if (k) {
@@ -1364,7 +1192,6 @@ function createAdvancedDropdown(key, title, items) {
 		if (initAdvancedEditor) {
 			m.CodeMirror = setupCodeMirror(m.querySelector('textarea'), null, true);
 		}
-		setCleanSection(m);
 	});
 	if (items) {
 		for (let k in items) {
@@ -1379,7 +1206,6 @@ function createAdvancedDropdown(key, title, items) {
 			if (initAdvancedEditor) {
 				m.CodeMirror = setupCodeMirror(m.querySelector('textarea'), null, true);
 			}
-			setCleanSection(m);
 		}
 	}
 	n.querySelectorAll('.mdl-textfield').forEach((e) => {
@@ -1435,95 +1261,20 @@ function createAdvancedImage(key, title, items) {
 	return n;
 }
 
-
-function maximizeCodeHeight(sectionDiv, isLast) {
-	var cm = sectionDiv.CodeMirror;
-	var stats = maximizeCodeHeight.stats = maximizeCodeHeight.stats || {totalHeight: 0, deltas: []};
-	if (!stats.cmActualHeight) {
-		stats.cmActualHeight = getComputedHeight(cm.display.wrapper);
-	}
-	if (!stats.sectionMarginTop) {
-		stats.sectionMarginTop = parseFloat(getComputedStyle(sectionDiv).marginTop);
-	}
-	var sectionTop = sectionDiv.getBoundingClientRect().top - stats.sectionMarginTop;
-	if (!stats.firstSectionTop) {
-		stats.firstSectionTop = sectionTop;
-	}
-	var extrasHeight = getComputedHeight(sectionDiv) - stats.cmActualHeight;
-	var cmMaxHeight = window.innerHeight - extrasHeight - sectionTop - stats.sectionMarginTop;
-	var cmDesiredHeight = cm.display.sizer.clientHeight + 2*cm.defaultTextHeight();
-	var cmGrantableHeight = Math.max(stats.cmActualHeight, Math.min(cmMaxHeight, cmDesiredHeight));
-	stats.deltas.push(cmGrantableHeight - stats.cmActualHeight);
-	stats.totalHeight += cmGrantableHeight + extrasHeight;
-	if (!isLast) {
-		return;
-	}
-	stats.totalHeight += stats.firstSectionTop;
-	if (stats.totalHeight <= window.innerHeight) {
-		editors.forEach((cm, index) => {
-			cm.setSize(null, stats.deltas[index] + stats.cmActualHeight);
-		});
-		return;
-	}
-	// scale heights to fill the gap between last section and bottom edge of the window
-	var sections = document.getElementById("sections");
-	var available = window.innerHeight - sections.getBoundingClientRect().bottom -
-		parseFloat(getComputedStyle(sections).marginBottom);
-	if (available <= 0) {
-		return;
-	}
-	var totalDelta = stats.deltas.reduce((sum, d) => {
-		return sum + d;
-	}, 0);
-	var q = available / totalDelta;
-	var baseHeight = stats.cmActualHeight - stats.sectionMarginTop;
-	stats.deltas.forEach((delta, index) => {
-		editors[index].setSize(null, baseHeight + Math.floor(q * delta));
-	});
-}
-
 function updateTitle() {
-	var DIRTY_TITLE = "* $";
-
 	var name = document.getElementById("name").value;
-	var clean = isCleanGlobal();
 	var title = styleId === null ? t("addStyleTitle") : t('editStyleTitle', [name]);
-	document.title = clean ? title : DIRTY_TITLE.replace("$", title);
-}
-
-function validate() {
-	var name = document.getElementById("name").value;
-	if (name == "") {
-		return t("styleMissingName");
-	}
-	// validate the regexps
-	if (document.querySelectorAll(".applies-to-list").some((list) => {
-		return list.childNodes.some((li) => {
-			if (li.className == template.appliesToEverything.className) {
-				return false;
-			}
-			var valueElement = li.querySelector("[name=applies-value]");
-			var type = li.querySelector("[name=applies-type]").value;
-			var value = valueElement.value;
-			if (type && value) {
-				if (type == "regexp") {
-					try {
-						new RegExp(value);
-					} catch (ex) {
-						valueElement.focus();
-						return true;
-					}
-				}
-			}
-			return false;
-		});
-	})) {
-		return t("styleBadRegexp");
-	}
-	return null;
+	document.title = isDirty ? DIRTY_TITLE.replace("$", title) : title;
 }
 
 function save() {
+	if (isSaving) {
+		return;
+	}
+	// show loading
+	isSaving = true;
+	document.getElementById("save-link").classList.add('saving');
+
 	updateLintReport(null, 0);
 
 	// save the contents of the CodeMirror editors back into the textareas
@@ -1531,25 +1282,22 @@ function save() {
 		editors[i].save();
 	}
 
-	var error = validate();
-	if (error) {
-		alert(error);
-		return;
-	}
-	let sections = getSectionsHashes();
+	let code = document.getElementById('code').value;
 	let request = {
 		method: "saveStyle",
+		type: "less",
 		id: styleId,
 		lastModified: new Date().getTime(),
 		name: document.getElementById("name").value,
 		enabled: document.getElementById("enabled").checked,
 		updateUrl: document.getElementById("update-url").value,
-		advanced: {"item": {}, "saved": {}, "css": []}
+		code: code,
+		sections: null,
+		advanced: {"item": {}, "saved": {}}
 	};
 	let advanced = getPageAdvanced();
 	if (advanced) {
 		request.advanced.item = advanced;
-		request.advanced.css = sections;
 		for (let k in advanced) {
 			// init saved
 			// 1. if the original style is set, the original setting is used
@@ -1559,26 +1307,43 @@ function save() {
 		}
 		// merge the global variable
 		advancedSaved = deepCopy(request.advanced.saved);
-		request.sections = applyAdvanced(sections, advanced, request.advanced.saved);
-	} else {
-		request.sections = sections;
+		code = applyAdvanced(code, advanced, request.advanced.saved);
 	}
-	browser.runtime.sendMessage(request).then(saveComplete);
+	compileLess(code).then((css) => {
+		compileCss(css).then((sections) => {
+			request.sections = sections;
+			browser.runtime.sendMessage(request).then(saveComplete);
+		}).catch(e => {
+			saveError(e);
+		});
+	}).catch((e) => {
+		let error = "Error: " + e.message + "\nAt line " + e.line + " column " + e.column + "\nCode:\n";
+		e.extract.forEach((c) => {
+			error += c.replace(/\t/g, '    ') + "\n";
+		});
+		saveError(error.trim());
+	});
 }
 
-function getSectionsHashes() {
-	var sections = [];
-	getSections().forEach((div) => {
-		var meta = getMeta(div);
-		var code = div.CodeMirror.getValue();
-		if (/^\s*$/.test(code) && Object.keys(meta).length == 0) {
-			return;
-		}
-		meta.code = code;
-		sections.push(meta);
-	});
-	return sections;
+function saveError(error) {
+	isSaving = false;
+	document.getElementById("save-link").classList.remove('saving');
+	alert(error);
 }
+function saveComplete(style) {
+	isSaving = false;
+	document.getElementById("save-link").classList.remove('saving');
+	styleId = style.id;
+	setDirty(false);
+	// Go from new style URL to edit style URL
+	if (!location.href.includes("id=")) {
+		history.replaceState({}, document.title, "edit.html?id=" + style.id);
+		document.getElementById("heading").innerHTML = t("editStyleHeading");
+	}
+	showToast(t('saveComplete'));
+	updateTitle();
+}
+
 function getPageAdvanced() {
 	if (advanceBox.childNodes.length === 0) {
 		return null;
@@ -1634,123 +1399,6 @@ function getPageAdvanced() {
 	return items;
 }
 
-
-function getMeta(e) {
-	var meta = {urls: [], urlPrefixes: [], domains: [], regexps: []};
-	e.querySelector(".applies-to-list").childNodes.forEach((li) => {
-		if (li.className == template.appliesToEverything.className) {
-			return;
-		}
-		var type = li.querySelector("[name=applies-type]").value;
-		var value = li.querySelector("[name=applies-value]").value;
-		if (type && value) {
-			var property = CssToProperty[type];
-			meta[property].push(value);
-		}
-	});
-	return meta;
-}
-
-function saveComplete(style) {
-	styleId = style.id;
-	setCleanGlobal();
-
-	// Go from new style URL to edit style URL
-	if (!location.href.includes("id=")) {
-		history.replaceState({}, document.title, "edit.html?id=" + style.id);
-		document.getElementById("contentHeading").innerHTML = t("editStyleHeading");
-		document.getElementById("heading").innerHTML = t("editStyleHeading");
-	}
-	showToast(t('saveComplete'));
-	updateTitle();
-}
-
-function showMozillaFormat() {
-	var popup = showCodeMirrorPopup(t("styleMozillaFormatExport"), "", {readOnly: true});
-	popup.codebox.setValue(toMozillaFormat());
-	popup.codebox.execCommand("selectAll");
-}
-
-function toMozillaFormat() {
-	return getSectionsHashes().map((section) => {
-		var cssMds = [];
-		for (var i in propertyToCss) {
-			if (section[i]) {
-				cssMds = cssMds.concat(section[i].map(function (v){
-					return propertyToCss[i] + "(\"" + v.replace(/\\/g, "\\\\") + "\")";
-				}));
-			}
-		}
-		return cssMds.length ? "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}" : section.code;
-	}).join("\n\n");
-}
-
-function fromMozillaFormat() {
-	var popup = showCodeMirrorPopup(t("styleFromMozillaFormatPrompt"), tHTML("<div>\
-		<button name='import-append' i18n-text='importAppendLabel' i18n-title='importAppendTooltip'></button>\
-		<button name='import-replace' i18n-text='importReplaceLabel' i18n-title='importReplaceTooltip'></button>\
-		</div>").innerHTML);
-
-	var contents = popup.querySelector(".contents");
-	contents.insertBefore(popup.codebox.display.wrapper, contents.firstElementChild);
-	popup.codebox.focus();
-
-	popup.querySelector("[name='import-append']").addEventListener("click", doImport);
-	popup.querySelector("[name='import-replace']").addEventListener("click", doImport);
-
-	popup.codebox.on("change", () => {
-		clearTimeout(popup.mozillaTimeout);
-		popup.mozillaTimeout = setTimeout(() => {
-			popup.classList.toggle("ready", trimNewLines(popup.codebox.getValue()));
-		}, 100);
-	});
-
-	function doImport() {
-		var replaceOldStyle = this.name == "import-replace";
-		popup.querySelector(".close-icon").click();
-		var mozStyle = trimNewLines(popup.codebox.getValue());
-		var firstAddedCM;
-		var sections = parseMozillaFormat(mozStyle);
-		for (let s of sections) {
-			doAddSection(s);
-		}
-
-		function doAddSection(section) {
-			if (!firstAddedCM) {
-				if (!initFirstSection(section)) {
-					return;
-				}
-			}
-			// don't add empty sections
-			if (!(section.code || section.urls || section.urlPrefixes || section.domains || section.regexps)) {
-				return;
-			}
-			setCleanItem(addSection(null, section), false);
-			firstAddedCM = firstAddedCM || editors.last;
-		}
-		// do onetime housekeeping as the imported text is confirmed to be a valid style
-		function initFirstSection(section) {
-			if (!section.code) {
-				return false;
-			}
-			if (replaceOldStyle) {
-				editors.slice(0).reverse().forEach((cm) => {
-					removeSection({target: cm.getSection().firstElementChild});
-				});
-			} else if (!editors.last.getValue()) {
-				// nuke the last blank section
-				if (editors.last.getSection().querySelector(".applies-to-everything")) {
-					removeSection({target: editors.last.getSection()});
-				}
-			}
-			return true;
-		}
-	}
-}
-
-function showAppliesToHelp() {
-	showHelp(t("appliesLabel"), t("appliesHelp"));
-}
 
 function showKeyMapHelp() {
 	var keyMap = mergeKeyMaps({}, prefs.get("editor.keyMap"), CodeMirror.defaults.extraKeys);
@@ -1837,8 +1485,8 @@ function showKeyMapHelp() {
 
 function showLintHelp() {
 	showHelp(t("issues"), t("issuesHelp") + "<ul>" +
-		CSSLint.getRules().map((rule) => {
-			return "<li><b>" + rule.name + "</b><br>" + rule.desc + "</li>";
+		Object.keys(stylelintConfig.rules).map((rule) => {
+			return '<li><a href="https://stylelint.io/user-guide/rules/' + rule + '/" target="_blank">' + rule + '</a></li>';
 		}).join("") + "</ul>"
 	);
 }
@@ -1925,7 +1573,7 @@ function getComputedHeight(el) {
 
 window.onbeforeunload = () => {
 	document.activeElement.blur();
-	if (isCleanGlobal()) {
+	if (!isDirty) {
 		return;
 	}
 	updateLintReport(null, 0);
@@ -1948,50 +1596,6 @@ document.addEventListener("DOMContentLoaded", () => {
 		reCalculatePanelPosition();
 	});
 	reCalculatePanelPosition();
-	// toggle advanced
-	document.getElementById('toggle-advanced').addEventListener('click', () => {
-		let box = document.getElementById('advanced-box');
-		if (box.classList.contains('close')) {
-			box.classList.remove('close');
-			let list = Array.prototype.slice.call(box.querySelectorAll('.dropdown-item'));
-			let queueStart = new Date().getTime();
-			// after 100ms the advanced will be updated asynchronously
-			while (new Date().getTime() - queueStart <= 100 && list.length) {
-				processQueue();
-			}
-			function processQueue() {
-				if (list.length) {
-					updateAdvanced();
-					setTimeout(processQueue, 0);
-				}
-			};
-			function updateAdvanced() {
-				let e = list.shift();
-				e.CodeMirror.refresh();
-			}
-		} else {
-			box.classList.add('close');
-		}
-	});
-	// Advanced add
-	document.querySelector('.advanced-add-dropdown').addEventListener('click', () => {
-		let n = createAdvancedDropdown();
-		let evt = document.createEvent("MouseEvents");
-		evt.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-		evt.initEvent("click", false, false);
-		n.querySelector('.add').dispatchEvent(evt);
-	});
-	document.querySelector('.advanced-add-image').addEventListener('click', () => {
-		let n = createAdvancedImage();
-		let evt = document.createEvent("MouseEvents");
-		evt.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-		evt.initEvent("click", false, false);
-		n.querySelector('.add').dispatchEvent(evt);
-	});
-	document.querySelector('.advanced-add-text').addEventListener('click', () => {
-		createAdvancedText();
-	});
-	document.querySelector('.advanced-add-color').addEventListener('click', () => {
-		createAdvancedColor();
-	});
+	// init advanced
+	initAdvancedEvents();
 });
