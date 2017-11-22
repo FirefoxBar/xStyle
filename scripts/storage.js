@@ -470,7 +470,7 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 			"space_around_selector_separator": true
 		},
 		"editor.lintDelay": 500, // lint gutter marker update delay, ms
-		"editor.lintReportDelay": 4500, // lint report update delay, ms
+		"editor.lintReportDelay": 2000, // lint report update delay, ms
 		"editor.fontSize": 16, // font size
 		"editor.fontName": "sans-serif" // font size
 	};

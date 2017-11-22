@@ -385,6 +385,8 @@ function setupCodeMirror(textarea, index, isAdvanced) {
 		}
 	});
 
+	updateLintReport(cm);
+
 	return cm;
 }
 
@@ -734,6 +736,7 @@ function updateLintReport(cm, delay) {
 
 	function update() { // this == cm
 		var scope = this ? [this] : editors;
+		console.log(scope);
 		var changed = false;
 		var fixedOldIssues = false;
 		scope.forEach((cm) => {
