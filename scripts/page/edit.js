@@ -960,6 +960,12 @@ function init() {
 		// default to enabled
 		document.getElementById("enabled").checked = true;
 		document.getElementById("heading").innerHTML = t("addStyleTitle");
+		// check if domain is passed
+		if (params.domain) {
+			cm.setValue("@-moz-document domain(\"" + params.domain + "\") {\n\n}");
+			cm.refresh();
+			reCalculatePanelPosition();
+		}
 		initHooks();
 		//material
 		if (typeof(componentHandler) !== 'undefined') {
