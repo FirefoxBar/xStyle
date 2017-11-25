@@ -474,11 +474,11 @@ function parseStyleFile(code, options) {
 				}).join("\n\n");
 			})(json.advanced.css.length > 0 ? json.advanced.css : json.sections) : json.code;
 			let body = result.code;
-			if (json.advanced.css.length > 0) {
+			if (Object.keys(json.advanced.item).length > 0) {
 				result.advanced.item = json.advanced.item;
 				let saved = {};
 				for (let k in json.advanced.item) {
-					saved[k] = getAdvancedSaved(k, json.advanced.item);
+					saved[k] = (typeof(json.advanced.saved) !== 'undefined' && typeof(json.advanced.saved[k]) !== 'undefined') ? json.advanced.saved[k] : getAdvancedSaved(k, json.advanced.item);
 				}
 				result.advanced.saved = saved;
 				body = applyAdvanced(body, json.advanced.item, saved);

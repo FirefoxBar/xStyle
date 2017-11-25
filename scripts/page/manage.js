@@ -78,8 +78,6 @@ function createStyleElement(style) {
 			a.appendChild(document.createTextNode(line));
 			appliesTo.appendChild(a);
 		}
-	} else {
-		appliesTo.appendChild(document.createTextNode(t('appliesToEverything')));
 	}
 	var editLink = e.querySelector(".style-edit-link");
 	editLink.setAttribute("href", editLink.getAttribute("href") + style.id);

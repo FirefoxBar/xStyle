@@ -1,14 +1,12 @@
 body {
-	width: 300px;
+	width: 310px;
+	min-height: 530px;
 	font-family: 'Microsoft Yahei', 'San Francisco', -apple-system, BlinkMacSystemFont, '.SFNSText-Regular', Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif;
-	margin:0px;
+	margin: 0px;
 	overflow-x: hidden;
 }
-.hide{
+.hide {
 	display:none;
-}
-a, a:visited {
-	color: black;
 }
 .mdl-button {
 	-moz-user-select: none;
@@ -18,18 +16,60 @@ a, a:visited {
 .section-spacer {
 	flex-grow: 1;
 }
-.tabs-container > section {
-	display: none;
-	height: 420px;
+#header {
+	width: 100%;
 	box-sizing: border-box;
 }
-body.unavailable #unavailable {
-	display: block;	
+#header .mdl-layout__header-row {
+	padding-left: 12px;
+	padding-right: 8px;
 }
-body.zerostyles #zerostyles {
-	display: block;	
+#header .mdl-menu__item {
+	height: 40px;
+	line-height: 40px;
+	padding-left: 12px;
+	padding-right: 12px;
 }
-body.have-styles #styles {
+#writeNewMenu .mdl-menu__item {
+	max-width: 150px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	box-sizing: border-box;
+}
+.mdl-layout__content {
+	overflow-y: hidden;
+}
+body.unavailable #header .add_style,
+body.unavailable #header .search_styles {
+	display: none;
+}
+.tabs-container > section {
+	height: 478px;
+	box-sizing: border-box;
+}
+body .tabs-container #loading {
+	display: block;
+	text-align: center;
+	padding-top: 100px;
+}
+body .tabs-container #loading .mdl-spinner {
+	width: 80px;
+	height: 80px;
+}
+body.unavailable .tabs-container #loading,
+body.zerostyles .tabs-container #loading,
+body.have-styles .tabs-container #loading {
+	display: none;
+}
+body .tabs-container #unavailable,
+body .tabs-container #zerostyles,
+body .tabs-container #styles {
+	display: none;
+}
+body.unavailable .tabs-container #unavailable,
+body.zerostyles .tabs-container #zerostyles,
+body.have-styles .tabs-container #styles {
 	display: block;	
 }
 body.all-off #installed {
@@ -45,39 +85,13 @@ body.all-off #installed {
 	color: #2c3e50;
 	padding: 200px 25px;
 }
-
-#sitename{
-	height: 52px;
-	padding-left: 12px;
-	padding-right: 40px;
-	font-size: 16px;
-	font-weight: bold;
-	font-style: normal;
-	font-stretch: normal;
-	color: #2c3e50;
-	line-height: 52px;
-	border-bottom: 1px solid #d7d7d7;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	width: 100%;
-	box-sizing: border-box;
-}
-#searchStyles {
-	position: absolute;
-	top: 12px;
-	right: 10px
-}
-
 #tab-item-installed.zero-installed #disable-all-container,
 #tab-item-installed.unavailable #disable-all-container {
 	visibility: hidden;
 }
-
 #disable-all-container{
 	width: 100%;
 	background-color: rgb(239, 239, 239);
-	box-shadow: 0 1px 0 0 #cfd6d9;
 	padding: 10px 20px 10px 10px;
 	box-sizing: border-box;
 	display: flex;
@@ -85,8 +99,9 @@ body.all-off #installed {
 	align-items: center;
 	justify-content: space-between;
 	overflow: visible;
+	border-bottom: 1px solid rgb(224, 224, 224);
 }
-#disable-all-container .disable-all-lable{
+#disable-all-container .disable-all-lable {
 	font-size: 13px;
 	font-weight: bold;
 	font-style: normal;
@@ -102,15 +117,16 @@ body.all-off #installed {
 	margin-top: 0;
 	margin-bottom: 0;
 	padding-top: 0;
+	padding-bottom: 0;
 	overflow-y: auto;
 	overflow-x: hidden;
-	height: calc(100% - 50px);
+	height: calc(100% - 44px);
 }
 #installed .mdl-list__item {
 	padding: 8px;
 }
 #installed .mdl-list__item-primary-content {
-	width: calc(100% - 50px);
+	width: calc(100% - 44px);
 	height: auto;
 	line-height: normal;
 }
@@ -141,35 +157,4 @@ body.all-off #installed {
 }
 #installed .mdl-list__item-secondary-action {
 	padding-right: 10px;
-}
-
-.bottom_controls {
-	z-index: 99;
-	position: relative;
-}
-
-.bottom_controls .manage_styles,
-.bottom_controls .add_style {
-	display: block;
-	width: 50%;
-	height: 43.6px;
-	text-align:center;
-	color:#757575;
-	line-height: 42px;
-	font-size: 14px;
-	text-decoration: none;
-	float: left;
-	background-color: rgb(238, 238, 238);
-	transition: background-color .2s cubic-bezier(.4,0,.2,1);
-	border-top: 1px solid rgb(224, 224, 224);
-	outline: none;
-}
-.bottom_controls .manage_styles:hover,
-.bottom_controls .add_style:hover {
-	background-color: rgb(224, 224, 224);
-}
-.bottom_controls::after {
-	display: table;
-	content: "";
-	clear: both;
 }

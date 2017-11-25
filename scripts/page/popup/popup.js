@@ -3,50 +3,22 @@ const DISABLED_CLASS = "disabled";
 const ZERO_INSTALLED_CLASS = "zerostyles";
 const UNAVAILABLE_CLASS = "unavailable";
 const STYLES_CLASS = "have-styles";
-
-var writeStyleTemplate = document.createElement("a");
-writeStyleTemplate.className = "write-style-link";
+const createNewStyleLink = '/edit.html?';
 
 const installed = document.getElementById("installed");
 const body = document.getElementsByTagName('body')[0];
-const zeroStyles = document.getElementById("zerostyles");
-const unavailable = document.getElementById("unavailable");
 const disableAllCheckbox = document.getElementById("disable-all-checkbox");
+const writeNewMenu = document.getElementById('writeNewMenu');
 
-var menutype;
-var website;
-
-var domain = '';
+let tabUrl = '';
 
 function isDisabledAll(){
 	return browser.extension.getBackgroundPage().prefs.get("disableAll");
 }
 
-function buildDomainForFiltering(url){
-	var parsed = parseUrl(url);
-	return parsed.protocol + "//" + parsed.hostname + "/";
-}
-
-
 function renderPageForAllCases(){
 	renderAllSwitch(true);
 	disableAllCheckbox.addEventListener('change', onDisableAllCheckboxChange);
-}
-
-// render for unavailable page
-function renderPageForUnavailable() {
-	renderPageForAllCases();
-	body.classList.add(UNAVAILABLE_CLASS);
-}
-
-// render for available page
-function renderInstalledTab(styles){
-	renderPageForAllCases();
-	if (styles.length == 0){
-		renderPageForNoStyles();
-	} else {
-		renderPageWithStyles(styles);
-	}
 }
 
 // render for a page with no style
@@ -123,27 +95,23 @@ function onDeleteStyleClick(style){
 	return (e) => {
 		e.preventDefault();
 		e.stopImmediatePropagation();
-		deleteStyle(style.id).then(onStyleDeleted(style));
-	}
-}
-
-function onStyleDeleted(style){
-	return () => {
-		var old = document.getElementById("installed-style-"+style.id);
-		var parent = old.parentNode;
-		parent.removeChild(old);
-		if (installed.childNodes.length == 0){
-			renderPageForNoStyles();
-		}
+		deleteStyle(style.id).then(() =>  {
+			var old = document.getElementById("installed-style-" + style.id);
+			var parent = old.parentNode;
+			parent.removeChild(old);
+			if (installed.childNodes.length == 0){
+				renderPageForNoStyles();
+			}
+		});
 	}
 }
 
 function onActivationStatusChanged(styleId, enabled){
 	return () => {
-		var old = document.getElementById("installed-style-"+styleId);
+		var old = document.getElementById("installed-style-" + styleId);
 		old.classList.remove(ENABLED_CLASS);
 		old.classList.remove(DISABLED_CLASS);
-		old.classList.add(enabled?ENABLED_CLASS : DISABLED_CLASS);
+		old.classList.add(enabled ? ENABLED_CLASS : DISABLED_CLASS);
 	}
 }
 
@@ -153,45 +121,60 @@ function parseUrl(url){
 	return a;
 }
 
-function updatePopUp(tab) {
-	updateSiteName(tab.url);
-	updateCreateStyleLink(tab.url);
-}
-
-function updateCreateStyleLink(url){
+function updateCreateStyle(url){
 	if (canStyle(url)) {
-		var createNewStyleLink = document.getElementById('write-new-style-link');
-		createNewStyleLink.href += "?domain=" + getSiteName(url);
+		let domain = getDomains(url);
+		let d = null;
+		if (domain.length > 1) {
+			domain.splice(-1, 1);
+		}
+		writeNewMenu.innerHTML = '';
+		while (domain.length > 0) {
+			d = domain.splice(0, 1);
+			let n = document.createElement('li');
+			n.setAttribute('class', "mdl-menu__item");
+			n.setAttribute('data-param', 'domain=' + d[0]);
+			n.appendChild(document.createTextNode(d[0]));
+			n.addEventListener('click', onCreateClick);
+			writeNewMenu.appendChild(n);
+		}
 	}
 }
 
-function updateSiteName(url){
-	document.getElementById('sitename').innerHTML = getSiteName(url);
-	if (canStyle(url)) {
-		domain = getSiteName(url);
-		document.getElementById('searchStylesMenu').childNodes.forEach((el) => {
-			el.addEventListener('click', onSearchClick);
-		});
-	} else {
-		document.getElementById('searchStyles').style.display = 'none';
-	}
+function onCreateClick() {
+	openLink(createNewStyleLink + this.getAttribute('data-param'));
 }
 
-function getSiteName(tabUrl){
-	if (tabUrl.indexOf('about:') === 0) {
-		return /about:(\w+)/.exec(tabUrl)[0];
+function getDomains(url) {
+	if (url.indexOf("file:") == 0) {
+		return [];
 	}
-	var a = document.createElement('a');
-	a.href = tabUrl;
-	return a.hostname;
+	if (url.indexOf('about:') === 0) {
+		return [/about:(\w+)/.exec(url)[0]];
+	}
+	let d = /.*?:\/*([^\/:]+)/.exec(url)[1];
+	let domains = [d];
+	while (d.indexOf(".") != -1) {
+		d = d.substring(d.indexOf(".") + 1);
+		domains.push(d);
+	}
+	return domains;
 }
+
 
 function openLink(e) {
-	if (!this.href && !e.target.href) {
-		return;
+	if (typeof(e) !== 'string') {
+		if (this.href) {
+			e.preventDefault();
+			e = this.href;
+		} else if (e.target.href) {
+			e.preventDefault();
+			e = e.target.href;
+		} else {
+			return;
+		}
 	}
-	e.preventDefault();
-	browser.runtime.sendMessage({method: "openURL", url: this.href || e.target.href});
+	browser.runtime.sendMessage({method: "openURL", url: e});
 	close();
 }
 
@@ -230,21 +213,40 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	}
 });
 
-getActiveTab((tab) => {
-	updatePopUp(tab);
-	if (canStyle(tab.url)) {
-		getInstalledStyleForDomain(tab.url).then(renderInstalledTab);
-	} else {
-		renderPageForUnavailable();
-	}
-});
-
-document.querySelectorAll(".open-manage-link").forEach((el) => {
-	el.addEventListener("click", openLink, false);
-});
-
 function onSearchClick() {
-	let url = this.getAttribute('data-url').replace('%s', domain);
+	let url = this.getAttribute('data-url').replace('%s', getDomains(tabUrl)[0]);
 	browser.runtime.sendMessage({method: "openURL", "url": url});
 	close();
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+	if (IS_MOBILE) {
+		let n = document.createElement('link');
+		n.rel = 'stylesheet';
+		n.href = 'styles/page/popup-mobile.css';
+		document.head.appendChild(n);
+	}
+	getActiveTab((tab) => {
+		tabUrl = tab.url;
+		updateCreateStyle(tabUrl);
+		if (canStyle(tabUrl)) {
+			getInstalledStyleForDomain(tabUrl).then((styles) => {
+				renderPageForAllCases();
+				if (styles.length == 0){
+					renderPageForNoStyles();
+				} else {
+					renderPageWithStyles(styles);
+				}
+			});
+		} else {
+			renderPageForAllCases();
+			body.classList.add(UNAVAILABLE_CLASS);
+		}
+	});
+	document.querySelectorAll(".open-manage-link").forEach((el) => {
+		el.addEventListener("click", openLink, false);
+	});
+	document.getElementById('searchStylesMenu').childNodes.forEach((el) => {
+		el.addEventListener('click', onSearchClick);
+	});
+});

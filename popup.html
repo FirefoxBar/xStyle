@@ -35,28 +35,41 @@
     <script src="scripts/page/popup/mustache.wrap.js"></script>
 </head>
 <body id="xstyle-popup">
-<div id="sitename">firefoxcn.net</div>
-<button id="searchStyles" class="mdl-button mdl-js-button mdl-button--icon"><i class="material-icons">search</i></button>
-<ul id="searchStylesMenu" class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="searchStyles">
-  	<li class="mdl-menu__item" data-url="https://userstyles.org/styles/browse/all/%s">userstyles.org</li>
-  	<li class="mdl-menu__item" data-url="http://freestyler.ws/search?q=%s">freestyler.ws</li>
-</ul>
-<div class="tabs-container">
-    <section id="styles" class="tab-item tab-installed">
-        <div id="disable-all-container">
-			<div class="disable-all-lable" i18n-text="allStyles"></div>
-			<label class="mdl-switch" for="disable-all-checkbox">
-				<input type="checkbox" id="disable-all-checkbox" class="mdl-switch__input"/>
-			</label>
-        </div>
-        <ul id="installed" class="mdl-list"></ul>
-    </section>
-	<section id="unavailable" i18n-text="xStyleUnavailableForURL"></section>
-	<section id="zerostyles" i18n-text="popupHaveNoStyle"></section>
-</div>
-<div class="bottom_controls">
-    <a id="write-new-style-link" class="add_style open-manage-link" href="/edit.html" target="_blank" tabindex="-1" i18n-text="openCreate"></a>
-	<a class="manage_styles open-manage-link" href="/manage.html" target="_blank" tabindex="-1" i18n-text="openManage"></a>
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+	<header id="header" class="mdl-layout__header">
+		<div class="mdl-layout__header-row">
+			<span class="mdl-layout-title sitename">xStyle</span>
+			<div class="mdl-layout-spacer"></div>
+			<nav class="mdl-navigation wrapper">
+				<button id="searchStyles" class="search_styles mdl-button mdl-js-button mdl-button--icon"><i class="material-icons">search</i></button>
+				<ul id="searchStylesMenu" class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="searchStyles">
+					<li class="mdl-menu__item" data-url="https://userstyles.org/styles/browse/all/%s">userstyles.org</li>
+					<li class="mdl-menu__item" data-url="http://freestyler.ws/search?q=%s">freestyler.ws</li>
+				</ul>
+				<button id="writeNew" class="search_styles mdl-button mdl-js-button mdl-button--icon"><i class="material-icons">add</i></button>
+				<ul id="writeNewMenu" class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="writeNew"></ul>
+				<a class="manage_styles open-manage-link mdl-button mdl-js-button mdl-button--icon" href="/manage.html" target="_blank" tabindex="-1" i18n-title="openManage"><i class="material-icons">settings</i></a>
+			</nav>
+		</div>
+	</header>
+	<main class="mdl-layout__content">
+		<div id="main-loading" class="page-content">
+			<div class="tabs-container">
+				<section id="loading"><div class="mdl-spinner mdl-js-spinner is-active"></div></section>
+				<section id="styles" class="tab-item tab-installed">
+					<div id="disable-all-container">
+						<div class="disable-all-lable" i18n-text="allStyles"></div>
+						<label class="mdl-switch" for="disable-all-checkbox">
+							<input type="checkbox" id="disable-all-checkbox" class="mdl-switch__input"/>
+						</label>
+					</div>
+					<ul id="installed" class="mdl-list"></ul>
+				</section>
+				<section id="unavailable" i18n-text="xStyleUnavailableForURL"></section>
+				<section id="zerostyles" i18n-text="popupHaveNoStyle"></section>
+			</div>
+		</div>
+	</main>
 </div>
 <script src="third-party/mdl/material.min.js"></script>
 <script src="scripts/page/popup/popup.js"></script>
