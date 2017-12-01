@@ -89,7 +89,6 @@
 			]
 		}
 	],
-	"update_url": "https://ext.firefoxcn.net/xstyle/install/update.xml",
 	"browser_action": {
 		"default_icon": {
 			"128": "images/128.png"
