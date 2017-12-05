@@ -86,9 +86,8 @@ function usoInstall () {
 				"md5Url": md5_url,
 				"url": getIdUrl(),
 				"author": author,
-				"originalMd5": md5,
-				"advanced": advanced
-			}).then((style) => {
+				"originalMd5": md5
+			}, advanced).then((style) => {
 				styleInstallByCode(style);
 			});
 		});
@@ -166,7 +165,7 @@ if (IS_CHROME) {
 			checkInstallButton();\
 		});\
 		function checkInstallButton() {\
-			let buttons = ["install_style_button", "update_style_button"];\
+			let buttons = ["update_style_button"];\
 			let inited = 0;\
 			for (let btnId of buttons) {\
 				if (document.getElementById(btnId)) {\

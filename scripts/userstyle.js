@@ -359,9 +359,15 @@ function compileCss(css, options) {
 }
 
 // Parse a style file
-function parseStyleFile(code, options) {
+function parseStyleFile(code, options, advanced) {
 	if (options === undefined) {
 		options = {};
+	}
+	if (options.advanced !== undefined) {
+		advanced = options.advanced;
+	}
+	if (advanced === undefined) {
+		advanced = {"item": {}, "saved": {}};
 	}
 	return new Promise((resolve, reject) => {
 		let result = {
@@ -371,8 +377,7 @@ function parseStyleFile(code, options) {
 			enabled: 1,
 			updateUrl: "",
 			code: "",
-			sections: null,
-			advanced: {"item": {}, "saved": {}}
+			sections: null
 		};
 		const finishParse = () => {
 			for (const k in options) {
@@ -387,6 +392,7 @@ function parseStyleFile(code, options) {
 					result[k] = options[k];
 				}
 			}
+			result.advanced = advanced;
 			resolve(result);
 		};
 		const getAdvancedSaved = (k, items) => {
@@ -394,10 +400,10 @@ function parseStyleFile(code, options) {
 			// 1. if the original style is set, the original setting is used
 			// 2. if the type of this one is text or color, the default is used
 			// 3. if the type of this one is dropdown or image, the first option is used
-			return (typeof(options.advanced) !== 'undefined' && typeof(options.advanced[k]) !== 'undefined' ? 
-				options.advanced[k] : 
-				(typeof(items[k].default) === 'undefined' ? 
-					Object.keys(items[k].option)[0] : 
+			return (typeof(advanced.saved[k]) !== 'undefined' ?
+				advanced.saved[k] :
+				(typeof(items[k].default) === 'undefined' ?
+					Object.keys(items[k].option)[0] :
 					items[k].default
 				)
 			);
@@ -408,15 +414,18 @@ function parseStyleFile(code, options) {
 			let meta = parseStyleMeta(trimNewLines(code.match(/\/\* ==UserStyle==([\s\S]+)==\/UserStyle== \*\//)[1]));
 			let body = trimNewLines(code.replace(/\/\* ==UserStyle==([\s\S]+)==\/UserStyle== \*\//, ''));
 			result.code = body;
+			// advanced param is more important than advanced key in json file
+			if (Object.keys(advanced.item).length === 0 &&
+				meta.advanced !== undefined &&
+				Object.keys(meta.advanced).length > 0) {
+				advanced.item = meta.advanced;
+			}
 			// Advanced
-			if (Object.keys(meta.advanced).length > 0) {
-				result.advanced.item = meta.advanced;
-				let saved = {};
-				for (let k in meta.advanced) {
-					saved[k] = getAdvancedSaved(k, meta.advanced);
+			if (Object.keys(advanced.item).length > 0) {
+				for (let k in advanced.item) {
+					advanced.saved[k] = getAdvancedSaved(k, advanced.item);
 				}
-				result.advanced.saved = saved;
-				body = applyAdvanced(body, meta.advanced, saved);
+				body = applyAdvanced(body, advanced.item, advanced.saved);
 			}
 			if (meta.type === 'less') {
 				// less
@@ -442,14 +451,16 @@ function parseStyleFile(code, options) {
 			try {
 				json = JSON.parse(code);
 			} catch (e) {
+				// normal css file, check if advanced is passed
 				result.code = cssToLess(code);
 				let body = code;
-				if (typeof(options.advanced) !== 'undefined' && Object.keys(options.advanced.item).length > 0) {
-					let saved = {};
-					for (let k in options.advanced.item) {
-						saved[k] = getAdvancedSaved(k, options.advanced.item);
+				if (Object.keys(advanced.item).length > 0) {
+					if (Object.keys(advanced.saved).length === 0) {
+						for (let k in advanced.item) {
+							advanced.saved[k] = getAdvancedSaved(k, advanced.item);
+						}
 					}
-					body = applyAdvanced(body, options.advanced.item, saved);
+					body = applyAdvanced(body, advanced.item, advanced.saved);
 				}
 				compileCss(body).then((sections) => {
 					result.sections = sections;
@@ -474,14 +485,31 @@ function parseStyleFile(code, options) {
 				}).join("\n\n");
 			})(json.advanced.css.length > 0 ? json.advanced.css : json.sections) : json.code;
 			let body = result.code;
-			if (Object.keys(json.advanced.item).length > 0) {
-				result.advanced.item = json.advanced.item;
-				let saved = {};
-				for (let k in json.advanced.item) {
-					saved[k] = (typeof(json.advanced.saved) !== 'undefined' && typeof(json.advanced.saved[k]) !== 'undefined') ? json.advanced.saved[k] : getAdvancedSaved(k, json.advanced.item);
+			if (json.advanced.css) {
+				delete json.advanced.css;
+			}
+			// advanced param is more important than advanced key in json file
+			if (Object.keys(advanced.item).length === 0 &&
+				json.advanced !== undefined &&
+				json.advanced.item !== undefined &&
+				Object.keys(json.advanced.item).length > 0) {
+				advanced.item = json.advanced.item;
+			}
+			if (Object.keys(advanced.saved).length === 0 &&
+				json.advanced !== undefined &&
+				json.advanced.saved !== undefined &&
+				Object.keys(json.advanced.saved).length > 0) {
+				advanced.saved = json.advanced.saved;
+			}
+			// If this style have advanced options
+			if (Object.keys(advanced.item).length > 0) {
+				if (Object.keys(advanced.saved).length === 0) {
+					// If not have saved, generate it
+					for (let k in advanced.item) {
+						advanced.saved[k] = getAdvancedSaved(k, advanced.item);
+					}
 				}
-				result.advanced.saved = saved;
-				body = applyAdvanced(body, json.advanced.item, saved);
+				body = applyAdvanced(body, advanced.item, advanced.saved);
 			}
 			if (json.type === 'less') {
 				// less
