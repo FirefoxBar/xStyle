@@ -69,7 +69,7 @@
 			]
 		},
 		{
-			"matches": ["http://*.firefoxcn.net/*", "https://*.firefoxcn.net/*", "https://*.github.io/*", "https://*.oschina.io/*"],
+			"matches": ["http://*.firefoxcn.net/*", "https://*.firefoxcn.net/*", "https://*.github.io/*", "https://*.gitee.io/*"],
 			"run_at": "document_end",
 			"all_frames": false,
 			"js": [
