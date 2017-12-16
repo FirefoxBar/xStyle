@@ -7,6 +7,9 @@ function getMd5Url() {
 function getIdUrl() {
 	return getMeta("xstyle-id-url") || getMeta("stylish-id-url");
 }
+function getStyleName() {
+	return getMeta("xstyle-name");
+}
 
 function sendEvent(type, data) {
 	if (typeof data == "undefined") {
@@ -17,15 +20,19 @@ function sendEvent(type, data) {
 }
 
 function styleInstall () {
+	let extParam = {};
+	if (getStyleName() !== '') {
+		extParam.name = getStyleName();
+	}
 	getURL(getCodeUrl()).then((code) => {
-		confirmAStyle(code);
+		confirmAStyle(code, extParam);
 	});
 }
 
-function confirmAStyle(code) {
-	parseStyleFile(code).then((json) => {
+function confirmAStyle(code, param) {
+	parseStyleFile(code, param).then((json) => {
 		if (!json.name || json.name === '') {
-			alert(t('fileTypeUnknown'));
+			alert(browser.i18n.getMessage('fileTypeUnknown'));
 			return;
 		}
 		if (confirm(browser.i18n.getMessage('styleInstall', [json.name]))) {
@@ -51,8 +58,12 @@ document.addEventListener("xstyleInstall", styleInstall, false);
 if (window.location.href.indexOf('https://ext.firefoxcn.net/xstyle/install/open.html') === 0) {
 	let params = getParams();
 	if (params.code) {
+		let extParam = {};
+		if (typeof(params.name) !== 'undefined') {
+			extParam.name = params.name;
+		}
 		getURL(params.code).then((code) => {
-			confirmAStyle(code);
+			confirmAStyle(code, extParam);
 		});
 	}
 }

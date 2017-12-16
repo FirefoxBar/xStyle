@@ -75,9 +75,9 @@
 			"js": [
 				"scripts/browser-polyfill.js",
 				"scripts/common.js",
-				"scripts/userstyle.js",
 				"third-party/less/less.min.js",
 				"third-party/clean-css/clean-css.min.js",
+				"scripts/userstyle.js",
 				"scripts/inject/install.js"
 			]
 		},
