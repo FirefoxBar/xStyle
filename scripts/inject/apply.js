@@ -3,8 +3,8 @@ var g_styleElements = {};
 var iframeObserver;
 var bodyObserver;
 var retiredStyleIds = [];
+var onlyAppliesToHtml = false;
 
-initObserver();
 requestStyles();
 
 function requestStyles() {
@@ -15,45 +15,54 @@ function requestStyles() {
 	var request = {method: "getStyles", matchUrl: location.href, enabled: true, asHash: true};
 	if (location.href.indexOf(browser.extension.getURL("")) === 0) {
 		var bg = browser.extension.getBackgroundPage();
-		if (bg && bg.getStyles) {
+		if (bg && bg.getStyles && bg.prefs) {
+			onlyAppliesToHtml = bg.prefs.get('only-applies-html');
+			initObserver();
+			initListener();
 			// apply styles immediately, then proceed with a normal request that will update the icon
 			bg.getStyles(request).then(applyStyles);
 			return;
 		}
 	}
-	browser.runtime.sendMessage(request).then(applyStyles);
+	browser.runtime.sendMessage({"method": "prefGet", "name": "only-applies-html"}).then(r => {
+		onlyAppliesToHtml = r;
+		initListener();
+		initObserver();
+		browser.runtime.sendMessage(request).then(applyStyles);
+	});
 }
-
-browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-	// Also handle special request just for the pop-up
-	switch (request.method == "updatePopup" ? request.reason : request.method) {
-		case "styleDeleted":
-			removeStyle(request.id, document);
-			break;
-		case "styleUpdated":
-			if (request.style.enabled) {
-				retireStyle(request.style.id);
-				// fallthrough to "styleAdded"
-			} else {
-				removeStyle(request.style.id, document);
+function initListener() {
+	browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
+		// Also handle special request just for the pop-up
+		switch (request.method == "updatePopup" ? request.reason : request.method) {
+			case "styleDeleted":
+				removeStyle(request.id, document);
 				break;
-			}
-		case "styleAdded":
-			if (request.style.enabled) {
-				browser.runtime.sendMessage({method: "getStyles", matchUrl: location.href, enabled: true, id: request.style.id, asHash: true}).then(applyStyles);
-			}
-			break;
-		case "styleApply":
-			applyStyles(request.styles);
-			break;
-		case "styleReplaceAll":
-			replaceAll(request.styles, document);
-			break;
-		case "styleDisableAll":
-			disableAll(request.disableAll);
-			break;
-	}
-});
+			case "styleUpdated":
+				if (request.style.enabled) {
+					retireStyle(request.style.id);
+					// fallthrough to "styleAdded"
+				} else {
+					removeStyle(request.style.id, document);
+					break;
+				}
+			case "styleAdded":
+				if (request.style.enabled) {
+					browser.runtime.sendMessage({method: "getStyles", matchUrl: location.href, enabled: true, id: request.style.id, asHash: true}).then(applyStyles);
+				}
+				break;
+			case "styleApply":
+				applyStyles(request.styles);
+				break;
+			case "styleReplaceAll":
+				replaceAll(request.styles, document);
+				break;
+			case "styleDisableAll":
+				disableAll(request.disableAll);
+				break;
+		}
+	});
+}
 
 function disableAll(disable) {
 	if (!disable === !g_disableAll) {
@@ -154,12 +163,20 @@ function applySections(styleId, sections) {
 	if (styleElement) {
 		return;
 	}
-	if (document.documentElement instanceof SVGSVGElement) {
-		// SVG document, make an SVG style element.
-		styleElement = document.createElementNS("http://www.w3.org/2000/svg", "style");
+	if (onlyAppliesToHtml) {
+		if (document.documentElement.tagName === 'HTML') {
+			styleElement = document.createElement("style");
+		} else {
+			return;
+		}
 	} else {
-		// This will make an HTML style element. If there's SVG embedded in an HTML document, this works on the SVG too.
-		styleElement = document.createElement("style");
+		if (document.documentElement instanceof SVGSVGElement) {
+			// SVG document, make an SVG style element.
+			styleElement = document.createElementNS("http://www.w3.org/2000/svg", "style");
+		} else {
+			// This will make an HTML style element. If there's SVG embedded in an HTML document, this works on the SVG too.
+			styleElement = document.createElement("style");
+		}
 	}
 	styleElement.setAttribute("id", "xstyle-" + styleId);
 	styleElement.setAttribute("class", "xstyle");

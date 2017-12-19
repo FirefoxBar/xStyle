@@ -96,6 +96,9 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 					break;
 			}
 			break;
+		case "prefGet":
+			sendResponse(prefs.get(request.name));
+			break;
 	}
 	sendResponse(); // avoid error
 });

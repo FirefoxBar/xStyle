@@ -555,7 +555,8 @@ document.addEventListener("DOMContentLoaded", () => {
 		"show-badge",
 		"modify-csp",
 		"auto-update",
-		"compact-popup"
+		"compact-popup",
+		"only-applies-html"
 	]);
 
 	//cloud
