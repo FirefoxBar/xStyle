@@ -158,3 +158,22 @@ body.all-off #installed {
 #installed .mdl-list__item-secondary-action {
 	padding-right: 10px;
 }
+#installed .installed-style-compact .mdl-checkbox {
+	width: auto;
+}
+#installed .installed-style-compact .style-name {
+	width: calc(100% - 45px);
+}
+#installed .installed-style-compact .mdl-button--icon {
+	width: 22px;
+	min-width: 22px;
+	height: 22px;
+}
+#installed .installed-style-compact .mdl-button--icon .material-icons {
+	font-size: 18px;
+    -webkit-transform: translate(-11px,-11px);
+    transform: translate(-11px,-11px);
+    line-height: 22px;
+    width: 22px;
+	text-align: center;
+}

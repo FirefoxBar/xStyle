@@ -6,8 +6,8 @@
 	<link rel="stylesheet" href="third-party/material-design-icons/material-icons.min.css"/>
 	<link rel="stylesheet" href="third-party/mdl/material.min.css"/>
 	<link rel="stylesheet" href="styles/page/popup.css"/>
-    <script id="template-style-installed-item" type="x-tmpl-mustache">
-	<li id="installed-style-{{id}}" class="mdl-list__item mdl-list__item--two-line entry">
+	<script id="template-style-installed-item" type="x-tmpl-mustache">
+	<li id="installed-style-{{id}}" class="mdl-list__item mdl-list__item--two-line entry installed-style">
 		<span class="mdl-list__item-primary-content">
 			<span class="mdl-list__item-avatar">{{style_first_word}}</span>
 			<span class="style-name" title="{{name}}">{{name}}</span>
@@ -23,7 +23,18 @@
 			</label>
 		</span>
 	</li>
-    </script>
+	</script>
+	<script id="template-style-installed-item-compact" type="x-tmpl-mustache">
+	<li id="installed-style-{{id}}" class="mdl-list__item installed-style-compact">
+		<span class="mdl-list__item-primary-content">
+			<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="list-switch-{{id}}">
+				<input type="checkbox" id="list-switch-{{id}}" class="mdl-checkbox__input activate">
+			</label>
+			<span class="style-name" title="{{name}}">{{name}}</span>
+			<a class="mdl-button mdl-js-button mdl-button--icon edit" href="{{style_edit_url}}"><i class="material-icons">create</i></a>
+		</span>
+	</li>
+	</script>
 	<script src="scripts/browser-polyfill.js"></script>
 	<script src="scripts/common.js"></script>
 	<script src="scripts/localization.js"></script>
@@ -31,8 +42,8 @@
 	<script src="scripts/storage.js"></script>
 	<script src="scripts/messaging.js"></script>
 	<script src="scripts/inject/apply.js"></script>
-    <script src="scripts/page/popup/mustache.min.js"></script>
-    <script src="scripts/page/popup/mustache.wrap.js"></script>
+	<script src="scripts/page/popup/mustache.min.js"></script>
+	<script src="scripts/page/popup/mustache.wrap.js"></script>
 </head>
 <body id="xstyle-popup">
 <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
