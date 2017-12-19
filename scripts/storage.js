@@ -445,7 +445,7 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 		"auto-update": false, // Auto update styles
 		"disableAll": false, // boss key
 		"compact-popup": false,
-		"only-applies-html": true,
+		"only-applies-html": false,
 
 		"manage.sort": "id", //sort styles in management page
 
