@@ -554,7 +554,8 @@ document.addEventListener("DOMContentLoaded", () => {
 	setupLivePrefs([
 		"show-badge",
 		"modify-csp",
-		"auto-update"
+		"auto-update",
+		"compact-popup"
 	]);
 
 	//cloud

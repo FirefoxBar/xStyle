@@ -444,10 +444,7 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 		"modify-csp": true, // modify csp
 		"auto-update": false, // Auto update styles
 		"disableAll": false, // boss key
-
-		"popup.breadcrumbs": true, // display "New style" links as URL breadcrumbs
-		"popup.breadcrumbs.usePath": false, // use URL path for "this URL"
-		"popup.enabledFirst": true, // display enabled styles before disabled styles
+		"compact-popup": false,
 
 		"manage.sort": "id", //sort styles in management page
 
