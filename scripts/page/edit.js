@@ -976,6 +976,7 @@ function init() {
 			componentHandler.upgradeElement(document.getElementById("enabled").parentElement.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
 		}
 		setLoadingFinish();
+		cm.refresh();
 		return;
 	}
 	// This is an edit
