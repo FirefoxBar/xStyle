@@ -1,9 +1,9 @@
 var g_disableAll = false;
+var g_onlyHtml = false;
 var g_styleElements = {};
 var iframeObserver;
 var bodyObserver;
 var retiredStyleIds = [];
-var onlyAppliesToHtml = false;
 
 requestStyles();
 
@@ -16,7 +16,7 @@ function requestStyles() {
 	if (location.href.indexOf(browser.extension.getURL("")) === 0) {
 		var bg = browser.extension.getBackgroundPage();
 		if (bg && bg.getStyles && bg.prefs) {
-			onlyAppliesToHtml = bg.prefs.get('only-applies-html');
+			g_onlyHtml = bg.prefs.get('only-applies-html');
 			initObserver();
 			initListener();
 			// apply styles immediately, then proceed with a normal request that will update the icon
@@ -25,7 +25,7 @@ function requestStyles() {
 		}
 	}
 	browser.runtime.sendMessage({"method": "prefGet", "name": "only-applies-html"}).then(r => {
-		onlyAppliesToHtml = r;
+		g_onlyHtml = r;
 		initListener();
 		initObserver();
 		browser.runtime.sendMessage(request).then(applyStyles);
@@ -163,7 +163,7 @@ function applySections(styleId, sections) {
 	if (styleElement) {
 		return;
 	}
-	if (onlyAppliesToHtml) {
+	if (g_onlyHtml) {
 		if (document.documentElement.tagName === 'HTML') {
 			styleElement = document.createElement("style");
 		} else {
@@ -192,7 +192,7 @@ function addStyleElement(styleElement, doc) {
 	if (!doc.documentElement || doc.getElementById(styleElement.id)) {
 		return;
 	}
-	doc.documentElement.appendChild(doc.importNode(styleElement, true)).disabled = g_disableAll;
+	doc.documentElement.appendChild(doc.importNode(styleElement, true)).sheet.disabled = g_disableAll;
 	getDynamicIFrames(doc).forEach((iframe) => {
 		if (iframeIsLoadingSrcDoc(iframe)) {
 			addStyleToIFrameSrcDoc(iframe, styleElement);
@@ -283,6 +283,7 @@ function initBodyObserver() {
 				if (s.previousElementSibling !== last_xstyle_el) {
 					last_xstyle_el.parentElement.insertBefore(s, last_xstyle_el.nextSibling);
 					last_xstyle_el = s;
+					s.sheet.disabled = g_disableAll;
 				} else {
 					break;
 				}

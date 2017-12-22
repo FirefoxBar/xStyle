@@ -97,7 +97,13 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			}
 			break;
 		case "prefGet":
-			sendResponse(prefs.get(request.name));
+			if (typeof(request.name) === 'string') {
+				sendResponse(prefs.get(request.name));
+			} else {
+				let result = [];
+				request.name.forEach(n => result.push(prefs.get(n)));
+				sendResponse(request);
+			}
 			break;
 	}
 	sendResponse(); // avoid error
