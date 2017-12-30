@@ -62,7 +62,6 @@ const CleanCSSOptions = {
 	"sourceMap": false
 };
 
-
 let IS_FIREFOX = false;
 let IS_CHROME = false;
 let FIREFOX_VERSION = 0;

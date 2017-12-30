@@ -217,7 +217,6 @@ function parseStyleMeta(f) {
 
 // less compatibility
 function cssToLess(code) {
-	code = code.replace(/calc\((.*?)\)(!imp| !im|;|[ ]?\}|\n)/g, 'calc(~"$1")$2');
 	return code;
 }
 
@@ -327,13 +326,10 @@ function compileLess(content) {
 			resolve(content);
 			return;
 		}
-		less.render(content, function (e, output) {
-			if (e) {
-				reject(e);
-			} else {
-				resolve(output.css);
-			}
-		});
+		less.render(content, {
+			"strictMath": true
+		}).then(e => resolve(e.css))
+		.catch(reject);
 	});
 }
 
