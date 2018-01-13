@@ -1,3 +1,6 @@
+let style = null;
+let format = null;
+
 function init() {
 	var params = getParams();
 	if (!params.id) { // match should be 2 - one for the whole thing, one for the parentheses
@@ -11,14 +14,13 @@ function init() {
 				requestStyle();
 				return;
 			}
-			var style = styles[0];
-			initWithStyle(style);
+			style = styles[0];
+			initWithStyle();
 		});
 	}
 }
 
-function initWithStyle(style) {
-	window.style = style;
+function initWithStyle() {
 	document.querySelector('.style-name').appendChild(document.createTextNode(style.name));
 	document.getElementById("name").value = style.name;
 	document.getElementById("author").value = style.author || '';
@@ -26,6 +28,18 @@ function initWithStyle(style) {
 	document.getElementById("md5Url").value = style.md5Url || '';
 	document.getElementById("originalMd5").value = style.originalMd5 || md5(style.code);
 	document.getElementById("url").value = style.url || "https://ext.firefoxcn.net/xstyle/md5namespace/" + document.getElementById("originalMd5").value;
+	switch (style.type) {
+		case 'less':
+			format = 'less';
+			break;
+		case 'css':
+			format = 'css';
+			break;
+	}
+	document.getElementById('export-as-json').appendChild(document.createTextNode(t('exportAs', ['json'])));
+	document.getElementById('export-as-json').addEventListener('click', exportAsJson);
+	document.getElementById('export-as-usercss').appendChild(document.createTextNode(t('exportAs', ['user.' + format])));
+	document.getElementById('export-as-usercss').addEventListener('click', exportAsUsercss);
 	//material
 	if (typeof(componentHandler) !== 'undefined') {
 		componentHandler.upgradeElement(document.getElementById("name").parentElement, 'MaterialTextfield');
@@ -125,11 +139,9 @@ function exportAsUsercss() {
 	}
 	content += "==/UserStyle== */\n\n";
 	content += style.code;
-	saveAsFile(content.trim(), 'xstyle-' + style.originalMd5 + '.user.less');
+	saveAsFile(content.trim(), 'xstyle-' + style.originalMd5 + '.user.' + format);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
 	init();
-	document.getElementById('export-as-json').addEventListener('click', exportAsJson);
-	document.getElementById('export-as-usercss').addEventListener('click', exportAsUsercss);
 });

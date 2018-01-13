@@ -214,12 +214,6 @@ function parseStyleMeta(f) {
 	return result;
 }
 
-
-// less compatibility
-function cssToLess(code) {
-	return code;
-}
-
 // check md5 for update
 function checkStyleUpdateMd5(style) {
 	return new Promise((resolve) => {
@@ -319,22 +313,24 @@ function applyAdvanced(content, item, saved) {
 }
 
 
-// Compile less to css
-function compileLess(content) {
+// Comile dynamic format like less and more
+function CompileDynamic(format, content) {
 	return new Promise((resolve, reject) => {
-		if (typeof(less) === 'undefined') {
-			resolve(content);
-			return;
+		switch (format) {
+			case 'less':
+				less.render(content, {
+					"strictMath": true
+				}).then(e => resolve(e.css))
+				.catch(reject);
+				break;
+			default:
+				resolve(content);
 		}
-		less.render(content, {
-			"strictMath": true
-		}).then(e => resolve(e.css))
-		.catch(reject);
 	});
 }
 
 // Convect css to a special format for storage
-function compileCss(css, options) {
+function CompileCSS(css, options) {
 	if (options === undefined) {
 		options = CleanCSSOptions;
 	}
@@ -367,7 +363,7 @@ function parseStyleFile(code, options, advanced) {
 	}
 	return new Promise((resolve, reject) => {
 		let result = {
-			type: "less",
+			type: "css",
 			lastModified: new Date().getTime(),
 			name: "",
 			enabled: 1,
@@ -423,24 +419,14 @@ function parseStyleFile(code, options, advanced) {
 				}
 				body = applyAdvanced(body, advanced.item, advanced.saved);
 			}
-			if (meta.type === 'less') {
-				// less
-				compileLess(body).then((css) => {
-					compileCss(css).then((sections) => {
-						result.sections = sections;
-						finishParse();
-					});
-				}).catch((e) => {
-					reject("Error: " + e.message + "\nAt line " + e.line + " column " + e.column);
-				});
-			} else {
-				// normal css
-				result.code = cssToLess(result.code);
-				compileCss(body).then((sections) => {
+			CompileDynamic(meta.type, body).then((css) => {
+				CompileCSS(css).then((sections) => {
 					result.sections = sections;
 					finishParse();
 				});
-			}
+			}).catch((e) => {
+				reject("Error: " + e.message + "\nAt line " + e.line + " column " + e.column);
+			});
 		} else {
 			// json file or normal css file
 			let json = null;
@@ -448,7 +434,6 @@ function parseStyleFile(code, options, advanced) {
 				json = JSON.parse(code);
 			} catch (e) {
 				// normal css file, check if advanced is passed
-				result.code = cssToLess(code);
 				let body = code;
 				if (Object.keys(advanced.item).length > 0) {
 					if (Object.keys(advanced.saved).length === 0) {
@@ -458,7 +443,7 @@ function parseStyleFile(code, options, advanced) {
 					}
 					body = applyAdvanced(body, advanced.item, advanced.saved);
 				}
-				compileCss(body).then((sections) => {
+				CompileCSS(body).then((sections) => {
 					result.sections = sections;
 					finishParse();
 				});
@@ -507,24 +492,14 @@ function parseStyleFile(code, options, advanced) {
 				}
 				body = applyAdvanced(body, advanced.item, advanced.saved);
 			}
-			if (json.type === 'less') {
-				// less
-				compileLess(body).then((css) => {
-					compileCss(css).then((sections) => {
-						result.sections = sections;
-						finishParse();
-					});
-				}).catch((e) => {
-					reject("Error: " + e.message + "\nAt line " + e.line + " column " + e.column);
-				});
-			} else {
-				// normal css
-				result.code = cssToLess(result.code);
-				compileCss(body).then((sections) => {
+			CompileDynamic(json.type, body).then((css) => {
+				CompileCSS(css).then((sections) => {
 					result.sections = sections;
 					finishParse();
 				});
-			}
+			}).catch((e) => {
+				reject("Error: " + e.message + "\nAt line " + e.line + " column " + e.column);
+			});
 		}
 	});
 }
@@ -541,7 +516,9 @@ function updateStyleFormat(s) {
 	}
 	// version 4
 	if (!s.type) {
-		s.type = 'less';
+		s.type = 'css';
+	}
+	if (!s.code) {
 		let codeSections = null;
 		if (typeof(s.advanced.css) !== 'undefined' && s.advanced.css.length) {
 			codeSections = s.advanced.css;
@@ -565,8 +542,6 @@ function updateStyleFormat(s) {
 			}
 			return cssMds.length ? "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}" : section.code;
 		}).join("\n\n");
-		// less compatibility
-		s.code = cssToLess(s.code);
 		delete s.advanced.css;
 	}
 	return s;

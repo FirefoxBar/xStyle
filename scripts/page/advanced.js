@@ -186,8 +186,8 @@ function onSaveClick() {
 	style.advanced.saved = settings;
 	style.method = "saveStyle";
 	let code = applyAdvanced(style.code, style.advanced.item, style.advanced.saved);
-	compileLess(code)
-	.then(css => compileCss(css))
+	CompileDynamic(style.type, code)
+	.then(CompileCSS)
 	.then((r) => {
 		style.sections = r;
 		browser.runtime.sendMessage(style).then(() => {

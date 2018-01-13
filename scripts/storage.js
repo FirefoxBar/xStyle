@@ -11,7 +11,10 @@ function getDatabase() {
 		dbOpenRequest.onupgradeneeded = function(event) {
 			if (event.oldVersion == 0) {
 				// Installed
-				event.target.result.createObjectStore("styles", {keyPath: 'id', autoIncrement: true});
+				event.target.result.createObjectStore("styles", {
+					keyPath: 'id',
+					autoIncrement: true
+				});
 			} else {
 				upgradeToNewest();
 			}
@@ -243,7 +246,7 @@ function getType(o) {
 	throw "Not supported - " + o;
 }
 
-var namespacePattern = /^\s*(@namespace[^;]+;\s*)+$/;
+const namespacePattern = /^\s*(@namespace[^;]+;\s*)+$/;
 function getApplicableSections(style, url) {
 	var sections = style.sections.filter(function(section) {
 		return sectionAppliesToUrl(section, url);
@@ -354,92 +357,13 @@ function setupLivePrefs(IDs) {
 	}
 }
 
-function installRepls(arrObj, keyCommands) {
-	var strObj = arrObj.join('');
-	var s = [];
-	for (var i in keyCommands) {
-		s.push([i, keyCommands[i]]);
-	}
-	s.sort(function(i, j) { return i[1] - j[1]; });
-	var t = [];
-	s.forEach(function (val) { t.push(val[1]); });
-	var newData = collectKeys([strObj, t]);
-	var retVal = {};
-	for (var i = 0; i < s.length; i++) {
-		retVal[s[i][0]] = newData[i];
-	}
-	return retVal;
-}
-
 globalKeys = {};
 var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() {
-	var me = this; var methodFields = "ourself";
-	var boundWrappers = {}; var boundMethods = {};
+	const _this = this;
+	let boundWrappers = {};
+	let boundMethods = {};
 
-	var http = {
-		// could be changed if server will use another methods
-		"b64": [btoa, atob],
-		"url": [encodeURIComponent, decodeURIComponent],
-		"requestWrapper": function(httpMethod, url, done) {
-			if (typeof(getURL) !== 'undefined') {
-				getURL(url, httpMethod === 'POST').then(done).catch(function() {
-					done(null);
-				});
-				return;
-			}
-			var xhr = new XMLHttpRequest();
-			xhr.onreadystatechange = function() {
-				if (xhr.readyState == 4 && done) {
-					if (xhr.status >= 400) {
-						done(null);
-					} else {
-						done(xhr.responseText);
-					}
-				}
-			};
-			xhr.open(httpMethod, url);
-			xhr.send(null);
-		},
-		"get": function(url, data) {
-			this.requestWrapper("GET", url, data);
-		},
-		"post": function(url, data) {
-			this.requestWrapper("POST", url, data);
-		},
-		"prepEncode": function(raw, conv, keyValueData, sep) {
-			var output = raw; sep = sep ? "" : "" && sep;
-			keyValueData.split(sep).forEach(function(t){
-				output = conv(output);
-			});
-			return output;
-		},
-		"parseResult": function(from, meta, callback) {
-			function parser(s, p) {
-				return p.length > 1 ? [from.slice(p[0], p[1])].concat
-				(parser(s, p.slice(1))) : from.slice(p[0]);
-			}
-			callback(parser(from, meta));
-		}
-	};
-
-	function applyExtSettings(setValues) {
-		var s = setValues.ExternalSuffix;
-		Object.keys(setValues).filter( function(v) {
-			return v.indexOf(s, v.length - s.length) !== -1
-		}).forEach(function (field){
-			var newField = field.substring(0, field.length - s.length);
-			http.get(setValues[field], function(resp) {
-				try {
-					setValues[newField] = JSON.parse(resp);
-				} catch(e) {
-					setValues[newField] = setValues[newField] || {};
-				}
-			});
-		});
-	}
-
-	var defaults = {
-		"ExternalSuffix": "Ext", // Suffix to get value from external resource
+	let defaults = {
 		"show-badge": true, // display text on popup menu icon
 		"modify-csp": true, // modify csp
 		"auto-update": false, // Auto update styles
@@ -473,11 +397,10 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 		"editor.fontName": "sans-serif" // font size
 	};
 	// when browser is strarting up, the setting is default
-	me.isDefault = true;
+	this.isDefault = true;
 
-	var values = deepCopy(defaults);
-	boundMethods.enc = boundWrappers.enc = http;
-	var syncTimeout; // see broadcast() function below
+	let values = deepCopy(defaults);
+	let syncTimeout; // see broadcast() function below
 
 	Object.defineProperty(this, "readOnlyValues", {value: {}});
 
@@ -509,11 +432,11 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 	};
 
 	Prefs.prototype.set = function(key, value, options) {
-		var oldValue = deepCopy(values[key]);
+		let oldValue = deepCopy(values[key]);
 		values[key] = value;
 		defineReadonlyProperty(this.readOnlyValues, key, value);
 		if ((!options || !options.noBroadcast) && !equal(value, oldValue)) {
-			me.broadcast(key, value, options);
+			_this.broadcast(key, value, options);
 		}
 	};
 
@@ -521,10 +444,12 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 		boundMethods[apiName] = apiMethod;
 	};
 
-	Prefs.prototype.remove = function(key) { me.set(key, undefined) };
+	Prefs.prototype.remove = function(key) {
+		_this.set(key, undefined)
+	};
 
 	Prefs.prototype.broadcast = function(key, value, options) {
-		var message = {method: "prefChanged", prefName: key, value: value};
+		const message = {method: "prefChanged", prefName: key, value: value};
 		notifyAllTabs(message);
 		browser.runtime.sendMessage(message);
 		if (key == "disableAll") {
@@ -539,19 +464,19 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 	};
 
 	Object.keys(defaults).forEach(function(key) {
-		me.set(key, defaults[key], {noBroadcast: true});
+		_this.set(key, defaults[key], {noBroadcast: true});
 	});
 
 	getSync().get("settings").then(function(result) {
-		me.isDefault = false;
-		var synced = result.settings;
+		_this.isDefault = false;
+		const synced = result.settings;
 		for (var key in defaults) {
 			if (synced && (key in synced)) {
-				me.set(key, synced[key], {noSync: true});
+				_this.set(key, synced[key], {noSync: true});
 			} else {
 				var value = tryMigrating(key);
 				if (value !== undefined) {
-					me.set(key, value);
+					_this.set(key, value);
 				}
 			}
 		}
@@ -559,11 +484,11 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 
 	browser.storage.onChanged.addListener(function(changes, area) {
 		if (area == "sync" && "settings" in changes) {
-			var synced = changes.settings.newValue;
+			const synced = changes.settings.newValue;
 			if (synced) {
 				for (key in defaults) {
 					if (key in synced) {
-						me.set(key, synced[key], {noSync: true});
+						_this.set(key, synced[key], {noSync: true});
 					}
 				}
 			} else {
@@ -596,20 +521,6 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 		return value;
 	}
 };
-
-function findRepls(repl, kc) {
-	var apk = prefs.get(repl);
-	return installRepls(apk, kc);
-}
-
-function collectKeys(overlays) {
-	var e = prefs.get("enc"), retVal = {};
-	e.parseResult(e.prepEncode(overlays[0], e.b64[1], "rw"),
-		overlays[1], function(res) {
-		retVal = res;
-	});
-	return retVal;
-}
 
 function sessionStorageHash(name) {
 	var hash = {
@@ -688,10 +599,10 @@ function defineReadonlyProperty(obj, key, value) {
 }
 
 function getSync() {
-	// Firefox do not support sync, use local to instead of it
 	if ("sync" in browser.storage) {
 		return browser.storage.sync;
 	}
+	// In old Firefox version, sync is not supported, use local to instead of it
 	if ("local" in browser.storage) {
 		return browser.storage.local;
 	}

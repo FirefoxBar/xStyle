@@ -18,5 +18,10 @@
 		"stylename": {
 			"content": "$1"
 		}
+	},
+	"exportAs": {
+		"styletype": {
+			"content": "$1"
+		}
 	}
 }

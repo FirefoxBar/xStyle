@@ -1289,10 +1289,12 @@ function save() {
 		editors[i].save();
 	}
 
+	const type = document.getElementById('enabled-less').checked ? 'less' : 'css';
+
 	let code = document.getElementById('code').value;
 	let request = {
 		method: "saveStyle",
-		type: "less",
+		type: type,
 		id: styleId,
 		lastModified: new Date().getTime(),
 		name: document.getElementById("name").value,
@@ -1316,18 +1318,21 @@ function save() {
 		advancedSaved = deepCopy(request.advanced.saved);
 		code = applyAdvanced(code, advanced, request.advanced.saved);
 	}
-	compileLess(code).then((css) => {
-		compileCss(css).then((sections) => {
+	CompileDynamic(type, code).then((css) => {
+		CompileCSS(css).then((sections) => {
 			request.sections = sections;
 			browser.runtime.sendMessage(request).then(saveComplete);
 		}).catch(e => {
 			saveError(e);
 		});
 	}).catch((e) => {
-		let error = "Error: " + e.message + "\nAt line " + e.line + " column " + e.column + "\nCode:\n";
-		e.extract.forEach((c) => {
-			error += c.replace(/\t/g, '    ') + "\n";
-		});
+		let error = "Error: " + e.message + "\nAt line " + e.line + " column " + e.column + "\n";
+		if (e.extract) {
+			error += "Code:\n";
+			e.extract.forEach((c) => {
+				error += c ? c.replace(/\t/g, '    ') + "\n" : '';
+			});
+		}
 		saveError(error.trim());
 	});
 }
