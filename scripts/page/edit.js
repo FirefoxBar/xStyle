@@ -974,6 +974,9 @@ function init() {
 			document.getElementById("enabled").parentElement.classList.add('mdl-js-ripple-effect');
 			componentHandler.upgradeElement(document.getElementById("enabled").parentElement, 'MaterialCheckbox');
 			componentHandler.upgradeElement(document.getElementById("enabled").parentElement.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
+			document.getElementById("enabled-less").parentElement.classList.add('mdl-js-ripple-effect');
+			componentHandler.upgradeElement(document.getElementById("enabled-less").parentElement, 'MaterialCheckbox');
+			componentHandler.upgradeElement(document.getElementById("enabled-less").parentElement.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
 		}
 		setLoadingFinish();
 		cm.refresh();
@@ -999,6 +1002,7 @@ function initWithStyle(style) {
 	document.getElementById("name").value = style.name;
 	document.getElementById("update-url").value = style.updateUrl || '';
 	document.getElementById("enabled").checked = style.enabled;
+	document.getElementById('enabled-less').checked = style.type === 'less';
 	//material
 	if (typeof(componentHandler) !== 'undefined') {
 		componentHandler.upgradeElement(document.getElementById("name").parentElement, 'MaterialTextfield');
@@ -1006,6 +1010,9 @@ function initWithStyle(style) {
 		document.getElementById("enabled").parentElement.classList.add('mdl-js-ripple-effect');
 		componentHandler.upgradeElement(document.getElementById("enabled").parentElement, 'MaterialCheckbox');
 		componentHandler.upgradeElement(document.getElementById("enabled").parentElement.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
+		document.getElementById("enabled-less").parentElement.classList.add('mdl-js-ripple-effect');
+		componentHandler.upgradeElement(document.getElementById("enabled-less").parentElement, 'MaterialCheckbox');
+		componentHandler.upgradeElement(document.getElementById("enabled-less").parentElement.querySelector('.mdl-js-ripple-effect'), 'MaterialRipple');
 	}
 
 	setTimeout(() => {
