@@ -60,8 +60,8 @@ function doExport() {
 		"originalMd5": document.getElementById("originalMd5").value || null,
 		"url": document.getElementById("url").value || null,
 		"author": document.getElementById("author").value || null,
-		"code": window.style.code,
-		"advanced": window.style.advanced || {"item": {}}
+		"code": style.code,
+		"advanced": style.advanced || {"item": {}}
 	};
 	// remove saved
 	delete result.advanced.saved;
