@@ -434,6 +434,7 @@ function parseStyleFile(code, options, advanced) {
 				json = JSON.parse(code);
 			} catch (e) {
 				// normal css file, check if advanced is passed
+				result.code = code;
 				let body = code;
 				if (Object.keys(advanced.item).length > 0) {
 					if (Object.keys(advanced.saved).length === 0) {
