@@ -41,6 +41,8 @@ You can also help us translate this extension on [Transifex](https://www.transif
 
 * sv-SE: [Kim](https://github.com/JumpySWE "JumpySWE")
 
+* pt-BR: [Kassio Cruz](https://www.transifex.com/user/profile/kassiocs/)
+
 * ru: [Shychara](https://github.com/vanja-san "Shychara")
 
 ## Licenses
