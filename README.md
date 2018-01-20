@@ -31,6 +31,51 @@ You can contribute code by [submiting a pull request](https://github.com/Firefox
 
 You can also help us translate this extension on [Transifex](https://www.transifex.com/sytec/xstyle/).
 
+## How to build
+
+* Download [WebExt-build-tool](https://github.com/FirefoxBar/WebExt-build-tool) and configure it
+
+* The config of xStyle is like this:
+
+```javascript
+"xstyle": {
+	"basic": {
+		"dir": "X:/Code/xStyle",
+		"output": "{EXT_DIR}/build/output",
+		"ignores": [".git", ".vscode", "build", "manifest", ".gitignore", "README.md", "LICENSE", "manifest.json", "manifest_t.json"],
+		"custom": "{EXT_DIR}/build/custom.js",
+		"version": {
+			"firefox": 0,
+			"amo": 0,
+			"chrome": 0,
+			"webstore": 1
+		}
+	},
+	"locales": {
+		"dir": "{EXT_DIR}/_locales",
+		"type": "transifex",
+		"placeholder": "{EXT_DIR}/build/locales_placeholder.json",
+		"default": "en",
+		"languages": ["zh_CN", "zh_TW", "pt_BR"],
+		"editable": "{EXT_DIR}/build/editable.json"
+	},
+	"ext": {
+		"version": "3.0.5",
+		"filename": "xstyle-{VERSION}",
+		"gecko": {
+			"manifest": "{EXT_DIR}/manifest/firefox.json",
+			// Omit some information
+		},
+		"crx": {
+			"manifest": "{EXT_DIR}/manifest/chrome.json"
+		}
+	}
+	// Omit some information
+}
+```
+
+* Run `node build.js xstyle`
+
 ## Translators
 
 * en: [ShuangYa](https://github.com/sylingd)
