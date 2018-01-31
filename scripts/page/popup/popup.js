@@ -3,7 +3,7 @@ const DISABLED_CLASS = "disabled";
 const ZERO_INSTALLED_CLASS = "zerostyles";
 const UNAVAILABLE_CLASS = "unavailable";
 const STYLES_CLASS = "have-styles";
-const createNewStyleLink = '/edit.html?';
+const createNewStyleLink = browser.extension.getURL("edit.html") + '?';
 
 const installed = document.getElementById("installed");
 const body = document.getElementsByTagName('body')[0];
