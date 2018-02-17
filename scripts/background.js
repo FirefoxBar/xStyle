@@ -83,6 +83,9 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		case "styleDisableAll":
 			browser.contextMenus.update("disableAll", {checked: request.disableAll});
 			break;
+		case "GhostText":
+			GTOnMessage(request, sender, sendResponse);
+			break;
 		case "prefChanged":
 			switch (request.prefName) {
 				case "show-badge":

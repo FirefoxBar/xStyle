@@ -1577,6 +1577,9 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			if (request.prefName == "editor.smartIndent") {
 				CodeMirror.setOption("smartIndent", request.value);
 			}
+		case "GhostText":
+			GTOnMessage(request, sender, sendResponse);
+			break;
 	}
 });
 
@@ -1604,6 +1607,23 @@ function reCalculatePanelPosition() {
 	const leftSection = document.querySelector('.left-section');
 	const rightSection = document.querySelector('.right-section');
 	rightSection.style.left = (leftSection.offsetLeft + leftSection.offsetWidth + 10).toString() + 'px';
+}
+
+
+// GhostText
+function enableGhostText() {
+	const c = document.getElementById('code').CodeMirror;
+	GTEnable(onGhostChange, document.title, c.getValue());
+	c.setOption("readOnly", true);
+}
+function onGhostChange(data) {
+	const c = document.getElementById('code').CodeMirror;
+	if (data.action === "change") {
+		c.setValue(data.data.text);
+	}
+	if (data.action === "close") {
+		c.setOption("readOnly", false);
+	}
 }
 
 
