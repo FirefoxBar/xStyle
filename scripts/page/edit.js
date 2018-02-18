@@ -408,8 +408,15 @@ function autocompletePicked(cm) {
 	cm.state.autocompletePicked = true;
 }
 
-function indicateCodeChange(cm) {
+function indicateCodeChange(cm, info) {
 	setDirty(true);
+	if (isGhostText() && info.origin !== "setValue" && cm.getTextArea().id === "code") {
+		if (GT_Update) {
+			GT_Update = false;
+		} else {
+			GTUpdate(cm.getValue());
+		}
+	}
 	updateLintReport(cm);
 }
 
@@ -1611,18 +1618,39 @@ function reCalculatePanelPosition() {
 
 
 // GhostText
+let GT_Enabled = false;
+let GT_Update = false;
+// Close exists connection if user reload page
+disableGhostText();
+function isGhostText() {
+	return GT_Enabled;
+}
 function enableGhostText() {
 	const c = document.getElementById('code').CodeMirror;
 	GTEnable(onGhostChange, document.title, c.getValue());
-	c.setOption("readOnly", true);
+	GT_Enabled = true;
+}
+function disableGhostText() {
+	GTDisable();
 }
 function onGhostChange(data) {
 	const c = document.getElementById('code').CodeMirror;
 	if (data.action === "change") {
+		GT_Update = true;
 		c.setValue(data.data.text);
+		for (const i in data.data.selections) {
+			const selection = data.data.selections[i];
+			const start = c.posFromIndex(selection.start);
+			const end = c.posFromIndex(selection.end);
+			if (i === 0) {
+				c.doc.setSelection(start, end)
+			} else {
+				c.doc.addSelection(start, end)
+			}
+		}
 	}
 	if (data.action === "close") {
-		c.setOption("readOnly", false);
+		GT_Enabled = false;
 	}
 }
 
