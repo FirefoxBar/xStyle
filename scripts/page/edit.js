@@ -310,6 +310,8 @@ function setupCodeMirror(textarea, index, isAdvanced) {
 		}
 	});
 
+	cm.on("beforeSelectionChange", onSelectionChange);
+
 	cm.on('change', autocompleteOnTyping);
 	cm.on('pick', autocompletePicked);
 
@@ -411,13 +413,27 @@ function autocompletePicked(cm) {
 function indicateCodeChange(cm, info) {
 	setDirty(true);
 	if (isGhostText() && info.origin !== "setValue" && cm.getTextArea().id === "code") {
-		if (GT_Update) {
-			GT_Update = false;
+		if (GT_Update_flag_1) {
+			GT_Update_flag_1 = false;
 		} else {
 			GTUpdate(cm.getValue());
 		}
 	}
 	updateLintReport(cm);
+}
+
+function onSelectionChange(cm, info) {
+	if (isGhostText() && info.origin === "*mouse" && cm.getTextArea().id === "code") {
+		GT_Update_flag_2 = false;
+		let selection = [];
+		info.ranges.forEach((range) => {
+			selection.push({
+				"start": cm.doc.indexFromPos(range.head),
+				"end": cm.doc.indexFromPos(range.anchor)
+			});
+		});
+		GTUpdate(cm.getValue(), selection);
+	}
 }
 
 // Shift-Ctrl-Wheel scrolls entire page even when mouse is over a code editor
@@ -1619,34 +1635,47 @@ function reCalculatePanelPosition() {
 
 // GhostText
 let GT_Enabled = false;
-let GT_Update = false;
+let GT_Update_flag_1 = false;
+let GT_Update_flag_2 = true;
 // Close exists connection if user reload page
 disableGhostText();
 function isGhostText() {
 	return GT_Enabled;
 }
 function enableGhostText() {
-	const c = document.getElementById('code').CodeMirror;
-	GTEnable(onGhostChange, document.title, c.getValue());
+	const cm = document.getElementById('code').CodeMirror;
+	let selection = [];
+	cm.doc.listSelections().forEach((range) => {
+		selection.push({
+			"start": cm.doc.indexFromPos(range.head),
+			"end": cm.doc.indexFromPos(range.anchor)
+		});
+	})
+	GTEnable(4001, onGhostChange, document.title, cm.getValue());
 	GT_Enabled = true;
 }
 function disableGhostText() {
 	GTDisable();
 }
 function onGhostChange(data) {
-	const c = document.getElementById('code').CodeMirror;
+	const cm = document.getElementById('code').CodeMirror;
 	if (data.action === "change") {
-		GT_Update = true;
-		c.setValue(data.data.text);
-		for (const i in data.data.selections) {
-			const selection = data.data.selections[i];
-			const start = c.posFromIndex(selection.start);
-			const end = c.posFromIndex(selection.end);
-			if (i === 0) {
-				c.doc.setSelection(start, end)
-			} else {
-				c.doc.addSelection(start, end)
-			}
+		GT_Update_flag_1 = true;
+		if (GT_Update_flag_2) {
+			cm.setValue(data.data.text);
+			let isFirst = true;
+			data.data.selections.forEach((selection) => {
+				const start = cm.posFromIndex(selection.start);
+				const end = cm.posFromIndex(selection.end);
+				if (isFirst) {
+					cm.doc.setSelection(start, end);
+					isFirst = false;
+				} else {
+					cm.doc.addSelection(start, end);
+				}
+			});
+		} else {
+			GT_Update_flag_2 = true;
 		}
 	}
 	if (data.action === "close") {

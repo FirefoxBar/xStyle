@@ -1,22 +1,21 @@
 let GTHandler = null;
 let GTData = {
 	"text": null,
-	"selections": {
-		"start": 0,
-		"end": 0
-	},
+	"selections": [],
 	"title": null,
 	"url": "ext.firefoxcn.net",
 	"syntax": "less"
 };
 
-function GTEnable(handler, title, text, selection) {
+function GTEnable(port, handler, title, text, selection) {
 	GTHandler = handler;
 	GTData.title = title;
 	GTData.text = text;
+	GTData.selection = selection;
 	notifyBackground({
 		"method": "GhostText",
 		"gt": "send",
+		"port": port,
 		"content": JSON.stringify(GTData)
 	});
 }
@@ -28,8 +27,9 @@ function GTDisable() {
 	});
 }
 
-function GTUpdate(text) {
+function GTUpdate(text, selection) {
 	GTData.text = text;
+	GTData.selection = selection;
 	notifyBackground({
 		"method": "GhostText",
 		"gt": "send",

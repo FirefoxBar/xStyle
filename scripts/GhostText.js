@@ -1,5 +1,4 @@
 const GTVersion = 1;
-const GTPort = 4001;
 let GTConnections = {};
 let GTTabListener = false;
 
@@ -10,7 +9,7 @@ function GTOnMessage(request, sender, sendResponse) {
 			GTConnections[tabId].send(request.content);
 			return;
 		}
-		GTInit(tabId).then(() => {
+		GTInit(tabId, request.port).then(() => {
 			GTConnections[tabId].send(request.content);
 			sendResponse("Connected");
 		})
@@ -24,9 +23,9 @@ function GTOnMessage(request, sender, sendResponse) {
 	}
 }
 
-function GTInit(tabId) {
+function GTInit(tabId, port) {
 	return new Promise((resolve, reject) => {
-		getURL('http://localhost:' + GTPort)
+		getURL('http://localhost:' + port)
 		.then(r => JSON.parse(r))
 		.then(({ProtocolVersion, WebSocketPort}) => {
 			if (parseFloat(ProtocolVersion) != GTVersion) {
