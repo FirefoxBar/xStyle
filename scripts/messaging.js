@@ -1,30 +1,33 @@
 function notifyAllTabs(request) {
 	return new Promise((resolve) => {
+		const exturl = browser.extension.getURL("");
+		browser.runtime.sendMessage(request);
 		if (IS_MOBILE) {
 			browser.tabs.query({}).then((tabs) => {
-				for (let tab of tabs) {
+				tabs.forEach((tab) => {
 					updateIcon(tab);
-					if (canStyle(tab.url)) {
+					if (canStyle(tab.url) && !tab.url.includes(exturl)) {
 						browser.tabs.sendMessage(tab.id, request);
 					}
-				}
+				});
 				resolve();
 			});
 		} else {
+			// notify all open popups
+			var reqPopup = shallowMerge({}, request, {method: "updatePopup", reason: request.method});
+			browser.runtime.sendMessage(reqPopup);
+			// notify other tabs
 			browser.windows.getAll({populate: true}).then((windows) => {
 				windows.forEach((win) => {
 					win.tabs.forEach((tab) => {
 						updateIcon(tab);
-						if (canStyle(tab.url)) {
+						if (canStyle(tab.url) && !tab.url.includes(exturl)) {
 							browser.tabs.sendMessage(tab.id, request);
 						}
 					});
 				});
 				resolve();
 			});
-			// notify all open popups
-			var reqPopup = shallowMerge({}, request, {method: "updatePopup", reason: request.method});
-			browser.runtime.sendMessage(reqPopup);
 		}
 	});
 }

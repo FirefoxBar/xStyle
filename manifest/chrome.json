@@ -27,6 +27,7 @@
 			"scripts/messaging.js",
 			"scripts/userstyle.js",
 			"scripts/storage.js",
+			"scripts/GhostText.js",
 			"scripts/background.js"
 		]
 	},
