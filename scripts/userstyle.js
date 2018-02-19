@@ -361,6 +361,9 @@ function parseStyleFile(code, options, advanced) {
 	if (advanced === undefined) {
 		advanced = {"item": {}, "saved": {}};
 	}
+	if (advanced.item === undefined) {
+		advanced.item = {};
+	}
 	return new Promise((resolve, reject) => {
 		let result = {
 			type: "css",
