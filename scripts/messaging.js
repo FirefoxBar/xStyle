@@ -29,9 +29,7 @@ function notifyAllTabs(request) {
 	});
 }
 function notifyBackground(request) {
-	return new Promise((resolve) => {
-		browser.runtime.sendMessage(shallowMerge({}, request, {method: "notifyBackground", reason: request.method}));
-	});
+	return browser.runtime.sendMessage(shallowMerge({}, request, {method: "notifyBackground", reason: request.method}));
 }
 
 function processRawStylesResponse(resp){

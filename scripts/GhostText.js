@@ -2,25 +2,28 @@ const GTVersion = 1;
 let GTConnections = {};
 let GTTabListener = false;
 
-function GTOnMessage(request, sender, sendResponse) {
-	const tabId = sender.tab.id;
-	if (request.gt === "send") {
-		if (GTConnections[tabId] && GTConnections[tabId].readyState === 1) {
-			GTConnections[tabId].send(request.content);
-			return;
+function GTOnMessage(request, sender) {
+	return new Promise((resolve) => {
+		const tabId = sender.tab.id;
+		if (request.gt === "send") {
+			if (GTConnections[tabId] && GTConnections[tabId].readyState === 1) {
+				GTConnections[tabId].send(request.content);
+				resolve(1);
+				return;
+			}
+			GTInit(tabId, request.port).then(() => {
+				GTConnections[tabId].send(request.content);
+				resolve(1);
+			})
+			.catch((error) => {
+				resolve(error);
+			});
 		}
-		GTInit(tabId, request.port).then(() => {
-			GTConnections[tabId].send(request.content);
-			sendResponse("1");
-		})
-		.catch((error) => {
-			sendResponse(error);
-		});
-	}
-	if (request.gt === "close") {
-		GTClose(tabId);
-		sendResponse("Closed");
-	}
+		if (request.gt === "close") {
+			GTClose(tabId);
+			resolve("Closed");
+		}
+	});
 }
 
 function GTInit(tabId, port) {
@@ -62,7 +65,8 @@ function GTInit(tabId, port) {
 				};
 				resolve();
 			};
-		}).catch((reason) => {
+		})
+		.catch((reason) => {
 			reject(browser.i18n.getMessage("GT_fail_connect"));
 		});
 	})
