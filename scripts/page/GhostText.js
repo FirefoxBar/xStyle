@@ -12,7 +12,7 @@ function GTEnable(port, handler, title, text, selection) {
 	GTData.title = title;
 	GTData.text = text;
 	GTData.selection = selection;
-	notifyBackground({
+	return notifyBackground({
 		"method": "GhostText",
 		"gt": "send",
 		"port": port,
@@ -21,7 +21,7 @@ function GTEnable(port, handler, title, text, selection) {
 }
 
 function GTDisable() {
-	notifyBackground({
+	return notifyBackground({
 		"method": "GhostText",
 		"gt": "close"
 	});

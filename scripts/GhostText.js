@@ -11,7 +11,7 @@ function GTOnMessage(request, sender, sendResponse) {
 		}
 		GTInit(tabId, request.port).then(() => {
 			GTConnections[tabId].send(request.content);
-			sendResponse("Connected");
+			sendResponse("1");
 		})
 		.catch((error) => {
 			sendResponse(error);
@@ -26,18 +26,18 @@ function GTOnMessage(request, sender, sendResponse) {
 function GTInit(tabId, port) {
 	return new Promise((resolve, reject) => {
 		getURL('http://localhost:' + port)
-		.then(r => JSON.parse(r))
-		.then(({ProtocolVersion, WebSocketPort}) => {
-			if (parseFloat(ProtocolVersion) != GTVersion) {
+		.then((r) => {
+			const result = JSON.parse(r);
+			if (parseFloat(result.ProtocolVersion) != GTVersion) {
 				// Unsupported version
-				reject("Unsupported version");
+				reject(browser.i18n.getMessage("GT_fail_version"));
 				return;
 			}
 			try {
-				GTConnections[tabId] = new WebSocket('ws://localhost:' + WebSocketPort);
+				GTConnections[tabId] = new WebSocket('ws://localhost:' + result.WebSocketPort);
 			} catch (e) {
 				// Connect fail
-				reject("Connect fail");
+				reject(browser.i18n.getMessage("GT_fail_connect"));
 				return;
 			}
 			if (GTTabListener === false) {
@@ -62,6 +62,8 @@ function GTInit(tabId, port) {
 				};
 				resolve();
 			};
+		}).catch((reason) => {
+			reject(browser.i18n.getMessage("GT_fail_connect"));
 		});
 	})
 }

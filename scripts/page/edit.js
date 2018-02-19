@@ -1651,11 +1651,20 @@ function enableGhostText() {
 			"end": cm.doc.indexFromPos(range.anchor)
 		});
 	})
-	GTEnable(4001, onGhostChange, document.title, cm.getValue());
 	GT_Enabled = true;
+	GTEnable(4001, onGhostChange, document.title, cm.getValue()).then((response) => {
+		if (response == "1") {
+			showToast(t("GT_connected"));
+		} else {
+			showToast(response);
+			GT_Enabled = false;
+		}
+	});
 }
 function disableGhostText() {
-	GTDisable();
+	GTDisable().then(() => {
+		GT_Enabled = false;
+	});
 }
 function onGhostChange(data) {
 	const cm = document.getElementById('code').CodeMirror;
