@@ -1639,32 +1639,16 @@ let GT_Update_flag_1 = false;
 let GT_Update_flag_2 = true;
 // Close exists connection if user reload page
 disableGhostText();
-function isGhostText() {
-	return GT_Enabled;
-}
-function enableGhostText() {
-	const cm = document.getElementById('code').CodeMirror;
-	let selection = [];
-	cm.doc.listSelections().forEach((range) => {
-		selection.push({
-			"start": cm.doc.indexFromPos(range.head),
-			"end": cm.doc.indexFromPos(range.anchor)
+function disableGhostText() {
+	return new Promise((resolve) => {
+		GTDisable().then(() => {
+			GT_Enabled = false;
+			resolve();
 		});
 	})
-	GT_Enabled = true;
-	GTEnable(4001, onGhostChange, document.title, cm.getValue()).then((response) => {
-		if (response == "1") {
-			showToast(t("GT_connected"));
-		} else {
-			showToast(response);
-			GT_Enabled = false;
-		}
-	});
 }
-function disableGhostText() {
-	GTDisable().then(() => {
-		GT_Enabled = false;
-	});
+function isGhostText() {
+	return GT_Enabled;
 }
 function onGhostChange(data) {
 	const cm = document.getElementById('code').CodeMirror;
@@ -1691,6 +1675,47 @@ function onGhostChange(data) {
 		GT_Enabled = false;
 	}
 }
+function onGtConnectClick() {
+	// Click connect button
+	if (this.classList.contains('connecting')) {
+		return;
+	}
+	this.classList.add('connecting');
+	const _this = this;
+	if (this.classList.contains('connected')) {
+		// Disable
+		disableGhostText().then(() => {
+			_this.querySelector('.title').innerHTML = t("GT_connect");
+			_this.classList.remove('connecting');
+			_this.classList.remove('connected');
+		});
+	} else {
+		const port = parseInt(document.getElementById('editor.gt.port').value);
+		const cm = document.getElementById('code').CodeMirror;
+		let selection = [];
+		cm.doc.listSelections().forEach((range) => {
+			selection.push({
+				"start": cm.doc.indexFromPos(range.head),
+				"end": cm.doc.indexFromPos(range.anchor)
+			});
+		});
+		GT_Enabled = true;
+		GTEnable(port, onGhostChange, document.title, cm.getValue()).then((response) => {
+			_this.classList.remove('connecting');
+			if (response == "1") {
+				_this.classList.add('connected');
+				_this.querySelector('.title').innerHTML = t("GT_disconnect");
+				showToast(t("GT_connected"));
+			} else {
+				showToast(response);
+				GT_Enabled = false;
+			}
+		});
+	}
+}
+function initGhostText() {
+	document.getElementById('gt_connect').addEventListener('click', onGtConnectClick);
+}
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -1703,4 +1728,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	reCalculatePanelPosition();
 	// init advanced
 	initAdvancedEvents();
+	// init GhostText
+	initGhostText();
 });

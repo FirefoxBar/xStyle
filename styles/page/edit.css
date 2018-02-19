@@ -67,16 +67,19 @@
 .right-section .mdl-tabs__panel > *{
 	margin-bottom: 10px;
 }
-#style-panel .mdl-button {
+#style-panel .mdl-button,
+#editor-panel .mdl-button {
 	width: 100%;
 	display: block;
 }
-#style-panel #save-link .loading {
+#style-panel #save-link .loading,
+#editor-panel #gt_connect .loading {
 	width: 20px;
 	height: 20px;
 	margin-left: 8px;
 }
-#style-panel #save-link.saving .loading {
+#style-panel #save-link.saving .loading,
+#editor-panel #gt_connect.connecting .loading {
 	display: inline-block;
 }
 #editor-panel .mdl-textfield {

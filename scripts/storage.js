@@ -394,7 +394,8 @@ var prefs = browser.extension.getBackgroundPage().prefs || new function Prefs() 
 		"editor.lintDelay": 500, // lint gutter marker update delay, ms
 		"editor.lintReportDelay": 2000, // lint report update delay, ms
 		"editor.fontSize": 16, // font size
-		"editor.fontName": "sans-serif" // font size
+		"editor.fontName": "sans-serif", // font size
+		"editor.gt.port": 4001 // GhostText port
 	};
 	// when browser is strarting up, the setting is default
 	this.isDefault = true;
