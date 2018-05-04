@@ -90,6 +90,8 @@ You can also help us translate this extension on [Transifex](https://www.transif
 
 * ru: [Shychara](https://github.com/vanja-san "Shychara")
 
+* fr(incomplete): [mikhoul](https://github.com/mikhoul "mikhoul")
+
 ## Licenses
 
 | File/Directory | LICENSE | GitHub |
