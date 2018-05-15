@@ -49,7 +49,7 @@ var CloudOneDrive = {
 				xhr.onreadystatechange = function() {
 					if (xhr.readyState == 4) {
 						if (xhr.status >= 400) {
-							callback(null);
+							resolve(null);
 						} else {
 							callback(xhr.responseText);
 						}
