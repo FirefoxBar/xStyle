@@ -254,7 +254,8 @@ function updateStyleFullCode(style) {
 					"md5Url": style.md5Url || null,
 					"url": style.url || null,
 					"author": style.author || null,
-					"originalMd5": md5
+					"originalMd5": md5,
+					"updateUrl": updateUrl
 				}).then((toSave) => {
 					update(style, toSave);
 				});
@@ -270,6 +271,9 @@ function updateStyleFullCode(style) {
 			}
 		}))
 		.then((toSave) => {
+			if (!toSave.updateUrl) {
+				toSave.updateUrl = updateUrl;
+			}
 			if (style.md5Url) {
 				getURL(style.md5Url).then((md5) => {
 					toSave.originalMd5 = md5;
