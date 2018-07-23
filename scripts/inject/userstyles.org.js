@@ -1,11 +1,11 @@
 browser.runtime.sendMessage({method: "getStyles", url: getIdUrl() || location.href}).then((response) => {
 	if (response.length == 0) {
-		sendEvent("styleCanBeInstalled");
+		sendEvent("styleCanBeInstalledChrome");
 		return;
 	}
 	let installedStyle = response[0];
 	if (Object.keys(installedStyle.advanced.saved).length > 0) {
-		sendEvent("styleCanBeUpdated");
+		sendEvent("styleCanBeUpdatedChrome");
 		return;
 	}
 	// maybe an update is needed
@@ -14,15 +14,15 @@ browser.runtime.sendMessage({method: "getStyles", url: getIdUrl() || location.hr
 	if (md5_url && installedStyle.md5Url && installedStyle.originalMd5) {
 		getURL(md5_url).then((md5) => {
 			if (md5 == installedStyle.originalMd5) {
-				sendEvent("styleAlreadyInstalled");
+				sendEvent("styleAlreadyInstalledChrome");
 				return;
 			} else {
-				sendEvent("styleCanBeUpdated");
+				sendEvent("styleCanBeUpdatedChrome");
 				return;
 			}
 		});
 	} else {
-		sendEvent("styleCanBeInstalled");
+		sendEvent("styleCanBeInstalledChrome");
 		return;
 	}
 });
@@ -150,37 +150,58 @@ function getAdvanced() {
 	});
 }
 document.addEventListener("stylishInstall", usoInstall, false);
+document.addEventListener("stylishInstallChrome", usoInstall, false);
 document.addEventListener("stylishUpdate", usoInstall, false);
 
+window.postMessage({
+	direction: 'from-content-script',
+	message: 'StylishInstalled',
+}, '*');
 // Fix a uso bug
 if (IS_CHROME) {
-	let src = document.createElement('script');
-	src.innerHTML = '(function() {\
-		let fixObserver = new MutationObserver(function(mutations) {\
-			checkInstallButton();\
-		});\
-		function checkInstallButton() {\
-			let buttons = ["update_style_button"];\
-			let inited = 0;\
-			for (let btnId of buttons) {\
-				if (document.getElementById(btnId)) {\
-					inited++;\
-					if (document.getElementById(btnId).getAttribute("data-xstyle")) {\
-						continue;\
-					}\
-					document.getElementById(btnId).setAttribute("data-xstyle", 1);\
-					document.getElementById(btnId).addEventListener("click", function() {\
-						let newEvent = new CustomEvent("stylishInstall", {detail: null});\
-						document.dispatchEvent(newEvent);\
-					});\
-				}\
-			}\
-			if (inited === buttons.length) {\
-				fixObserver.disconnect();\
-				fixObserver = null;\
-			}\
-		}\
-		fixObserver.observe(document.body, {childList: true, subtree: true});\
-	})();';
-	document.body.appendChild(src);
+	const src = document.createElement('script');
+	src.innerHTML = `(function() {
+		const originImage = window.Image;
+		window.Image = function(...args) {
+			const newImage = new originImage(...args);
+			Object.defineProperty(newImage, 'src', {
+				set: function(newValue) {
+					if (newValue.includes('chrome-extension://')) {
+						setTimeout(() => {
+							newImage.onload();
+						}, 0);
+					} else {
+						newImage.src = newValue;
+					}
+				}
+			});
+			return newImage;
+		};
+		let fixObserver = new MutationObserver(function(mutations) {
+			checkInstallButton();
+		});
+		function checkInstallButton() {
+			let buttons = ["update_style_button"];
+			let inited = 0;
+			for (let btnId of buttons) {
+				if (document.getElementById(btnId)) {
+					inited++;
+					if (document.getElementById(btnId).getAttribute("data-xstyle")) {
+						continue;
+					}
+					document.getElementById(btnId).setAttribute("data-xstyle", 1);
+					document.getElementById(btnId).addEventListener("click", function() {
+						let newEvent = new CustomEvent("stylishInstall", {detail: null});
+						document.dispatchEvent(newEvent);
+					});
+				}
+			}
+			if (inited === buttons.length) {
+				fixObserver.disconnect();
+				fixObserver = null;
+			}
+		}
+		fixObserver.observe(document.body, {childList: true, subtree: true});
+	})();`;
+	document.documentElement.appendChild(src);
 }
