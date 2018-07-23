@@ -28,16 +28,11 @@ browser.runtime.sendMessage({method: "getStyles", url: getIdUrl() || location.hr
 });
 
 function usoInstall () {
-	var md5_url = getMeta('stylish-md5-url');
-	var style_id = md5_url.match(/\/(\d+)\.md5/)[1];
-	var styleName = document.getElementById('stylish-description').innerHTML.trim();
+	const md5_url = getMeta('stylish-md5-url');
+	const style_id = md5_url.match(/\/(\d+)\.md5/)[1];
+	const styleName = document.getElementById('stylish-description').innerHTML.trim();
 	// Get author
-	var author = null;
-	document.querySelectorAll('#left_information > div').forEach((e) => {
-		if (e.children[0].innerHTML === 'Author') {
-			author = e.children[1].innerHTML;
-		}
-	});
+	const author = document.querySelectorAll('.author-name a').innerHTML;
 	const getValidKey = (k) => {
 		let key = k.replace(/([^a-zA-Z0-9\-_]+)/g, '_');
 		if (key.replace(/_/g, '') === '') {

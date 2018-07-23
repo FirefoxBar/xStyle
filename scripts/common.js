@@ -142,23 +142,23 @@ function trimNewLines(s) {
 	return s.replace(/^[\s\n]+/, "").replace(/[\s\n]+$/, "");
 }
 
-function getURL(url, isPost) {
-	return new Promise((resolve, fail) => {
-		var xhr = new XMLHttpRequest();
+function getURL(url, post, headers) {
+	return new Promise((resolve, reject) => {
+		const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = () => {
 			if (xhr.readyState == 4) {
 				if (xhr.status >= 400) {
-					fail();
+					reject(xhr);
 				} else {
 					resolve(xhr.responseText);
 				}
 			}
 		};
-		if (url.length > 2000 || isPost) {
-			var parts = url.split("?");
-			xhr.open("POST", parts[0], true);
-			xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-			xhr.send(parts[1]);
+		if (post) {
+			xhr.open("POST", url, true);
+			xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			const data = typeof(post) === "string" ? post : (new URLSearchParams(post)).toString();
+			xhr.send(data);
 		} else {
 			xhr.open("GET", url, true);
 			xhr.send();
