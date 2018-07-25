@@ -97,7 +97,7 @@ You can also help us translate this extension on [Transifex](https://www.transif
 ## Licenses
 
 | File/Directory | Version | LICENSE | GitHub |
-| ----- | ----- | ----- |
+| ----- | ----- | ----- | ----- |
 | scripts/page/popup/mustache.min.js | 2.3.0 | [MIT](https://github.com/janl/mustache.js/blob/master/LICENSE) | [janl/mustache.js](https://github.com/janl/mustache.js) |
 | scripts/md5.min.js | 2.8.0 | [MIT](https://github.com/blueimp/JavaScript-MD5/blob/master/LICENSE.txt) | [blueimp/JavaScript-MD5](https://github.com/blueimp/JavaScript-MD5) |
 | third-party/codemirror | 5.28.0 | [MIT](third-party/codemirror/LICENSE) | [codemirror/CodeMirror](https://github.com/codemirror/CodeMirror) |
