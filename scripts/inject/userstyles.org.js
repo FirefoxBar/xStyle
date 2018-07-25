@@ -158,50 +158,48 @@ window.postMessage({
 	message: 'StylishInstalled',
 }, '*');
 // Fix a uso bug
-if (IS_CHROME) {
-	const src = document.createElement('script');
-	src.innerHTML = `(function() {
-		const originImage = window.Image;
-		window.Image = function(...args) {
-			const newImage = new originImage(...args);
-			Object.defineProperty(newImage, 'src', {
-				set: function(newValue) {
-					if (newValue.includes('chrome-extension://')) {
-						setTimeout(() => {
-							newImage.onload();
-						}, 0);
-					} else {
-						newImage.src = newValue;
-					}
-				}
-			});
-			return newImage;
-		};
-		let fixObserver = new MutationObserver(function(mutations) {
-			checkInstallButton();
-		});
-		function checkInstallButton() {
-			let buttons = ["update_style_button"];
-			let inited = 0;
-			for (let btnId of buttons) {
-				if (document.getElementById(btnId)) {
-					inited++;
-					if (document.getElementById(btnId).getAttribute("data-xstyle")) {
-						continue;
-					}
-					document.getElementById(btnId).setAttribute("data-xstyle", 1);
-					document.getElementById(btnId).addEventListener("click", function() {
-						let newEvent = new CustomEvent("stylishInstall", {detail: null});
-						document.dispatchEvent(newEvent);
-					});
+const src = document.createElement('script');
+src.innerHTML = `(function() {
+	const originImage = window.Image;
+	window.Image = function(...args) {
+		const newImage = new originImage(...args);
+		Object.defineProperty(newImage, 'src', {
+			set: function(newValue) {
+				if (newValue.includes('chrome-extension://')) {
+					setTimeout(() => {
+						newImage.onload();
+					}, 0);
+				} else {
+					newImage.src = newValue;
 				}
 			}
-			if (inited === buttons.length) {
-				fixObserver.disconnect();
-				fixObserver = null;
+		});
+		return newImage;
+	};
+	let fixObserver = new MutationObserver(function(mutations) {
+		checkInstallButton();
+	});
+	function checkInstallButton() {
+		let buttons = ["update_style_button"];
+		let inited = 0;
+		for (const btnId of buttons) {
+			if (document.getElementById(btnId)) {
+				inited++;
+				if (document.getElementById(btnId).getAttribute("data-xstyle")) {
+					continue;
+				}
+				document.getElementById(btnId).setAttribute("data-xstyle", 1);
+				document.getElementById(btnId).addEventListener("click", function() {
+					const newEvent = new CustomEvent("stylishInstall", {detail: null});
+					document.dispatchEvent(newEvent);
+				});
 			}
 		}
-		fixObserver.observe(document.body, {childList: true, subtree: true});
-	})();`;
-	document.documentElement.appendChild(src);
-}
+		if (inited === buttons.length) {
+			fixObserver.disconnect();
+			fixObserver = null;
+		}
+	}
+	fixObserver.observe(document.body, {childList: true, subtree: true});
+})();`;
+document.documentElement.appendChild(src);
