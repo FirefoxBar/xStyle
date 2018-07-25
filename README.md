@@ -96,22 +96,24 @@ You can also help us translate this extension on [Transifex](https://www.transif
 
 ## Licenses
 
-| File/Directory | LICENSE | GitHub |
+| File/Directory | Version | LICENSE | GitHub |
 | ----- | ----- | ----- |
-| third-party/codemirror | [MIT](third-party/codemirror/LICENSE) | [codemirror/CodeMirror](https://github.com/codemirror/CodeMirror) |
-| scripts/browser-polyfill.js | [MPL 2.0](http://mozilla.org/MPL/2.0/) | [mozilla/webextension-polyfill](https://github.com/mozilla/webextension-polyfill) |
-| third-party/colorpicker | [MIT](https://github.com/easylogic/codemirror-colorpicker/blob/master/LICENSE) | [easylogic/codemirror-colorpicker](https://github.com/easylogic/codemirror-colorpicker) |
-| third-party/mdl | [Apache 2.0](https://github.com/google/material-design-lite/blob/mdl-1.x/LICENSE) | [google/material-design-lite](https://github.com/google/material-design-lite) |
-| third-party/material-design-icons | [Apache 2.0](https://github.com/google/material-design-icons/blob/master/LICENSE) | [google/material-design-icons](https://github.com/google/material-design-icons) |
-| third-party/beautify | [MIT](https://github.com/beautify-web/js-beautify/blob/master/LICENSE) | [beautify-web/js-beautify](https://github.com/beautify-web/js-beautify) |
-| third-party/clean-css | [MIT](https://github.com/jakubpawlowicz/clean-css/blob/master/LICENSE) | [jakubpawlowicz/clean-css](https://github.com/jakubpawlowicz/clean-css) |
-| third-party/less | [Apache 2.0](https://github.com/less/less.js/blob/3.x/LICENSE) | [less/less.js](https://github.com/less/less.js) |
-| third-party/stylelint | [MIT](https://github.com/stylelint/stylelint/blob/master/LICENSE) | [stylelint/stylelint](https://github.com/stylelint/stylelint) |
+| scripts/page/popup/mustache.min.js | 2.3.0 | [MIT](https://github.com/janl/mustache.js/blob/master/LICENSE) | [janl/mustache.js](https://github.com/janl/mustache.js) |
+| scripts/md5.min.js | 2.8.0 | [MIT](https://github.com/blueimp/JavaScript-MD5/blob/master/LICENSE.txt) | [blueimp/JavaScript-MD5](https://github.com/blueimp/JavaScript-MD5) |
+| third-party/codemirror | 5.28.0 | [MIT](third-party/codemirror/LICENSE) | [codemirror/CodeMirror](https://github.com/codemirror/CodeMirror) |
+| scripts/browser-polyfill.js | - | [MPL 2.0](http://mozilla.org/MPL/2.0/) | [mozilla/webextension-polyfill](https://github.com/mozilla/webextension-polyfill) |
+| third-party/colorpicker | 1.7.6 | [MIT](https://github.com/easylogic/codemirror-colorpicker/blob/master/LICENSE) | [easylogic/codemirror-colorpicker](https://github.com/easylogic/codemirror-colorpicker) |
+| third-party/mdl | 1.3.0 | [Apache 2.0](https://github.com/google/material-design-lite/blob/mdl-1.x/LICENSE) | [google/material-design-lite](https://github.com/google/material-design-lite) |
+| third-party/material-design-icons | 3.0.1 | [Apache 2.0](https://github.com/google/material-design-icons/blob/master/LICENSE) | [google/material-design-icons](https://github.com/google/material-design-icons) |
+| third-party/beautify | 1.7.4 | [MIT](https://github.com/beautify-web/js-beautify/blob/master/LICENSE) | [beautify-web/js-beautify](https://github.com/beautify-web/js-beautify) |
+| third-party/clean-css | 4.1.9 | [MIT](https://github.com/jakubpawlowicz/clean-css/blob/master/LICENSE) | [jakubpawlowicz/clean-css](https://github.com/jakubpawlowicz/clean-css) |
+| third-party/less | 2.7.3 | [Apache 2.0](https://github.com/less/less.js/blob/3.x/LICENSE) | [less/less.js](https://github.com/less/less.js) |
+| third-party/stylelint | 8.2.0 | [MIT](https://github.com/stylelint/stylelint/blob/master/LICENSE) | [stylelint/stylelint](https://github.com/stylelint/stylelint) |
 
 **Everything else:**
 
 Copyright © 2005-2014 [Jason Barnabe](https://github.com/JasonBarnabe)
 
-Copyright © 2017 [FirefoxBar Team](http://team.firefoxcn.net)
+Copyright © 2017-2018 [FirefoxBar Team](http://team.firefoxcn.net)
 
 Open source licensed under [GPLv3](COPYING).
