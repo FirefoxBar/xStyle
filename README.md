@@ -107,7 +107,7 @@ You can also help us translate this extension on [Transifex](https://www.transif
 | third-party/material-design-icons | 3.0.1 | [Apache 2.0](https://github.com/google/material-design-icons/blob/master/LICENSE) | [google/material-design-icons](https://github.com/google/material-design-icons) |
 | third-party/beautify | 1.7.4 | [MIT](https://github.com/beautify-web/js-beautify/blob/master/LICENSE) | [beautify-web/js-beautify](https://github.com/beautify-web/js-beautify) |
 | third-party/clean-css | 4.1.9 | [MIT](https://github.com/jakubpawlowicz/clean-css/blob/master/LICENSE) | [jakubpawlowicz/clean-css](https://github.com/jakubpawlowicz/clean-css) |
-| third-party/less | 2.7.3 | [Apache 2.0](https://github.com/less/less.js/blob/3.x/LICENSE) | [less/less.js](https://github.com/less/less.js) |
+| third-party/less | 2.7.3 | [Apache 2.0](https://github.com/less/less.js/blob/master/LICENSE) | [less/less.js](https://github.com/less/less.js) |
 | third-party/stylelint | 8.2.0 | [MIT](https://github.com/stylelint/stylelint/blob/master/LICENSE) | [stylelint/stylelint](https://github.com/stylelint/stylelint) |
 
 **Everything else:**
