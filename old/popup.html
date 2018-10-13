@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="third-party/material-design-icons/material-icons.min.css"/>
+	<link rel="stylesheet" href="third-party/mdl/material.min.css"/>
+	<link rel="stylesheet" href="styles/page/popup.css"/>
+	<script id="template-style-installed-item" type="x-tmpl-mustache">
+	<li id="installed-style-{{id}}" class="mdl-list__item mdl-list__item--two-line entry installed-style">
+		<span class="mdl-list__item-primary-content">
+			<span class="mdl-list__item-avatar">{{style_first_word}}</span>
+			<span class="style-name" title="{{name}}">{{name}}</span>
+			<span class="mdl-list__item-sub-title">
+				<span class="style-author">{{author}}</span>
+				<a class="mdl-button mdl-js-button mdl-button--icon edit" href="{{style_edit_url}}"><i class="material-icons">create</i></a>
+				<a class="mdl-button mdl-js-button mdl-button--icon delete" href="{{style_url}}"><i class="material-icons">delete</i></a>
+			</span>
+		</span>
+		<span class="mdl-list__item-secondary-action">
+			<label class="mdl-switch" for="list-switch-{{id}}">
+				<input type="checkbox" id="list-switch-{{id}}" class="mdl-switch__input activate" />
+			</label>
+		</span>
+	</li>
+	</script>
+	<script id="template-style-installed-item-compact" type="x-tmpl-mustache">
+	<li id="installed-style-{{id}}" class="mdl-list__item installed-style-compact">
+		<span class="mdl-list__item-primary-content">
+			<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="list-switch-{{id}}">
+				<input type="checkbox" id="list-switch-{{id}}" class="mdl-checkbox__input activate">
+			</label>
+			<span class="style-name" title="{{name}}">{{name}}</span>
+			<a class="mdl-button mdl-js-button mdl-button--icon edit" href="{{style_edit_url}}"><i class="material-icons">create</i></a>
+		</span>
+	</li>
+	</script>
+	<script src="scripts/browser-polyfill.js"></script>
+	<script src="scripts/common.js"></script>
+	<script src="scripts/localization.js"></script>
+	<script src="scripts/health.js"></script>
+	<script src="scripts/storage.js"></script>
+	<script src="scripts/messaging.js"></script>
+	<script src="scripts/inject/apply.js"></script>
+	<script src="scripts/page/popup/mustache.min.js"></script>
+	<script src="scripts/page/popup/mustache.wrap.js"></script>
+</head>
+<body id="xstyle-popup">
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+	<header id="header" class="mdl-layout__header">
+		<div class="mdl-layout__header-row">
+			<span class="mdl-layout-title sitename">xStyle</span>
+			<div class="mdl-layout-spacer"></div>
+			<nav class="mdl-navigation wrapper">
+				<button id="searchStyles" class="search_styles mdl-button mdl-js-button mdl-button--icon"><i class="material-icons">search</i></button>
+				<ul id="searchStylesMenu" class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="searchStyles">
+					<li class="mdl-menu__item" data-url="https://userstyles.org/styles/browse/all/%s">userstyles.org</li>
+					<li class="mdl-menu__item" data-url="http://freestyler.ws/search?q=%s">freestyler.ws</li>
+				</ul>
+				<button id="writeNew" class="search_styles mdl-button mdl-js-button mdl-button--icon"><i class="material-icons">add</i></button>
+				<ul id="writeNewMenu" class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="writeNew"></ul>
+				<a class="manage_styles open-manage-link mdl-button mdl-js-button mdl-button--icon" href="/manage.html" target="_blank" tabindex="-1" i18n-title="openManage"><i class="material-icons">settings</i></a>
+			</nav>
+		</div>
+	</header>
+	<main class="mdl-layout__content">
+		<div id="main-loading" class="page-content">
+			<div class="tabs-container">
+				<section id="loading"><div class="mdl-spinner mdl-js-spinner is-active"></div></section>
+				<section id="styles" class="tab-item tab-installed">
+					<div id="disable-all-container">
+						<div class="disable-all-lable" i18n-text="allStyles"></div>
+						<label class="mdl-switch" for="disable-all-checkbox">
+							<input type="checkbox" id="disable-all-checkbox" class="mdl-switch__input"/>
+						</label>
+					</div>
+					<ul id="installed" class="mdl-list"></ul>
+				</section>
+				<section id="unavailable" i18n-text="xStyleUnavailableForURL"></section>
+				<section id="zerostyles" i18n-text="popupHaveNoStyle"></section>
+			</div>
+		</div>
+	</main>
+</div>
+<script src="third-party/mdl/material.min.js"></script>
+<script src="scripts/page/popup/popup.js"></script>
+</body></html>

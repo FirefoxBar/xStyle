@@ -1,3 +1,4 @@
-.vscode
-manifest.json
-manifest_t.json
+/node_modules
+/*.log
+/dist
+/dist-zip
