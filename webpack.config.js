@@ -16,7 +16,12 @@ const config = {
 	entry: {
 		'background': './background.js',
 		'popup/popup': './popup/popup.js',
-		'options/options': './options/options.js'
+		'options/options': './options/options.js',
+		'inject/cloud': './inject/cloud.js',
+		'inject/apply': './inject/apply.js',
+		'inject/install': './inject/install.js',
+		'inject/userstyles.org': './inject/userstyles.org.js',
+		'inject/freestyler.ws': './inject/freestyler.ws.js',
 	},
 	output: {
 		path: __dirname + '/dist',
