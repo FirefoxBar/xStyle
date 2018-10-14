@@ -1,4 +1,4 @@
-var CloudGoogle = {
+export default {
 	"client_id": '1093144396733-22kuva2susjn585850ka8euhf61n41ij.apps.googleusercontent.com',
 	"scope": 'https://www.googleapis.com/auth/drive.appdata',
 	"api_url": 'https://www.googleapis.com/',

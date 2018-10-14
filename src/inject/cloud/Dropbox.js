@@ -1,4 +1,4 @@
-var CloudDropbox = {
+export default {
 	"client_id": 'odsxkcb677ld8gi',
 	"api_url": 'https://api.dropboxapi.com/2/',
 	"content_api_url": 'https://content.dropboxapi.com/2/',

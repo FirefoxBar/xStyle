@@ -1,4 +1,4 @@
-var CloudOneDrive = {
+export default {
 	"client_id": 'd742c0ec-f3ba-4ce9-949a-56507e86ca98',
 	"scope": ['openid', 'offline_access', 'files.readwrite', 'files.readwrite.appfolder'],
 	"api_url": 'https://graph.microsoft.com/v1.0/me/',

@@ -1,34 +1,38 @@
+import browser from 'webextension-polyfill';
+import install from './install';
+import utils from '../core/utils';
+
 browser.runtime.sendMessage({method: "getStyles", url: getIdUrl() || location.href}).then((response) => {
 	if (response.length == 0) {
-		sendEvent("styleCanBeInstalledChrome");
+		install.sendEvent("styleCanBeInstalledChrome");
 		return;
 	}
-	let installedStyle = response[0];
+	const installedStyle = response[0];
 	if (Object.keys(installedStyle.advanced.saved).length > 0) {
-		sendEvent("styleCanBeUpdatedChrome");
+		install.sendEvent("styleCanBeUpdatedChrome");
 		return;
 	}
 	// maybe an update is needed
 	// use the md5 if available
-	let md5_url = getMd5Url();
+	const md5_url = install.getMd5Url();
 	if (md5_url && installedStyle.md5Url && installedStyle.originalMd5) {
-		getURL(md5_url).then((md5) => {
+		utils.getURL(md5_url).then((md5) => {
 			if (md5 == installedStyle.originalMd5) {
-				sendEvent("styleAlreadyInstalledChrome");
+				install.sendEvent("styleAlreadyInstalledChrome");
 				return;
 			} else {
-				sendEvent("styleCanBeUpdatedChrome");
+				install.sendEvent("styleCanBeUpdatedChrome");
 				return;
 			}
 		});
 	} else {
-		sendEvent("styleCanBeInstalledChrome");
+		install.sendEvent("styleCanBeInstalledChrome");
 		return;
 	}
 });
 
 function usoInstall () {
-	const md5_url = getMeta('stylish-md5-url');
+	const md5_url = install.getMeta('stylish-md5-url');
 	const style_id = md5_url.match(/\/(\d+)\.md5/)[1];
 	const styleName = document.getElementById('stylish-description').innerHTML.trim();
 	// Get author
@@ -40,19 +44,22 @@ function usoInstall () {
 		}
 		return key;
 	};
-	if (confirm(browser.i18n.getMessage('styleInstall', [styleName]))) {
-		let queue = [getURL('https://userstyles.org/api/v1/styles/' + style_id), getURL(md5_url)];
+	if (confirm(utils.t('styleInstall', [styleName]))) {
+		const queue = [
+			utils.getURL('https://userstyles.org/api/v1/styles/' + style_id),
+			utils.getURL(md5_url)
+		];
 		if (hasAdvanced()) {
 			queue.push(getAdvanced());
 		}
 		Promise.all(queue).then((results) => {
-			let serverJson = JSON.parse(results[0]);
-			let md5 = results[1];
+			const serverJson = JSON.parse(results[0]);
+			const md5 = results[1];
 			let advanced = null;
 			if (hasAdvanced()) {
 				advanced = results[2];
 				// Parse advanced
-				for (let i of serverJson.style_settings) {
+				for (const i of serverJson.style_settings) {
 					const install_key = getValidKey(i.install_key);
 					advanced.item[install_key] = {"type": i.setting_type, "title": i.label};
 					switch (i.setting_type) {
@@ -83,7 +90,7 @@ function usoInstall () {
 				"author": author,
 				"originalMd5": md5
 			}, advanced).then((style) => {
-				styleInstallByCode(style);
+				install.installByCode(style);
 			});
 		});
 	}
@@ -97,7 +104,7 @@ function hasAdvanced() {
 // Get all advanced
 function readImage(file) {
 	return new Promise((resolve) => {
-		var reader = new FileReader();
+		const reader = new FileReader();
 		reader.onload = () => {
 			resolve(reader.result);
 		};
@@ -105,7 +112,7 @@ function readImage(file) {
 	});
 }
 function getAdvanced() {
-	let removePrefix = (v) => {
+	const removePrefix = (v) => {
 		let key = v.replace(/^ik-/, '');
 		if (key.replace(/([^a-zA-Z0-9\-_]+)/g, '') === '') {
 			return 'u_' + encodeURIComponent(key).replace(/%/g, '');
@@ -114,9 +121,9 @@ function getAdvanced() {
 		}
 	};
 	return new Promise((resolve) => {
-		let advanced = {"item": {}, "saved": {}};
+		const advanced = {"item": {}, "saved": {}};
 		let file_count = 0;
-		let area = document.getElementById('advancedsettings_area');
+		const area = document.getElementById('advancedsettings_area');
 		//select
 		area.querySelectorAll('option:checked').forEach((e) => {
 			advanced.saved[removePrefix(e.parentElement.name)] = removePrefix(e.value);
@@ -149,6 +156,7 @@ function getAdvanced() {
 		checkEnd();
 	});
 }
+
 document.addEventListener("stylishInstall", usoInstall, false);
 document.addEventListener("stylishInstallChrome", usoInstall, false);
 document.addEventListener("stylishUpdate", usoInstall, false);
@@ -157,6 +165,7 @@ window.postMessage({
 	direction: 'from-content-script',
 	message: 'StylishInstalled',
 }, '*');
+
 // Fix a uso bug
 const src = document.createElement('script');
 src.innerHTML = `(function() {

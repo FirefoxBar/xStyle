@@ -1,9 +1,13 @@
+import browser from 'webextension-polyfill';
+import install from './install';
+import utils from '../core/utils';
+
 const FS_API_URL = window.location.protocol + "//freestyler.ws/api/v2/";
 function fsInstall () {
-	let style_id = window.location.href.match(/style\/(\d+)\//)[1];
-	let param = JSON.parse(getMeta('xstyle-fs-param'));
-	let styleName = trimNewLines(document.querySelector('h1[itemprop="name"]').innerHTML);
-	if (confirm(browser.i18n.getMessage('styleInstall', [styleName]))) {
+	const style_id = window.location.href.match(/style\/(\d+)\//)[1];
+	const param = JSON.parse(getMeta('xstyle-fs-param'));
+	const styleName = trimNewLines(document.querySelector('h1[itemprop="name"]').innerHTML);
+	if (confirm(utils.t('styleInstall', [styleName]))) {
 		let css = getURL(FS_API_URL + 'get_css.php?json=' + encodeURIComponent(JSON.stringify([{"id": style_id, "params": param}])));
 		let info = getURL(FS_API_URL + 'get_styles_info.php?json=' + encodeURIComponent(JSON.stringify([style_id])));
 		Promise.all([css, info]).then((result) => {

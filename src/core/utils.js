@@ -21,6 +21,9 @@ export default {
 	CHROME_VERSION: CHROME_VERSION,
 	FIREFOX_VERSION: FIREFOX_VERSION,
 	TABLE_NAMES: ['request', 'sendHeader', 'receiveHeader'],
+	// direct & reverse mapping of @-moz-document keywords and internal property names
+	PROPERTY_TO_CSS: {"urls": "url", "urlPrefixes": "url-prefix", "domains": "domain", "regexps": "regexp", "exclude": "exclude"},
+	CSS_TO_PROPERTY: {"url": "urls", "url-prefix": "urlPrefixes", "domain": "domains", "regexp": "regexps", "exclude": "exclude"},
 	getExportName(additional) {
 		return 'HE_' + dateFormat(new Date(), 'isoUtcDateTime').replace(/\:/g, '-') + (additional ? "_" + additional : "") + '.json';
 	},
@@ -31,6 +34,25 @@ export default {
 			.then(tabs => tabs[0])
 			.then(resolve)
 		});
+	},
+	getActiveTabRealURL() {
+		return new Promise(resolve => {
+			this.getActiveTab
+			.then(tab => getTabRealURL(tab))
+			.then(resolve)
+		})
+	},
+	getTabRealURL(tab) {
+		return new Promise(resolve => {
+			if (tab.url != "chrome://newtab/") {
+				resolve(tab.url);
+			} else {
+				browser.webNavigation.getFrame({tabId: tab.id, frameId: 0, processId: -1})
+				.then(frame => {
+					resolve(frame ? frame.url : "");
+				});
+			}
+		})
 	},
 	trimNewLines(s) {
 		return s.replace(/^[\s\n]+/, "").replace(/[\s\n]+$/, "");
@@ -57,37 +79,6 @@ export default {
 				xhr.send();
 			}
 		})
-	},
-	getTableName(ruleType) {
-		if (ruleType === 'cancel' || ruleType === 'redirect') {
-			return 'request';
-		}
-		if (ruleType === 'modifySendHeader') {
-			return 'sendHeader';
-		}
-		if (ruleType === 'modifyReceiveHeader') {
-			return 'receiveHeader';
-		}
-	},
-	upgradeRuleFormat(s) {
-		if (typeof(s.matchType) === "undefined") {
-			s.matchType = s.type;
-			delete s.type;
-		}
-		if (typeof(s.isFunction) === "undefined") {
-			s.isFunction = false;
-		} else {
-			s.isFunction = s.isFunction ? true : false;
-		}
-		if (typeof(s.enable) === "undefined") {
-			s.enable = true;
-		} else {
-			s.enable = s.enable ? true : false;
-		}
-		if ((s.ruleType === "modifySendHeader" || s.ruleType === "modifyReceiveHeader") && !s.isFunction) {
-			s.action.name = s.action.name.toLowerCase();
-		}
-		return s;
 	},
 	canAccess(url) {
 		// only http, https, file, extension allowed

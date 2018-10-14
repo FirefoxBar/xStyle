@@ -1,3 +1,5 @@
+import utils from '../core/utils';
+
 function getCodeUrl() {
 	return getMeta("xstyle-code") || getMeta("stylish-code-chrome");
 }
@@ -11,6 +13,11 @@ function getStyleName() {
 	return getMeta("xstyle-name");
 }
 
+function getMeta(name) {
+	var e = document.querySelector("link[rel='" + name + "']");
+	return e ? e.getAttribute("href") : null;
+}
+
 function sendEvent(type, data) {
 	if (typeof data == "undefined") {
 		data = null;
@@ -19,29 +26,29 @@ function sendEvent(type, data) {
 	document.dispatchEvent(newEvent);
 }
 
-function styleInstall () {
+function install () {
 	let extParam = {};
 	if (getStyleName() !== '') {
 		extParam.name = getStyleName();
 	}
 	getURL(getCodeUrl()).then((code) => {
-		confirmAStyle(code, extParam);
+		confirmStyle(code, extParam);
 	});
 }
 
-function confirmAStyle(code, param) {
+function confirmStyle(code, param) {
 	parseStyleFile(code, param).then((json) => {
 		if (!json.name || json.name === '') {
-			alert(browser.i18n.getMessage('fileTypeUnknown'));
+			alert(utils.t('fileTypeUnknown'));
 			return;
 		}
-		if (confirm(browser.i18n.getMessage('styleInstall', [json.name]))) {
-			styleInstallByCode(json);
+		if (confirm(utils.t('styleInstall', [json.name]))) {
+			installByCode(json);
 		}
 	});
 }
 
-function styleInstallByCode(json) {
+function installByCode(json) {
 	//Check whether the style has been installed
 	json.method = "installStyle";
 	if (!json.url) {
@@ -63,12 +70,18 @@ if (window.location.href.indexOf('https://ext.firefoxcn.net/xstyle/install/open.
 			extParam.name = params.name;
 		}
 		getURL(params.code).then((code) => {
-			confirmAStyle(code, extParam);
+			confirmStyle(code, extParam);
 		});
 	}
 }
 
-function getMeta(name) {
-	var e = document.querySelector("link[rel='" + name + "']");
-	return e ? e.getAttribute("href") : null;
-}
+export default {
+	getCodeUrl,
+	getMd5Url,
+	getIdUrl,
+	getStyleName,
+	sendEvent,
+	install,
+	confirmStyle,
+	installByCode
+};

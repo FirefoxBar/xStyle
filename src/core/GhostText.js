@@ -98,17 +98,3 @@ function GTClose(tabId) {
 		GTTabListener = false;
 	}
 }
-
-function GTTabRemove(tabId) {
-	GTClose(tabId);
-}
-
-function GTTabUpdate(tabId, changeInfo) {
-	if (changeInfo.url && !changeInfo.url.includes("edit.html")) {
-		GTClose(tabId);
-	}
-}
-
-function GTTabReplaced(newId, oldId) {
-	GTClose(oldId);
-}

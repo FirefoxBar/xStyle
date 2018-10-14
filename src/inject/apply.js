@@ -1,3 +1,5 @@
+import browser from 'webextension-polyfill';
+
 var g_disableAll = false;
 var g_onlyHtml = false;
 var g_styleElements = {};

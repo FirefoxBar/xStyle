@@ -1,17 +1,6 @@
 var frameIdMessageable, backStorage = localStorage;
 var autoUpdateTimer = null;
 
-function appId() {
-	function genRand(){
-		var r = "xxxxxxxx-xxxx-8xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (a) => {
-			var c = 16 * Math.random() | 0;
-			return ("x" == a ? c : 3 & c | 8).toString(16)
-		});
-		localStorage.setItem("appUniqueId", r);
-	};
-	return localStorage.getItem("appUniqueId") || genRand();
-}
-
 runTryCatch(() => {
 	browser.tabs.sendMessage(0, {}, {frameId: 0}).then(() => {
 		frameIdMessageable = true;
@@ -83,9 +72,6 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		case "styleDisableAll":
 			browser.contextMenus.update("disableAll", {checked: request.disableAll});
 			break;
-		case "GhostText":
-			GTOnMessage(request, sender).then(sendResponse);
-			return true;
 		case "prefChanged":
 			switch (request.prefName) {
 				case "show-badge":
@@ -115,7 +101,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 if (IS_MOBILE) {
 	browser.browserAction.onClicked.addListener(() => {
-		openURL({url: browser.extension.getURL('manage.html')});
+		openURL({url: browser.extension.getURL('options/options.html')});
 	});
 } else {
 	// contextMenus API is present in ancient Chrome but it throws an exception
@@ -148,7 +134,7 @@ if (IS_MOBILE) {
 	browser.commands.onCommand.addListener((command) => {
 		switch (command) {
 			case 'openManage':
-				openURL({"url": browser.extension.getURL("manage.html")});
+				openURL({"url": browser.extension.getURL("options/options.html")});
 				break;
 			case 'styleDisableAll':
 				disableAllStylesToggle();
