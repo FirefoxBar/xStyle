@@ -3,14 +3,46 @@
 	"version": "4.0.0",
 	"description": "xStyle",
 	"author": "ShuangYa",
-	"license": "GPL-2.0",
+	"license": "GPL-3.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/FirefoxBar/xStyle.git"
+	},
 	"scripts": {
 		"lint": "eslint --ext .js,.vue src",
 		"build": "cross-env NODE_ENV=production webpack --hide-modules",
 		"build:dev": "cross-env NODE_ENV=development webpack --hide-modules",
-		"build-zip": "node scripts/build-zip.js",
 		"watch": "npm run build -- --watch",
-		"watch:dev": "cross-env HMR=true npm run build:dev -- --watch"
+		"watch:dev": "cross-env HMR=true npm run build:dev -- --watch",
+		"release": "node scripts/release.js",
+		"pack:all": "node scripts/pack-check.js && node scripts/pack.js",
+		"pack:amo": "node scripts/pack-check.js && node scripts/pack.js --platform=amo",
+		"pack:xpi": "node scripts/pack-check.js && node scripts/pack.js --platform=xpi",
+		"pack:cws": "node scripts/pack-check.js && node scripts/pack.js --platform=cws",
+		"pack:crx": "node scripts/pack-check.js && node scripts/pack.js --platform=crx"
+	},
+	"webextension": {
+		"name": "xStyle",
+		"autobuild": {
+			"xpi": true,
+			"amo": true,
+			"cwx": true,
+			"crx": true
+		},
+		"firefox": {
+			"version": "52.0",
+			"xpi": "xstyle@addon.firefoxcn.net",
+			"amo": "xstyle-amo@addon.firefoxcn.net",
+			"update": "https://ext.firefoxcn.net/xstyle/install/update.json"
+		},
+		"chrome": {
+			"id": "hncgkmhphmncjohllpoleelnibpmccpj",
+			"update": "https://ext.firefoxcn.net/xstyle/install/update.xml"
+		},
+		"github": {
+			"enable": true,
+			"tag": "{VER}"
+		}
 	},
 	"dependencies": {
 		"clean-css": "^4.2.1",

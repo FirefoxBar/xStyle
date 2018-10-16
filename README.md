@@ -1,7 +1,10 @@
 # xStyle
 
+[![Build Status](https://travis-ci.org/FirefoxBar/xStyle.svg?branch=master)](https://travis-ci.org/FirefoxBar/xStyle)
 [![GitHub release](https://img.shields.io/github/release/FirefoxBar/xStyle.svg)](https://github.com/FirefoxBar/xStyle/releases)
 [![license](https://img.shields.io/github/license/FirefoxBar/xStyle.svg)](https://github.com/FirefoxBar/xStyle/blob/master/COPYING)
+[![Mozilla Add-on](https://img.shields.io/amo/users/xstyle.svg)](https://addons.mozilla.org/en-US/firefox/addon/xstyle/)
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/users/hncgkmhphmncjohllpoleelnibpmccpj.svg)](https://chrome.google.com/webstore/detail/header-editor/hncgkmhphmncjohllpoleelnibpmccpj)
 
 A style manager for your browser. Built on the WebExtensions APIs.
 
