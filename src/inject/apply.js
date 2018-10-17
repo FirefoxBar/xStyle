@@ -1,8 +1,19 @@
 import browser from 'webextension-polyfill';
 
-var g_disableAll = false;
-var g_onlyHtml = false;
-var g_styleElements = {};
+const pref = {
+	disableAll: false,
+	onlyHtml: false
+};
+function setPrefs(name, to) {
+	if (to === pref[name]) {
+		return;
+	}
+	pref[name] = to;
+	if (name === "disableAll") {
+		disableAll(to);
+	}
+}
+let styleElements = {};
 var iframeObserver;
 var bodyObserver;
 var retiredStyleIds = [];
@@ -14,11 +25,15 @@ function requestStyles() {
 	// we'll request the styles directly to minimize delay and flicker,
 	// unless Chrome still starts up and the background page isn't fully loaded.
 	// (Note: in this case the function may be invoked again from applyStyles.)
-	var request = {method: "getStyles", matchUrl: location.href, enabled: true, asHash: true};
+	var request = {
+		method: "getStyles",
+		matchUrl: location.href,
+		enabled: true
+	};
 	if (location.href.indexOf(browser.extension.getURL("")) === 0) {
 		var bg = browser.extension.getBackgroundPage();
 		if (bg && bg.getStyles && bg.prefs) {
-			g_onlyHtml = bg.prefs.get('only-applies-html');
+			setPrefs('onlyHtml', bg.prefs.get('only-applies-html'));
 			initObserver();
 			initListener();
 			// apply styles immediately, then proceed with a normal request that will update the icon
@@ -26,8 +41,12 @@ function requestStyles() {
 			return;
 		}
 	}
-	browser.runtime.sendMessage({"method": "prefGet", "name": "only-applies-html"}).then(r => {
-		g_onlyHtml = r;
+	browser.runtime.sendMessage({
+		"method": "getPrefs",
+		"name": ["only-applies-html", "disableAll"]
+	}).then(r => {
+		setPrefs('onlyHtml', r[0]);
+		setPrefs('disableAll', r[1]);
 		initListener();
 		initObserver();
 		browser.runtime.sendMessage(request).then(applyStyles);
@@ -50,7 +69,12 @@ function initListener() {
 				}
 			case "styleAdded":
 				if (request.style.enabled) {
-					browser.runtime.sendMessage({method: "getStyles", matchUrl: location.href, enabled: true, id: request.style.id, asHash: true}).then(applyStyles);
+					browser.runtime.sendMessage({
+						method: "getStyles",
+						matchUrl: location.href,
+						enabled: true,
+						id: request.style.id
+					}).then(applyStyles);
 				}
 				break;
 			case "styleApply":
@@ -59,25 +83,16 @@ function initListener() {
 			case "styleReplaceAll":
 				replaceAll(request.styles, document);
 				break;
-			case "styleDisableAll":
-				disableAll(request.disableAll);
-				break;
 		}
 	});
 }
 
-function disableAll(disable) {
-	if (!disable === !g_disableAll) {
-		return;
-	}
-	g_disableAll = disable;
-	if (g_disableAll) {
-		iframeObserver.disconnect();
-	}
+function disableAll(to) {
+	iframeObserver.disconnect();
 
-	disableSheets(g_disableAll, document);
+	disableSheets(to, document);
 
-	if (!g_disableAll && document.readyState != "loading") {
+	if (!to && document.readyState != "loading") {
 		iframeObserver.start();
 	}
 
@@ -98,12 +113,12 @@ function disableAll(disable) {
 }
 
 function removeStyle(id, doc) {
-	var e = doc.getElementById("xstyle-" + id);
-	delete g_styleElements["xstyle-" + id];
+	const e = doc.getElementById("xstyle-" + id);
+	delete styleElements["xstyle-" + id];
 	if (e) {
 		e.remove();
 	}
-	if (doc == document && Object.keys(g_styleElements).length == 0) {
+	if (doc == document && Object.keys(styleElements).length == 0) {
 		iframeObserver.disconnect();
 	}
 	getDynamicIFrames(doc).forEach((iframe) => {
@@ -119,7 +134,7 @@ function retireStyle(id, doc) {
 	if (!doc) {
 		doc = document;
 		retiredStyleIds.push(deadID);
-		delete g_styleElements["xstyle-" + id];
+		delete styleElements["xstyle-" + id];
 		// in case something went wrong and new style was never applied
 		setTimeout(removeStyle.bind(null, deadID, doc), 1000);
 	}
@@ -132,21 +147,16 @@ function retireStyle(id, doc) {
 	});
 }
 
-function applyStyles(styleHash) {
-	if (!styleHash) { // Chrome is starting up
+function applyStyles(styles) {
+	if (!styles) { // Chrome is starting up
 		requestStyles();
 		return;
 	}
-	if ("disableAll" in styleHash) {
-		disableAll(styleHash.disableAll);
-		delete styleHash.disableAll;
+	for (const styleId in styles) {
+		applySections(styleId, styles[styleId]);
 	}
 
-	for (var styleId in styleHash) {
-		applySections(styleId, styleHash[styleId]);
-	}
-
-	if (Object.keys(g_styleElements).length) {
+	if (Object.keys(styleElements).length) {
 		initBodyObserver();
 	}
 
@@ -165,7 +175,7 @@ function applySections(styleId, sections) {
 	if (styleElement) {
 		return;
 	}
-	if (g_onlyHtml) {
+	if (pref.onlyHtml) {
 		if (document.documentElement.tagName === 'HTML') {
 			styleElement = document.createElement("style");
 		} else {
@@ -187,14 +197,14 @@ function applySections(styleId, sections) {
 		return section.code;
 	}).join("\n")));
 	addStyleElement(styleElement, document);
-	g_styleElements[styleElement.id] = styleElement;
+	styleElements[styleElement.id] = styleElement;
 }
 
 function addStyleElement(styleElement, doc) {
 	if (!doc.documentElement || doc.getElementById(styleElement.id)) {
 		return;
 	}
-	doc.documentElement.appendChild(doc.importNode(styleElement, true)).sheet.disabled = g_disableAll;
+	doc.documentElement.appendChild(doc.importNode(styleElement, true)).sheet.disabled = pref.disableAll;
 	getDynamicIFrames(doc).forEach((iframe) => {
 		if (iframeIsLoadingSrcDoc(iframe)) {
 			addStyleToIFrameSrcDoc(iframe, styleElement);
@@ -205,13 +215,11 @@ function addStyleElement(styleElement, doc) {
 }
 
 function addDocumentStylesToIFrame(iframe) {
-	var doc = iframe.contentDocument;
-	var srcDocIsLoading = iframeIsLoadingSrcDoc(iframe);
-	for (var id in g_styleElements) {
-		if (srcDocIsLoading) {
-			addStyleToIFrameSrcDoc(iframe, g_styleElements[id]);
+	for (const id in styleElements) {
+		if (iframeIsLoadingSrcDoc(iframe)) {
+			addStyleToIFrameSrcDoc(iframe, styleElements[id]);
 		} else {
-			addStyleElement(g_styleElements[id], doc);
+			addStyleElement(styleElements[id], iframe.contentDocument);
 		}
 	}
 }
@@ -242,7 +250,7 @@ function iframeIsLoadingSrcDoc(f) {
 }
 
 function addStyleToIFrameSrcDoc(iframe, styleElement) {
-	if (g_disableAll) {
+	if (pref.disableAll) {
 		return;
 	}
 	iframe.srcdoc += styleElement.outerHTML;
@@ -251,7 +259,7 @@ function addStyleToIFrameSrcDoc(iframe, styleElement) {
 }
 
 function replaceAll(newStyles, doc, pass2) {
-	var oldStyles = [].slice.call(doc.querySelectorAll("STYLE.xstyle" + (pass2 ? "[id$='-ghost']" : "")));
+	var oldStyles = Array.prototype.slice.call(doc.querySelectorAll("STYLE.xstyle" + (pass2 ? "[id$='-ghost']" : "")));
 	if (!pass2) {
 		oldStyles.forEach((style) => {
 			style.id += "-ghost";
@@ -261,7 +269,7 @@ function replaceAll(newStyles, doc, pass2) {
 		replaceAll(newStyles, iframe.contentDocument, pass2);
 	});
 	if (doc == document && !pass2) {
-		g_styleElements = {};
+		styleElements = {};
 		applyStyles(newStyles);
 		replaceAll(newStyles, doc, true);
 	}
@@ -280,12 +288,12 @@ function initBodyObserver() {
 	bodyObserver = new MutationObserver(() => {
 		if (document.body) {
 			let last_xstyle_el = document.body;
-			for (const id in g_styleElements) {
+			for (const id in styleElements) {
 				const s = document.getElementById(id);
 				if (s.previousElementSibling !== last_xstyle_el) {
 					last_xstyle_el.parentElement.insertBefore(s, last_xstyle_el.nextSibling);
 					last_xstyle_el = s;
-					s.sheet.disabled = g_disableAll;
+					s.sheet.disabled = pref.disableAll;
 				} else {
 					break;
 				}
