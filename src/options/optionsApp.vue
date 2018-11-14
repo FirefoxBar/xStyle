@@ -1,7 +1,7 @@
 <template>
 	<div class="main">
 		<md-tabs class="md-primary main-menu" md-elevation="1" md-active-tab="tab-style-list">
-			<md-tab id="tab-style-list" :md-label="t('styles')" md-icon="style">
+			<md-tab id="tab-style-list" :md-label="t('styles')">
 				<md-menu md-size="medium" md-align-trigger>
 					<md-button md-menu-trigger>{{t('sortStyles')}}</md-button>
 					<md-menu-content class="sort-select">
@@ -33,7 +33,7 @@
 					</md-card-area>
 				</md-card>
 			</md-tab>
-			<md-tab id="tab-options" :md-label="t('optionsHeading')" md-icon="settings">
+			<md-tab id="tab-options" :md-label="t('optionsHeading')">
 				<md-card>
 					<md-card-header>
 						<div class="md-title">{{t('optionsHeading')}}</div>
@@ -49,14 +49,52 @@
 					</md-card-content>
 				</md-card>
 			</md-tab>
-			<md-tab id="tab-backup" :md-label="t('exportAndImport')" md-icon="settings_backup_restore">
+			<md-tab id="tab-backup" :md-label="t('exportAndImport')">
 				<md-card>
 					<md-card-header>
 						<div class="md-title">{{t('exportAndImport')}}</div>
 					</md-card-header>
 					<md-card-content>
-						<div class="md-layout md-gutter">
+						<md-button class="md-primary">{{t('bckpInstStyles')}}</md-button>
+						<md-button class="md-primary">{{t('retrieveBckp')}}</md-button>
+						<md-button class="md-primary">{{t('importFromFirefoxStylish')}}</md-button>
+					</md-card-content>
+				</md-card>
+				<md-card>
+					<md-card-header>
+						<div class="md-title">{{t('cloudTitle')}}</div>
+					</md-card-header>
+					<md-card-content>
+						<div class="cloud-from">
+							<md-radio class="md-primary" v-model="cloud.from" value="onedrive">OneDrive</md-radio>
+							<md-radio class="md-primary" v-model="cloud.from" value="google">Google Drive</md-radio>
 						</div>
+						<md-table class="class-table">
+							<md-table-row>
+								<md-table-head class="cell-name">{{t('cloudFileName')}}</md-table-head>
+								<md-table-head class="cell-size">{{t('cloudFileSize')}}</md-table-head>
+								<md-table-head class="cell-action">{{t('cloudFileAction')}}</md-table-head>
+							</md-table-row>
+							<md-table-row v-show="cloud.list.length === 0">
+								<md-table-cell colspan="3">
+									<md-button class="md-raised" @click="cloudLoadList">{{t('cloudLoadList')}}</button>
+								</md-table-cell>
+							</md-table-row>
+							<md-table-row v-for="f of cloud.list" :key="f.id">
+								<md-table-cell>{{f.name}}</md-table-cell>
+								<md-table-cell>{{f.size}}</md-table-cell>
+								<md-table-cell>
+									<md-button class="md-primary"><span>{{t('cloudImport')}}</span></md-button>
+									<md-button class="md-primary"><span>{{t('cloudDelete')}}</span></md-button>
+								</md-table-cell>
+							</md-table-row>
+							<md-table-row v-show="cloud.list.length > 0">
+								<md-table-cell colspan="3">
+									<md-button class="md-raised">{{t('cloudExport')}}</md-button>
+									<md-button class="md-raised">{{t('cloudReload')}}</md-button>
+								</md-table-cell>
+							</md-table-row>
+						</md-table>
 					</md-card-content>
 				</md-card>
 			</md-tab>
@@ -73,12 +111,18 @@
 <script>
 import browser from 'webextension-polyfill';
 import storage from '../core/storage';
+import onedrive from '../core/cloud/onedrive';
+import google from '../core/cloud/google';
 
 export default {
 	data() {
 		return {
 			sort: "",
-			styles: []
+			styles: [],
+			cloud: {
+				from: "onedrive",
+				list: []
+			}
 		};
 	},
 	methods: {
