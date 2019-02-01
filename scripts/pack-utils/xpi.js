@@ -11,9 +11,9 @@ module.exports = function(manifest, outputDir) {
 	return new Promise(resolve => {
 		// replace manifest
 		const newManifest = merge(true, manifest);
-		newManifest.application = {
+		newManifest.applications = {
 			gecko: {
-				id: package.webextension.firefox.amo,
+				id: package.webextension.firefox.xpi,
 				strict_min_version: package.webextension.firefox.version,
 				update_url: package.webextension.firefox.update
 			}
@@ -29,14 +29,14 @@ module.exports = function(manifest, outputDir) {
 					version: package.version,
 					apiKey: AMOUser.key,
 					apiSecret: AMOUser.secret,
-					id: package.webextension.firefox.amo,
+					id: package.webextension.firefox.xpi,
 					downloadDir: buildTemp
 				})
 				.then(result => {
 					if (result.success) {
 						console.log("Downloaded signed addon");
 						fs.unlinkSync(`${buildTemp}xpi.zip`);
-						const out = outputDir + package.webextension.name + '-' + package.version + '.xpi';
+						const out = outputDir + package.webextension.dist.replace('{VER}', package.version) + '.xpi';
 						// Move download file to output dir
 						if (result.downloadedFiles[0]) {
 							fs.renameSync(result.downloadedFiles[0], out);

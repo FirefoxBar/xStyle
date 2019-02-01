@@ -8,11 +8,6 @@ const bundles = [
 	'background.js',
 	'popup/popup.js',
 	'options/options.js',
-	'inject/cloud.js',
-	'inject/apply.js',
-	'inject/install.js',
-	'inject/userstyles.org.js',
-	'inject/freestyler.ws.js'
 ];
 
 const evalRegexForProduction = /;([a-z])=function\(\){return this}\(\);try{\1=\1\|\|Function\("return this"\)\(\)\|\|\(0,eval\)\("this"\)}catch\(t\){"object"==typeof window&&\(\1=window\)}/g;

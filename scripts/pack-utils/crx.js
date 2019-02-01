@@ -6,7 +6,7 @@ const package = require('../../package.json');
 const buildTemp = fs.realpathSync(__dirname + '/../../build-temp/') + '/';
 const copyDist = buildTemp + 'copy-dist/';
 const exec = require('child_process').exec;
-const privKey = fs.realpathSync(__dirname + '/../../encrypt/crx.pem');
+const privKey = fs.realpathSync(__dirname + '/../..') + '/encrypt/crx.pem';
 
 function generatePublicKey(privateKey) {
 	const key = new RSA(privateKey);
@@ -52,7 +52,7 @@ module.exports = function(manifest, outputDir) {
 			} else {
 				createCrx(fs.readFileSync(`${buildTemp}crx.zip`))
 				.then(content => {
-					const out = outputDir + package.webextension.name + '-' + package.version + '.crx';
+					const out = outputDir + package.webextension.dist.replace('{VER}', package.version) + '.crx';
 					fs.writeFileSync(out, content);
 					fs.unlinkSync(`${buildTemp}crx.zip`);
 					resolve(out);

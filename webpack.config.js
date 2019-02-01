@@ -54,12 +54,12 @@ const config = {
 				use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader?indentedSyntax'],
 			},
 			{
-				test: /\.(png|jpg|gif|svg|ico)$/,
+				test: /\.(png|jpg|gif|svg|ico|ttf|eot|woff|woff2)$/,
 				loader: 'file-loader',
 				options: {
-					name: '[name].[ext]?emitFile=false',
+					name: '/assets/[name].[hash].[ext]',
 				},
-			},
+			}
 		],
 	},
 	plugins: [
@@ -68,7 +68,7 @@ const config = {
 			filename: '[name].css',
 		}),
 		new CopyWebpackPlugin([{
-				from: 'assets',
+				from: 'public',
 				to: 'assets'
 			},
 			{

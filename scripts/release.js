@@ -1,27 +1,35 @@
 const fs = require('fs');
+const crypto = require('crypto');
 const publishRelease = require('publish-release');
 const package = require('../package.json');
 const rootDir = fs.realpathSync(__dirname + '/../') + '/';
 const output = rootDir + 'dist-pack/';
 const GitHubUser = require(rootDir + 'encrypt/github.json');
 
-if (!package.github.enable) {
+if (!package.webextension.github.enable) {
 	console.log("GitHub not enabled");
+	process.exit(0);
 }
 
 const assets = [];
-const assetName = package.name + "-" + package.version;
+let content = "";
 
-if (fs.existsSync(output + assetName + '.crx')) {
-	assets.push(output + assetName + '.crx');
-}
-if (fs.existsSync(output + assetName + '.xpi')) {
-	assets.push(output + assetName + '.xpi');
-}
+const assetName = package.webextension.dist.replace('{VER}', package.version);
+
+['crx', 'xpi'].forEach(extName => {
+	if (fs.existsSync(output + assetName + '.' + extName)) {
+		assets.push(output + assetName + '.' + extName);
+		content += assetName + '.' + extName + ' sha256:';
+		const buffer = fs.readFileSync(output + assetName + '.' + extName);
+		const fsHash = crypto.createHash('sha256');
+		fsHash.update(buffer);
+		content += fsHash.digest('hex') + "\n";
+	}
+});
 
 // Get git names
 const gitName = package.repository.url.match(/(\w+)\/(\w+)\.git/);
-const tagName = package.github.tag.replace('{VER}', package.version);
+const tagName = package.webextension.github.tag.replace('{VER}', package.version);
 
 publishRelease({
 	token: GitHubUser.token,
@@ -29,7 +37,7 @@ publishRelease({
 	repo: gitName[2],
 	tag: tagName,
 	name: package.version,
-	notes: package.version,
+	notes: content,
 	draft: false,
 	prerelease: false,
 	reuseRelease: false,
