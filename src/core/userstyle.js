@@ -373,7 +373,7 @@ function parseStyleFile(code, options, advanced) {
 			type: "css",
 			lastModified: new Date().getTime(),
 			name: "",
-			enabled: 1,
+			enabled: true,
 			updateUrl: "",
 			code: "",
 			sections: null

@@ -35,9 +35,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		case "installStyle":
 			return styles.install(request);
 		case "invalidateCache":
-			if (typeof invalidateCache != "undefined") {
-				styles.invalidateCache(false);
-			}
+			styles.invalidateCache();
 			break;
 		case "getPrefs":
 			if (typeof(request.name) === 'string') {

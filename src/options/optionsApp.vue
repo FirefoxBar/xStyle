@@ -2,9 +2,9 @@
 	<div class="main">
 		<md-tabs class="md-primary main-menu" md-elevation="1" md-active-tab="tab-style-list">
 			<md-tab id="tab-style-list" :md-label="t('styles')">
-				<md-menu md-size="medium" md-align-trigger>
+				<md-menu class="sort-menu-button" md-size="medium" md-align-trigger>
 					<md-button class="with-icon" md-menu-trigger><md-icon class="iconfont icon-sort"></md-icon>{{t('sortStyles')}}</md-button>
-					<md-menu-content class="sort-select">
+					<md-menu-content class="sort-menu">
 						<md-menu-item :class="{ active: sort == 'id' }" @click="sort = 'id'">{{t('sortStylesById')}}</md-menu-item>
 						<md-menu-item :class="{ active: sort == 'status' }" @click="sort = 'status'">{{t('sortStylesByStatus')}}</md-menu-item>
 						<md-menu-item :class="{ active: sort == 'name' }" @click="sort = 'name'">{{t('sortStylesByName')}}</md-menu-item>
@@ -14,24 +14,31 @@
 				<md-button id="update-all-styles" class="with-icon"><md-icon class="iconfont icon-refresh"></md-icon>{{t('updateAllStyles')}}</md-button>
 				<md-button href="edit.html" class="with-icon"><md-icon class="iconfont icon-add"></md-icon>{{t('addStyleLabel')}}</md-button>
 				<md-button id="install-from-file" class="with-icon"><md-icon class="iconfont icon-create-new-folder"></md-icon>{{t('installFromFile')}}</md-button>
-				<md-card v-for="s of styles" :key="s.id" class="group-item">
-					<md-card-area>
-						<md-card-header>
-							<div class="md-title">{{s.name}}</div>
-							<md-switch v-model="s.enable" class="md-primary" :data-id="s.id" @change="newValue => onStyleEnable(r, newValue)"></md-switch>
-						</md-card-header>
-						<md-card-content>
-						</md-card-content>
-						<md-card-actions md-alignment="left">
-							<md-button class="md-primary" :href="`edit.html?id=${s.id}`">{{t('editStyleLabel')}}</md-button>
-							<md-button class="md-primary">{{t('deleteStyleLabel')}}</md-button>
-							<md-button class="md-primary">{{t('export')}}</md-button>
-							<md-button class="md-primary">{{t('advancedTitle')}}</md-button>
-							<md-button class="md-primary">{{t('updateOneStyle')}}</md-button>
-							<md-button class="md-primary">{{t('autoUpdateLabel')}}</md-button>
-						</md-card-actions>
-					</md-card-area>
-				</md-card>
+				<div class="md-layout md-gutter">
+					<div class="md-layout-item md-size-50 md-small-size-100 style-item"  v-for="s of sortedStyles" :key="s.id">
+						<md-card>
+							<md-card-area>
+								<md-card-header>
+									<div class="md-title">
+										<span>{{s.name}}</span>
+										<md-switch v-model="s.enabled" class="md-primary" :data-id="s.id" @change="newValue => onStyleEnable(s.id, newValue)"></md-switch>
+									</div>
+								</md-card-header>
+								<md-card-content>
+									<p>Last modified at {{timestampToString(s.lastModified)}}</p>
+									<p><md-checkbox v-model="s.autoUpdate" class="md-primary" :disabled="!s.updateUrl" @change="newValue => onStyleAutoUpdate(s.id, newValue)">{{t('autoUpdateLabel')}}</md-checkbox></p>
+								</md-card-content>
+								<md-card-actions md-alignment="left">
+									<md-button class="md-primary" :href="`edit.html?id=${s.id}`">{{t('editStyleLabel')}}</md-button>
+									<md-button class="md-primary" @click="onStyleDelete(s)">{{t('deleteStyleLabel')}}</md-button>
+									<md-button class="md-primary">{{t('export')}}</md-button>
+									<md-button class="md-primary">{{t('advancedTitle')}}</md-button>
+									<md-button class="md-primary">{{t('updateOneStyle')}}</md-button>
+								</md-card-actions>
+							</md-card-area>
+						</md-card>
+					</div>
+				</div>
 			</md-tab>
 			<md-tab id="tab-options" :md-label="t('optionsHeading')">
 				<md-card>
@@ -50,16 +57,9 @@
 				</md-card>
 			</md-tab>
 			<md-tab id="tab-backup" :md-label="t('exportAndImport')">
-				<md-card>
-					<md-card-header>
-						<div class="md-title">{{t('exportAndImport')}}</div>
-					</md-card-header>
-					<md-card-content>
-						<md-button class="md-primary">{{t('bckpInstStyles')}}</md-button>
-						<md-button class="md-primary">{{t('retrieveBckp')}}</md-button>
-						<md-button class="md-primary">{{t('importFromFirefoxStylish')}}</md-button>
-					</md-card-content>
-				</md-card>
+				<md-button class="with-icon" @click="onExport"><md-icon class="iconfont icon-save"></md-icon>{{t('bckpInstStyles')}}</md-button>
+				<md-button class="with-icon" @click="onImport"><md-icon class="iconfont icon-folder-open"></md-icon>{{t('retrieveBckp')}}</md-button>
+				<md-button class="with-icon"><md-icon class="iconfont icon-firefox"></md-icon>{{t('importFromFirefoxStylish')}}</md-button>
 				<md-card>
 					<md-card-header>
 						<div class="md-title">{{t('cloudTitle')}}</div>
@@ -102,14 +102,10 @@
 	</div>
 </template>
 
-<style lang="scss">
-.sort-select .active {
-	font-weight: bold;
-}
-</style>
-
 <script>
 import browser from 'webextension-polyfill';
+import dateFormat from 'dateformat';
+import merge from 'merge';
 import utils from '../core/utils';
 import file from '../core/file';
 import styles from '../core/styles';
@@ -120,7 +116,7 @@ import google from '../core/cloud/google';
 export default {
 	data() {
 		return {
-			sort: "",
+			sort: "id",
 			styles: [],
 			cloud: {
 				from: "onedrive",
@@ -135,8 +131,37 @@ export default {
 			}
 		};
 	},
+	computed: {
+		sortedStyles() {
+			let sortMethod = null;
+			switch (this.sort) {
+				case 'name':
+					sortMethod = (e1, e2) => e1.name.localeCompare(e2.name);
+					break;
+				case 'id':
+					sortMethod = (e1, e2) => e1.id > e2.id ? 1 : -1;
+					break;
+				case 'modified':
+					sortMethod = (e1, e2) => e1.lastModified < e2.lastModified ? 1 : -1;
+					break;
+				case 'status':
+					sortMethod = (e1, e2) => {
+						if (e1.enabled) {
+							return e2.enabled ? 0 : -1;
+						} else {
+							return e2.enabled ? 1 : 0;
+						}
+					};
+					break;
+			}
+			return this.styles.sort(sortMethod);
+		}
+	},
 	methods: {
 		t: utils.t,
+		timestampToString(time) {
+			return dateFormat(new Date(time), 'yyyy-mm-dd HH:MM:ss');
+		},
 		loadStylesFromBackup(content) {
 			return new Promise((resolve) => {
 				var i = 0, nextStyle;
@@ -153,13 +178,36 @@ export default {
 				proceed();
 			});
 		},
+		onStyleEnable(id, enabled) {
+			styles.save({
+				id: id,
+				enabled: enabled
+			});
+		},
+		onStyleAutoUpdate(id, auto) {
+			styles.save({
+				id: id,
+				autoUpdate: auto
+			});
+		},
+		onStyleDelete(style) {
+			if (!confirm(utils.t('deleteStyleConfirm'))) {
+				return;
+			}
+			styles.remove(style.id).then(() => {
+				this.styles.splice(this.styles.indexOf(style), 1);
+			});
+		},
 		onImport() {
 			file.load(utils.DUMP_FILE_EXT).then(result => {
-				const data = JSON.parse(result[0]);
-				loadStylesFromBackup(data).then(() => {
+				const data = JSON.parse(result);
+				this.loadStylesFromBackup(data).then(() => {
 					window.location.reload();
 				});
 			});
+		},
+		onExport() {
+			//
 		},
 		cloudLoadList() {
 			//TODO
@@ -189,35 +237,6 @@ export default {
 			}
 			this.styles = r;
 		});
-	},
-	watch: {
-		sort(newVal) {
-			if (storage.prefs.get('manage.sort', newVal) != newVal) {
-				storage.prefs.set('manage.sort', newVal);
-			}
-			let sortMethod = null;
-			switch (newVal) {
-				case 'name':
-					sortMethod = (e1, e2) => e1.name.localeCompare(e2.name);
-					break;
-				case 'id':
-					sortMethod = (e1, e2) => e1.id > e2.id;
-					break;
-				case 'modified':
-					sortMethod = (e1, e2) => e1.lastModified < e2.lastModified;
-					break;
-				case 'status':
-					sortMethod = (e1, e2) => {
-						if (e1.enabled) {
-							return e2.enabled ? 0 : -1;
-						} else {
-							return e2.enable ? 1 : 0;
-						}
-					};
-					break;
-			}
-			this.styles.sort(sortMethod);
-		}
 	}
 }
 </script>

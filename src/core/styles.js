@@ -1,5 +1,7 @@
-import utils from './utils'
-import storage from './storage'
+import utils from './utils';
+import storage from './storage';
+import notify from './notify';
+import browser from 'webextension-polyfill';
 
 var cachedStyles = null;
 function get(options) {
@@ -34,9 +36,9 @@ function getInstalledStyleForDomain(domain){
 	});
 }
 
-function invalidateCache(andNotify) {
+function invalidateCache() {
 	cachedStyles = null;
-	if (andNotify) {
+	if (!window.IS_BACKGROUND) {
 		browser.runtime.sendMessage({method: "invalidateCache"});
 	}
 }
@@ -90,6 +92,9 @@ function save(o) {
 			var os = tx.objectStore("styles");
 			// Update
 			if (o.id) {
+				if (typeof(o.enabled) !== "undefined") {
+					o.enabled = !!o.enabled;
+				}
 				var request = os.get(Number(o.id));
 				request.onsuccess = function(event) {
 					var style = request.result || {};
@@ -104,8 +109,11 @@ function save(o) {
 					}
 					request = os.put(style);
 					request.onsuccess = function(event) {
-						notifyAllTabs({method: "styleUpdated", style: style});
-						invalidateCache(true);
+						invalidateCache();
+						notify.tabs({
+							method: "styleUpdated",
+							style: style
+						});
 						resolve(style);
 					};
 				};
@@ -133,14 +141,20 @@ function save(o) {
 			if (!("enabled" in o)) {
 				o.enabled = true;
 			}
+			if (typeof(o.enabled) !== "boolean") {
+				o.enabled = !!o.enabled;
+			}
 			// Make sure it's not null - that makes indexeddb sad
 			delete o["id"];
 			var request = os.add(o);
 			request.onsuccess = function(event) {
-				invalidateCache(true);
+				invalidateCache();
 				// Give it the ID that was generated
 				o.id = event.target.result;
-				notifyAllTabs({method: "styleAdded", style: o});
+				notify.tabs({
+					method: "styleAdded",
+					style: o
+				});
 				resolve(o);
 			};
 		});
@@ -168,16 +182,6 @@ function install(json) {
 	return save(json);
 }
 
-function enable(id, enabled) {
-	return new Promise(function(resolve){
-		save({id: id, enabled: enabled}).then((style) => {
-			handleUpdate(style);
-			notifyAllTabs({method: "styleUpdated", style: style});
-			resolve();
-		});
-	});
-}
-
 function remove(id) {
 	return new Promise(function(resolve){
 		storage.getDatabase().then((db) => {
@@ -185,9 +189,8 @@ function remove(id) {
 			var os = tx.objectStore("styles");
 			var request = os.delete(Number(id));
 			request.onsuccess = function(event) {
-				handleDelete(id);
-				invalidateCache(true);
-				notifyAllTabs({method: "styleDeleted", id: id});
+				invalidateCache();
+				notify.tabs({method: "styleDeleted", id: id});
 				resolve();
 			};
 		});
@@ -275,7 +278,6 @@ export default {
 	getInstalledStyleForDomain,
 	invalidateCache,
 	save,
-	enable,
 	remove,
 	install
 }
