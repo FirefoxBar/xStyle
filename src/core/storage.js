@@ -22,20 +22,18 @@ function getDatabase() {
 					autoIncrement: true
 				});
 			} else {
-				utils.TABLE_NAMES.forEach(k => {
-					const tx = event.target.transaction;
-					const os = tx.objectStore(k);
-					os.openCursor().onsuccess = function(e) {
-						const cursor = e.target.result;
-						if (cursor) {
-							const s = cursor.value;
-							s.id = cursor.key;
-							// upgrade rule format
-							os.put(utils.upgradeRuleFormat(s));
-							cursor.continue();
-						}
-					};
-				})
+				const tx = event.target.transaction;
+				const os = tx.objectStore(k);
+				os.openCursor().onsuccess = function(e) {
+					const cursor = e.target.result;
+					if (cursor) {
+						const s = cursor.value;
+						s.id = cursor.key;
+						// upgrade rule format
+						os.put(utils.updateStyleFormat(s));
+						cursor.continue();
+					}
+				};
 			}
 		}
 	});
@@ -214,8 +212,9 @@ function getSync() {
 		return browser.storage.local;
 	}
 }
-function getLocalStorage() {
+
+function getLocal() {
 	return browser.storage.local;
 }
 
-export default { getSync, getDatabase, getLocalStorage, prefs };
+export default { getSync, getDatabase, getLocal, prefs };

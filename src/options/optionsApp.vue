@@ -3,7 +3,7 @@
 		<md-tabs class="md-primary main-menu" md-elevation="1" md-active-tab="tab-style-list">
 			<md-tab id="tab-style-list" :md-label="t('styles')">
 				<md-menu md-size="medium" md-align-trigger>
-					<md-button md-menu-trigger>{{t('sortStyles')}}</md-button>
+					<md-button class="with-icon" md-menu-trigger><md-icon class="iconfont icon-sort"></md-icon>{{t('sortStyles')}}</md-button>
 					<md-menu-content class="sort-select">
 						<md-menu-item :class="{ active: sort == 'id' }" @click="sort = 'id'">{{t('sortStylesById')}}</md-menu-item>
 						<md-menu-item :class="{ active: sort == 'status' }" @click="sort = 'status'">{{t('sortStylesByStatus')}}</md-menu-item>
@@ -11,9 +11,9 @@
 						<md-menu-item :class="{ active: sort == 'modified' }" @click="sort = 'modified'">{{t('sortStylesByModified')}}</md-menu-item>
 					</md-menu-content>
 				</md-menu>
-				<md-button id="update-all-styles" class="with-icon"><md-icon>refresh</md-icon>{{t('updateAllStyles')}}</md-button>
-				<md-button href="edit.html" class="with-icon"><md-icon>add</md-icon>{{t('addStyleLabel')}}</md-button>
-				<md-button id="install-from-file" class="with-icon"><md-icon>create_new_folder</md-icon>{{t('installFromFile')}}</md-button>
+				<md-button id="update-all-styles" class="with-icon"><md-icon class="iconfont icon-refresh"></md-icon>{{t('updateAllStyles')}}</md-button>
+				<md-button href="edit.html" class="with-icon"><md-icon class="iconfont icon-add"></md-icon>{{t('addStyleLabel')}}</md-button>
+				<md-button id="install-from-file" class="with-icon"><md-icon class="iconfont icon-create-new-folder"></md-icon>{{t('installFromFile')}}</md-button>
 				<md-card v-for="s of styles" :key="s.id" class="group-item">
 					<md-card-area>
 						<md-card-header>
@@ -77,7 +77,7 @@
 							</md-table-row>
 							<md-table-row v-show="cloud.list.length === 0">
 								<md-table-cell colspan="3">
-									<md-button class="md-raised" @click="cloudLoadList">{{t('cloudLoadList')}}</button>
+									<md-button class="md-raised" @click="cloudLoadList">{{t('cloudLoadList')}}</md-button>
 								</md-table-cell>
 							</md-table-row>
 							<md-table-row v-for="f of cloud.list" :key="f.id">
@@ -110,6 +110,9 @@
 
 <script>
 import browser from 'webextension-polyfill';
+import utils from '../core/utils';
+import file from '../core/file';
+import styles from '../core/styles';
 import storage from '../core/storage';
 import onedrive from '../core/cloud/onedrive';
 import google from '../core/cloud/google';
@@ -122,16 +125,78 @@ export default {
 			cloud: {
 				from: "onedrive",
 				list: []
+			},
+			options: {
+				onlyHtml: false,
+				compactPopup: false,
+				autoUpdate: true,
+				modifyCSP: true,
+				showBadge: true
 			}
 		};
 	},
 	methods: {
-		sortStyles(method, styles) {
-			if (!method) {
-				method = this.sort;
+		t: utils.t,
+		loadStylesFromBackup(content) {
+			return new Promise((resolve) => {
+				var i = 0, nextStyle;
+				function proceed(){
+					nextStyle = content[i++];
+					if (nextStyle) {
+						delete nextStyle["id"];
+						styles.install(nextStyle).then(proceed);
+					} else {
+						i--;
+						resolve();
+					}
+				}
+				proceed();
+			});
+		},
+		onImport() {
+			file.load(utils.DUMP_FILE_EXT).then(result => {
+				const data = JSON.parse(result[0]);
+				loadStylesFromBackup(data).then(() => {
+					window.location.reload();
+				});
+			});
+		},
+		cloudLoadList() {
+			//TODO
+		}
+	},
+	created() {
+		storage.prefs.onReady()
+		.then(prefs => {
+			this.sort = prefs.get('manage.sort');
+			this.$set(this.options, 'onlyHtml', prefs.get('only-applies-html'));
+			this.$set(this.options, 'compactPopup', prefs.get('compact-popup'));
+			this.$set(this.options, 'autoUpdate', prefs.get('auto-update'));
+			this.$set(this.options, 'modifyCSP', prefs.get('modify-csp'));
+			this.$set(this.options, 'showBadge', prefs.get('show-badge'));
+			this.$watch('options', newOpt => {
+				storage.prefs.set('only-applies-html', newOpt.onlyHtml);
+				storage.prefs.set('compact-popup', newOpt.compactPopup);
+				storage.prefs.set('auto-update', newOpt.autoUpdate);
+				storage.prefs.set('modify-csp', newOpt.modifyCSP);
+				storage.prefs.set('show-badge', newOpt.showBadge);
+			}, { deep: true });
+		})
+		browser.runtime.sendMessage({method: "getStyles"})
+		.then(r => {
+			if (history.state) {
+				window.scrollTo(0, history.state.scrollY);
+			}
+			this.styles = r;
+		});
+	},
+	watch: {
+		sort(newVal) {
+			if (storage.prefs.get('manage.sort', newVal) != newVal) {
+				storage.prefs.set('manage.sort', newVal);
 			}
 			let sortMethod = null;
-			switch (method) {
+			switch (newVal) {
 				case 'name':
 					sortMethod = (e1, e2) => e1.name.localeCompare(e2.name);
 					break;
@@ -151,40 +216,8 @@ export default {
 					};
 					break;
 			}
-			styles.sort(sortMethod);
-		},
-		onChangeSort(m) {
-			this.sort = m;
-			this.sortStyles(m, this.styles);
+			this.styles.sort(sortMethod);
 		}
-	},
-	mounted() {
-		storage.prefs.onReady((prefs) => {
-			this.sort = prefs.get('manage.sort');
-			this.$set(this.options, 'onlyHtml', prefs.get('only-applies-html'));
-			this.$set(this.options, 'compactPopup', prefs.get('compact-popup'));
-			this.$set(this.options, 'autoUpdate', prefs.get('auto-update'));
-			this.$set(this.options, 'modifyCSP', prefs.get('modify-csp'));
-			this.$set(this.options, 'showBadge', prefs.get('show-badge'));
-			this.$watch('options', newOpt => {
-				storage.prefs.set('only-applies-html', newOpt.onlyHtml);
-				storage.prefs.set('compact-popup', newOpt.compactPopup);
-				storage.prefs.set('auto-update', newOpt.autoUpdate);
-				storage.prefs.set('modify-csp', newOpt.modifyCSP);
-				storage.prefs.set('show-badge', newOpt.showBadge);
-			}, { deep: true });
-			this.$watch('sort', newOpt => {
-				storage.prefs.set('manage.sort', newOpt);
-			});
-		})
-		.then(browser.runtime.sendMessage({method: "getStyles"}))
-		.then(r => {
-			if (history.state) {
-				window.scrollTo(0, history.state.scrollY);
-			}
-			this.sortStyles(null, r);
-			this.styles = r;
-		});
 	}
 }
 </script>

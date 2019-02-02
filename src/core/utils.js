@@ -20,6 +20,7 @@ export default {
 	IS_CHROME: IS_CHROME,
 	CHROME_VERSION: CHROME_VERSION,
 	FIREFOX_VERSION: FIREFOX_VERSION,
+	DUMP_FILE_EXT: '.json',
 	TABLE_NAMES: ['request', 'sendHeader', 'receiveHeader'],
 	// direct & reverse mapping of @-moz-document keywords and internal property names
 	PROPERTY_TO_CSS: {"urls": "url", "urlPrefixes": "url-prefix", "domains": "domain", "regexps": "regexp", "exclude": "exclude"},
@@ -97,5 +98,46 @@ export default {
 	t(key, params) {
 		const s = browser.i18n.getMessage(key, params)
 		return s || key;
+	},
+	updateStyleFormat(s) {
+		// version 2
+		if (!s.advanced) {
+			s.advanced = {"item": {}, "saved": {}};
+		}
+		// version 3
+		if (!s.lastModified) {
+			s.lastModified = new Date().getTime();
+		}
+		// version 4
+		if (!s.type) {
+			s.type = 'css';
+		}
+		if (!s.code) {
+			let codeSections = null;
+			if (typeof(s.advanced.css) !== 'undefined' && s.advanced.css.length) {
+				codeSections = s.advanced.css;
+			} else {
+				codeSections = s.sections;
+			}
+			// Add exclude
+			for (let i in s.sections) {
+				if (typeof(s.sections[i].exclude) === 'undefined') {
+					s.sections[i].exclude = [];
+				}
+			}
+			s.code = codeSections.map((section) => {
+				var cssMds = [];
+				for (var i in propertyToCss) {
+					if (section[i]) {
+						cssMds = cssMds.concat(section[i].map(function (v){
+							return propertyToCss[i] + "(\"" + v.replace(/\\/g, "\\\\") + "\")";
+						}));
+					}
+				}
+				return cssMds.length ? "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}" : section.code;
+			}).join("\n\n");
+			delete s.advanced.css;
+		}
+		return s;
 	}
 }

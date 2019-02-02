@@ -131,15 +131,15 @@ export default {
 		});
 	},
 	getFile(filename, data) {
-		const data = JSON.parse(data);
+		const dataObj = JSON.parse(data);
 		return new Promise(resolve => {
-			this.callApi('drive/v3/files/' + data.id + '?spaces=appDataFolder&alt=media', '', 'GET').then(resolve);
+			this.callApi('drive/v3/files/' + dataObj.id + '?spaces=appDataFolder&alt=media', '', 'GET').then(resolve);
 		});
 	},
 	delete(filename, data) {
-		const data = JSON.parse(data);
+		const dataObj = JSON.parse(data);
 		return new Promise(resolve => {
-			this.callApi('drive/v3/files/' + data.id + '?spaces=appDataFolder', '', 'DELETE').then(resolve);
+			this.callApi('drive/v3/files/' + dataObj.id + '?spaces=appDataFolder', '', 'DELETE').then(resolve);
 		});
 	}
 };

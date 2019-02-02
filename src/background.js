@@ -1,5 +1,6 @@
 import browser from 'webextension-polyfill';
 import storage from './core/storage';
+import styles from './core/styles';
 import notify from './core/notify';
 
 window.IS_BACKGROUND = true;
@@ -22,20 +23,20 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		case "getStyles":
 			// check if this is a main content frame style enumeration
 			return new Promise(resolve => {
-				getStyles(request).then((styles) => {
+				styles.get(request).then(style => {
 					if (request.matchUrl && !request.id && sender && sender.tab && sender.frameId == 0 && sender.tab.url == request.matchUrl) {
 						notify.updateIcon(sender.tab, styles);
 					}
-					resolve(styles);
+					resolve(style);
 				});
 			});
 		case "saveStyle":
-			return saveStyle(request);
+			return styles.save(request);
 		case "installStyle":
-			return installStyle(request);
+			return styles.install(request);
 		case "invalidateCache":
 			if (typeof invalidateCache != "undefined") {
-				invalidateCache(false);
+				styles.invalidateCache(false);
 			}
 			break;
 		case "getPrefs":
@@ -50,10 +51,14 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 storage.prefs.watch('disableAll', (to) => {
-	browser.contextMenus.update("disableAll", {checked: to});
+	browser.contextMenus.update("disableAll", {
+		checked: to
+	});
 });
 storage.prefs.watch('show-badge', (to) => {
-	browser.contextMenus.update("show-badge", {checked: to});
+	browser.contextMenus.update("show-badge", {
+		checked: to
+	});
 });
 storage.prefs.watch('auto-update', (to) => {
 	toggleAutoUpdate(to);

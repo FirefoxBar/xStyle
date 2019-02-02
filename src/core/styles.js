@@ -1,17 +1,20 @@
+import utils from './utils'
+import storage from './storage'
+
 var cachedStyles = null;
-function getStyles(options) {
+function get(options) {
 	return new Promise((resolve) => {
 		if (cachedStyles != null) {
 			resolve(filterStyles(cachedStyles, options));
 		} else {
-			getDatabase().then((db) => {
-				var tx = db.transaction(["styles"], "readonly");
-				var os = tx.objectStore("styles");
-				var all = [];
+			storage.getDatabase().then((db) => {
+				const tx = db.transaction(["styles"], "readonly");
+				const os = tx.objectStore("styles");
+				const all = [];
 				os.openCursor().onsuccess = function(event) {
-					var cursor = event.target.result;
+					const cursor = event.target.result;
 					if (cursor) {
-						var s = cursor.value;
+						const s = cursor.value;
 						s.id = cursor.key;
 						all.push(cursor.value);
 						cursor.continue();
@@ -27,7 +30,7 @@ function getStyles(options) {
 
 function getInstalledStyleForDomain(domain){
 	return new Promise(function(resolve, reject){
-		browser.runtime.sendMessage({method: "getStyles", matchUrl: domain}).then(resolve);
+		browser.runtime.sendMessage({method: "get", matchUrl: domain}).then(resolve);
 	});
 }
 
@@ -43,7 +46,7 @@ function filterStyles(styles, options) {
 	var id = "id" in options ? Number(options.id) : null;
 	var matchUrl = "matchUrl" in options ? options.matchUrl : null;
 
-	if (enabled != null) {
+	if (options.enabled != null) {
 		styles = styles.filter(function(style) {
 			return style.enabled == enabled;
 		});
@@ -79,10 +82,10 @@ function filterStyles(styles, options) {
 	return styles;
 }
 
-function saveStyle(o) {
+function save(o) {
 	delete o["method"];
 	return new Promise((resolve) => {
-		getDatabase().then((db) => {
+		storage.getDatabase().then((db) => {
 			var tx = db.transaction(["styles"], "readwrite");
 			var os = tx.objectStore("styles");
 			// Update
@@ -145,11 +148,11 @@ function saveStyle(o) {
 }
 
 // Install a style, check its url
-function installStyle(json) {
-	json = updateStyleFormat(json);
+function install(json) {
+	json = utils.updateStyleFormat(json);
 	if (json.url) {
 		return new Promise((resolve) => {
-			getStyles({url: json.url}).then((response) => {
+			get({url: json.url}).then((response) => {
 				if (response.length != 0) {
 					json.id = response[0].id;
 					delete json.name;
@@ -157,17 +160,17 @@ function installStyle(json) {
 				if (typeof(json.autoUpdate) === 'undefined') {
 					json.autoUpdate = json.updateUrl !== null;
 				}
-				saveStyle(json).then(resolve);
+				save(json).then(resolve);
 			});
 		});
 	}
 	// Have not URL key, install as a new style
-	return saveStyle(json);
+	return save(json);
 }
 
-function enableStyle(id, enabled) {
+function enable(id, enabled) {
 	return new Promise(function(resolve){
-		saveStyle({id: id, enabled: enabled}).then((style) => {
+		save({id: id, enabled: enabled}).then((style) => {
 			handleUpdate(style);
 			notifyAllTabs({method: "styleUpdated", style: style});
 			resolve();
@@ -175,9 +178,9 @@ function enableStyle(id, enabled) {
 	});
 }
 
-function deleteStyle(id) {
+function remove(id) {
 	return new Promise(function(resolve){
-		getDatabase().then((db) => {
+		storage.getDatabase().then((db) => {
 			var tx = db.transaction(["styles"], "readwrite");
 			var os = tx.objectStore("styles");
 			var request = os.delete(Number(id));
@@ -204,7 +207,7 @@ function getApplicableSections(style, url) {
 }
 
 function sectionAppliesToUrl(section, url) {
-	if (!canStyle(url)) {
+	if (!utils.canStyle(url)) {
 		return false;
 	}
 	if (section.exclude && section.exclude.length > 0) {
@@ -267,45 +270,12 @@ function sectionAppliesToUrl(section, url) {
 	return false;
 }
 
-// Accepts an array of pref names (values are fetched via prefs.get)
-// and establishes a two-way connection between the document elements and the actual prefs
-function setupLivePrefs(IDs) {
-	var localIDs = {};
-	IDs.forEach(function(id) {
-		localIDs[id] = true;
-		updateElement(id).addEventListener("change", function() {
-			notifyBackground({"method": "prefChanged", "prefName": this.id, "value": isCheckbox(this) ? this.checked : this.value});
-			prefs.set(this.id, isCheckbox(this) ? this.checked : this.value);
-		});
-	});
-	browser.runtime.onMessage.addListener(function(request) {
-		if (request.prefName in localIDs) {
-			updateElement(request.prefName);
-		}
-	});
-	function updateElement(id) {
-		var el = document.getElementById(id);
-		el[isCheckbox(el) ? "checked" : "value"] = prefs.get(id);
-		el.dispatchEvent(new Event("change", {bubbles: true, cancelable: true}));
-		return el;
-	}
-}
-
-
-// Upgrade functions
-function upgradeToNewest() {
-	getDatabase().then((db) => {
-		let tx = db.transaction(["styles"], "readwrite");
-		let os = tx.objectStore("styles");
-		os.openCursor().onsuccess = function(e) {
-			let cursor = e.target.result;
-			if (cursor) {
-				let s = cursor.value;
-				s.id = cursor.key;
-				s = updateStyleFormat(s);
-				os.put(s);
-				cursor.continue();
-			}
-		};
-	});
+export default {
+	get,
+	getInstalledStyleForDomain,
+	invalidateCache,
+	save,
+	enable,
+	remove,
+	install
 }

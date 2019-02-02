@@ -513,47 +513,6 @@ function parseStyleFile(code, options, advanced) {
 }
 
 // Update style to newest format
-function updateStyleFormat(s) {
-	// version 2
-	if (!s.advanced) {
-		s.advanced = {"item": {}, "saved": {}};
-	}
-	// version 3
-	if (!s.lastModified) {
-		s.lastModified = new Date().getTime();
-	}
-	// version 4
-	if (!s.type) {
-		s.type = 'css';
-	}
-	if (!s.code) {
-		let codeSections = null;
-		if (typeof(s.advanced.css) !== 'undefined' && s.advanced.css.length) {
-			codeSections = s.advanced.css;
-		} else {
-			codeSections = s.sections;
-		}
-		// Add exclude
-		for (let i in s.sections) {
-			if (typeof(s.sections[i].exclude) === 'undefined') {
-				s.sections[i].exclude = [];
-			}
-		}
-		s.code = codeSections.map((section) => {
-			var cssMds = [];
-			for (var i in propertyToCss) {
-				if (section[i]) {
-					cssMds = cssMds.concat(section[i].map(function (v){
-						return propertyToCss[i] + "(\"" + v.replace(/\\/g, "\\\\") + "\")";
-					}));
-				}
-			}
-			return cssMds.length ? "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}" : section.code;
-		}).join("\n\n");
-		delete s.advanced.css;
-	}
-	return s;
-}
 
 
 // two json is equal or not
