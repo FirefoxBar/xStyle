@@ -5,8 +5,6 @@ https://img.shields.io/travis/FirefoxBar/xStyle/master.svg?style=flat-square)](h
 [![GitHub release](https://img.shields.io/github/release/FirefoxBar/xStyle.svg?style=flat-square)](https://github.com/FirefoxBar/xStyle/releases)
 [![license](https://img.shields.io/github/license/FirefoxBar/xStyle.svg?style=flat-square)](https://github.com/FirefoxBar/xStyle/blob/master/COPYING)
 [![Gitter](https://img.shields.io/gitter/room/FirefoxBar/xStyle.svg?style=flat-square)](https://gitter.im/FirefoxBar/xStyle)
-[![Mozilla Add-on](https://img.shields.io/amo/users/xstyle.svg)]()
-[![Chrome Web Store](https://img.shields.io/chrome-web-store/users/hncgkmhphmncjohllpoleelnibpmccpj.svg)]()
 
 A style manager.
 
@@ -22,7 +20,7 @@ Install our [self-distributed version](https://github.com/FirefoxBar/xStyle/rele
 
 #### Install self-distributed version in Chrome
 
-You should download an [Administrative Policy Template](http://www.chromium.org/administrators/policy-templates) and install it.
+You should download [Administrative Policy Template](http://www.chromium.org/administrators/policy-templates) and install it.
 
 Then, allow Chrome to install local plugins and whitelist the ID for this extension (`dbbjndgnfkbjmciadekfomemdiledmam`).
 

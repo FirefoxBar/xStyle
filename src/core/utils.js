@@ -120,9 +120,9 @@ export default {
 				codeSections = s.sections;
 			}
 			// Add exclude
-			for (let i in s.sections) {
-				if (typeof(s.sections[i].exclude) === 'undefined') {
-					s.sections[i].exclude = [];
+			for (const e of s.sections) {
+				if (typeof(e.exclude) === 'undefined') {
+					e.exclude = [];
 				}
 			}
 			s.code = codeSections.map((section) => {

@@ -15,7 +15,7 @@
 				<md-button href="edit.html" class="with-icon"><md-icon class="iconfont icon-add"></md-icon>{{t('addStyleLabel')}}</md-button>
 				<md-button id="install-from-file" class="with-icon"><md-icon class="iconfont icon-create-new-folder"></md-icon>{{t('installFromFile')}}</md-button>
 				<div class="md-layout md-gutter">
-					<div class="md-layout-item md-size-50 md-small-size-100 style-item"  v-for="s of sortedStyles" :key="s.id">
+					<div class="md-layout-item md-size-50 md-small-size-100 style-item" v-for="s of sortedStyles" :key="s.id">
 						<md-card>
 							<md-card-area>
 								<md-card-header>
@@ -31,7 +31,7 @@
 								<md-card-actions md-alignment="left">
 									<md-button class="md-primary" :href="`edit.html?id=${s.id}`">{{t('editStyleLabel')}}</md-button>
 									<md-button class="md-primary" @click="onStyleDelete(s)">{{t('deleteStyleLabel')}}</md-button>
-									<md-button class="md-primary">{{t('export')}}</md-button>
+									<md-button class="md-primary" @click="onStyleExport(s)">{{t('export')}}</md-button>
 									<md-button class="md-primary">{{t('advancedTitle')}}</md-button>
 									<md-button class="md-primary">{{t('updateOneStyle')}}</md-button>
 								</md-card-actions>
@@ -99,6 +99,55 @@
 				</md-card>
 			</md-tab>
 		</md-tabs>
+		<md-dialog :md-active.sync="exportDialog.show">
+			<md-dialog-title>{{t('export')}}</md-dialog-title>
+			<md-dialog-content>
+				<div class="md-layout md-gutter">
+					<div class="md-layout-item md-size-50 md-small-size-100">
+						<md-field>
+							<label>{{t('styleName')}}</label>
+							<md-input v-model="exportDialog.name" disabled></md-input>
+						</md-field>
+					</div>
+					<div class="md-layout-item md-size-50 md-small-size-100">
+						<md-field>
+							<label>{{t('styleAuthor')}}</label>
+							<md-input v-model="exportDialog.author"></md-input>
+						</md-field>
+					</div>
+					<div class="md-layout-item md-size-50 md-small-size-100">
+						<md-field>
+							<label>URL</label>
+							<md-input v-model="exportDialog.url"></md-input>
+						</md-field>
+					</div>
+					<div class="md-layout-item md-size-50 md-small-size-100">
+						<md-field>
+							<label>Update URL</label>
+							<md-input v-model="exportDialog.updateUrl"></md-input>
+						</md-field>
+					</div>
+					<div class="md-layout-item md-size-50 md-small-size-100">
+						<md-field>
+							<label>MD5 URL</label>
+							<md-input v-model="exportDialog.md5Url"></md-input>
+						</md-field>
+					</div>
+					<div class="md-layout-item md-size-50 md-small-size-100">
+						<md-field>
+							<label>Original MD5</label>
+							<md-input v-model="exportDialog.originalMd5"></md-input>
+						</md-field>
+					</div>
+					<div class="md-layout-item md-size-100">{{t('exportHelp')}}</div>
+				</div>
+			</md-dialog-content>
+			<md-dialog-actions>
+				<md-button class="md-primary" @click="onExportToJson">{{t('exportAs', 'json')}}</md-button>
+				<md-button class="md-primary" @click="onExportToUserCss">{{t('exportAs', 'user.' + exportDialog.format)}}</md-button>
+				<md-button class="md-primary" @click="exportDialog.show = false">Close</md-button>
+			</md-dialog-actions>
+		</md-dialog>
 	</div>
 </template>
 
@@ -106,6 +155,7 @@
 import browser from 'webextension-polyfill';
 import dateFormat from 'dateformat';
 import merge from 'merge';
+import md5 from 'md5.js';
 import utils from '../core/utils';
 import file from '../core/file';
 import styles from '../core/styles';
@@ -128,6 +178,17 @@ export default {
 				autoUpdate: true,
 				modifyCSP: true,
 				showBadge: true
+			},
+			exportDialog: {
+				show: false,
+				name: "",
+				author: "",
+				url: "",
+				md5Url: "",
+				updateUrl: "",
+				originalMd5: "",
+				format: "",
+				advanced: null
 			}
 		};
 	},
@@ -197,6 +258,79 @@ export default {
 			styles.remove(style.id).then(() => {
 				this.styles.splice(this.styles.indexOf(style), 1);
 			});
+		},
+		onStyleExport(style) {
+			this.exportDialog.name = style.name;
+			this.exportDialog.author = style.author || '';
+			this.exportDialog.updateUrl = style.updateUrl || '';
+			this.exportDialog.md5Url = style.md5Url || '';
+			this.exportDialog.originalMd5 = style.originalMd5 || new MD5().update(style.code).digest('hex');
+			this.exportDialog.url = style.url || "https://ext.firefoxcn.net/xstyle/md5namespace/" + this.exportDialog.originalMd5;
+			this.exportDialog.format = style.type || "css";
+			this.exportDialog.advanced = style.advanced || {"item": {}};
+			this.exportDialog.show = true;
+		},
+		onExportToJson() {
+			const style = merge({}, this.exportDialog);
+			// remove saved
+			delete style.advanced.saved;
+			file.save(JSON.stringify(style, null, "\t"), 'xstyle-' + style.originalMd5 + '.json');
+			this.exportDialog.show = false;
+		},
+		onExportToUserCss() {
+			const style = merge({}, this.exportDialog);
+			const content = ["/* ==UserStyle=="];
+			content.push("@name " + style.name);
+			content.push("@type " + style.type);
+			if (style.url) {
+				content.push("@homepageURL " + style.url);
+			}
+			if (style.updateUrl) {
+				content.push("@updateURL " + style.updateUrl);
+			}
+			if (style.md5Url) {
+				content.push("@md5URL " + style.md5Url);
+			}
+			content.push("@originalMD5 " + style.originalMd5);
+			if (style.author) {
+				content.push("@author " + style.author);
+			}
+			content.push("@formatVersion 2");
+			content.push("@generator xStyle");
+			if (Object.keys(style.advanced.item).length > 0) {
+				for (const k in style.advanced.item) {
+					const it = style.advanced.item[k];
+					let itText = `@advanced ${it.type} ${k} "${it.title.replace(/"/g, '%22')}" `;
+					switch (item.type) {
+						case 'text':
+							itText += `"${it.default.replace(/"/g, '%22')}"`;
+							break;
+						case 'color':
+							itText += it.default;
+							break;
+						case 'image':
+							itText += "{\n";
+							for (let kk in it.option) {
+								itText += `\t ${kk} "${it.option[kk].title.replace(/"/g, '%22')}" "${it.option[kk].value}"\n`;
+							}
+							itText += "}";
+							break;
+						case 'dropdown':
+							itText += "{\n";
+							for (let kk in it.option) {
+								itText += `\t ${kk} "${it.option[kk].title.replace(/"/g, '%22')}" <<<EOT\n${it.option[kk].value.replace(/\*\//g, '*\\/')} EOT;\n`;
+							}
+							itText += "}";
+							break;
+					}
+					content.push(itText);
+				}
+			}
+			content.push("==/UserStyle== */");
+			content.push("");
+			content.push(style.code);
+			file.save(content.join("\n"), 'xstyle-' + style.originalMd5 + '.user.' + style.format);
+			this.exportDialog.show = false;
 		},
 		onImport() {
 			file.load(utils.DUMP_FILE_EXT).then(result => {
