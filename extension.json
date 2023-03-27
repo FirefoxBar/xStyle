@@ -1,0 +1,20 @@
+{
+	"dist": "HeaderEditor-{VER}",
+	"autobuild": {
+		"xpi": true,
+		"amo": true,
+		"cws": true,
+		"crx": true
+	},
+  "firefox": {
+    "xpi": "xstyle@addon.firefoxcn.net",
+    "amo": "xstyle-amo@addon.firefoxcn.net"
+  },
+	"chrome": {
+		"id": "eningockdidmgiojffjmkdblpjocbhgh",
+		"crx": "hncgkmhphmncjohllpoleelnibpmccpj"
+	},
+	"github": {
+		"enable": true
+	}
+}
