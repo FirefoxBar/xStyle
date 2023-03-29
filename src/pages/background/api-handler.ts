@@ -6,25 +6,6 @@ import { openURL } from './utils';
 import { getDatabase } from './core/db';
 import styles from './core/styles';
 
-/*
-storage.prefs.watch('disableAll', (to) => {
-  browser.contextMenus.update('disableAll', {
-    checked: to,
-  });
-});
-storage.prefs.watch('show-badge', (to) => {
-  browser.contextMenus.update('show-badge', {
-    checked: to,
-  });
-});
-storage.prefs.watch('auto-update', (to) => {
-  toggleAutoUpdate(to);
-});
-storage.prefs.watch('modify-csp', (to) => {
-  toggleCSP(to);
-});
-*/
-
 function execute(request: any, sender) {
   if (request.method === 'notifyBackground') {
     request.method = request.reason;
@@ -46,7 +27,7 @@ function execute(request: any, sender) {
       // check if this is a main content frame style enumeration
       return new Promise((resolve) => {
         styles.get(request).then((style) => {
-          if (request.matchUrl && !request.id && sender && sender.tab && sender.frameId == 0 && sender.tab.url == request.matchUrl) {
+          if (request.matchUrl && !request.id && sender && sender.tab && sender.frameId === 0 && sender.tab.url === request.matchUrl) {
             // notify.updateIcon(sender.tab, styles);
           }
           resolve(style);
@@ -68,7 +49,7 @@ function execute(request: any, sender) {
   // return false;
 }
 
-export default function createApiHandler() {
+function initApiHandler() {
   browser.runtime.onMessage.addListener((request, sender) => {
     logger.debug('Background Receive Message', request);
     if (request.method === 'batchExecute') {
@@ -84,3 +65,5 @@ export default function createApiHandler() {
     return execute(request, sender);
   });
 }
+
+export default initApiHandler;

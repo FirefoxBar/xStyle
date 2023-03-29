@@ -9,15 +9,15 @@
 		"url": "https://github.com/FirefoxBar/xStyle.git"
 	},
 	"scripts": {
-	  "start": "icejs start --disable-open --config build.config.js",
-	  "build": "icejs build --config build.config.js",
-	  "lint": "npm run eslint && npm run stylelint",
-	  "eslint": "eslint --cache --ext .js,.jsx,.ts,.tsx ./",
-	  "eslint:fix": "npm run eslint -- --fix",
-	  "stylelint": "stylelint \"**/*.{css,scss,less}\"",
-	  "release": "node ./scripts/release.mjs",
-	  "pack": "node ./scripts/pack.mjs",
-	  "precommit": "lint-staged"
+		"start": "icejs start --disable-open --config build.config.js",
+		"build": "icejs build --config build.config.js",
+		"lint": "npm run eslint && npm run stylelint",
+		"eslint": "eslint --cache --ext .js,.jsx,.ts,.tsx ./",
+		"eslint:fix": "npm run eslint -- --fix",
+		"stylelint": "stylelint \"**/*.{css,scss,less}\"",
+		"release": "node ./scripts/release.mjs",
+		"pack": "node ./scripts/pack.mjs",
+		"precommit": "lint-staged"
 	},
 	"dependencies": {
 		"@codemirror/lang-javascript": "^6.1.4",
@@ -32,16 +32,18 @@
 		"dayjs": "^1.9.5",
 		"eventemitter3": "^4.0.0",
 		"fast-deep-equal": "^2.0.1",
+		"less": "^4.1.3",
 		"lodash-es": "^4.17.21",
+		"md5.js": "^1.3.5",
+		"parse-path": "^3.0.4",
 		"query-string": "^8.1.0",
 		"react": "^17.0.0",
 		"react-app-renderer": "^3.1.0",
 		"react-dom": "^17.0.0",
 		"regenerator-runtime": "^0.13.11",
+		"sass": "^1.60.0",
 		"tslib": "^2.5.0",
-		"webextension-polyfill": "^0.10.0",
-		"md5.js": "^1.3.5",
-		"parse-path": "^3.0.4"
+		"webextension-polyfill": "^0.10.0"
 	},
 	"devDependencies": {
 		"@iceworks/spec": "^1.0.0",
@@ -72,14 +74,14 @@
 		"webpack-bundle-analyzer": "^4.8.0"
 	},
 	"husky": {
-	  "hooks": {
-		"pre-commit": "npm run precommit"
-	  }
+		"hooks": {
+			"pre-commit": "npm run precommit"
+		}
 	},
 	"lint-staged": {
-	  "./src/**/*.{ts,tsx}": [
-		"eslint --cache --fix",
-		"git add"
-	  ]
+		"./src/**/*.{ts,tsx}": [
+			"eslint --cache --fix",
+			"git add"
+		]
 	}
 }

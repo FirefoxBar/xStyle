@@ -3,18 +3,10 @@ import { APIs, EVENTs, propertyToCss } from '@/share/core/constant';
 import notify from '@/share/core/notify';
 import { prefs } from '@/share/core/prefs';
 import { BasicStyle, SavedStyle, StyleFilterOption, StyleSection } from '@/share/core/types';
-import { canStyle, isBackground } from '@/share/core/utils';
+import { canStyle, fetchUrl, isBackground, runTryCatch } from '@/share/core/utils';
 import { getDatabase } from './db';
 
-function runTryCatch<T = any>(cb: () => T): T {
-  try {
-    return cb();
-  } catch (e) {
-    // ignore
-  }
-}
-
-type FilteredStyles = SavedStyle[] | Record<string, SavedStyle>;
+export type FilteredStyles = SavedStyle[] | Record<string, SavedStyle>;
 
 let cachedStyles = null;
 function get(options: StyleFilterOption): Promise<FilteredStyles> {
@@ -64,17 +56,17 @@ function filterStyles(styles: SavedStyle[], options: StyleFilterOption): Filtere
 
   if (options.enabled != null) {
     styles = styles.filter((style) => {
-      return style.enabled == options.enabled;
+      return style.enabled === options.enabled;
     });
   }
   if (url != null) {
     styles = styles.filter((style) => {
-      return style.url == url;
+      return style.url === url;
     });
   }
   if (id != null) {
     styles = styles.filter((style) => {
-      return style.id == id;
+      return style.id === id;
     });
   }
   if (matchUrl != null) {
@@ -108,14 +100,14 @@ function save(o: Partial<SavedStyle>) {
       const os = tx.objectStore('styles');
       // Update
       if (o.id) {
-        if (typeof (o.enabled) !== 'undefined') {
+        if (typeof o.enabled !== 'undefined') {
           o.enabled = !!o.enabled;
         }
         const request = os.get(Number(o.id));
         request.onsuccess = function (event) {
           const style = request.result || {};
           for (const prop in o) {
-            if (prop == 'id') {
+            if (prop === 'id') {
               continue;
             }
             style[prop] = o[prop];
@@ -227,7 +219,7 @@ function install(json: any) {
   if (json.url) {
     return new Promise((resolve) => {
       get({ url: json.url }).then((response) => {
-        if (response.length != 0) {
+        if (response.length !== 0) {
           json.id = response[0].id;
           delete json.name;
         }
@@ -242,13 +234,14 @@ function install(json: any) {
   return save(json);
 }
 
-function remove(id): Promise<void> {
+function remove(_id: string | number): Promise<void> {
+  const id = Number(_id);
   return new Promise((resolve, reject) => {
     getDatabase().then((db) => {
       const tx = db.transaction(['styles'], 'readwrite');
       const os = tx.objectStore('styles');
-      const request = os.delete(Number(id));
-      request.onsuccess = (event) => {
+      const request = os.delete(id);
+      request.onsuccess = () => {
         invalidateCache();
         notify.tabs({
           method: APIs.ON_EVENT,
@@ -266,7 +259,7 @@ const namespacePattern = /^\s*(@namespace[^;]+;\s*)+$/;
 function getApplicableSections(style: SavedStyle, url: string) {
   const sections = style.sections.filter((section) => sectionAppliesToUrl(section, url));
   // ignore if it's just namespaces
-  if (sections.length == 1 && namespacePattern.test(sections[0].code)) {
+  if (sections.length === 1 && namespacePattern.test(sections[0].code)) {
     return [];
   }
   return sections;
@@ -278,10 +271,10 @@ function sectionAppliesToUrl(section: StyleSection, url: string) {
   }
   if (section.exclude && section.exclude.length > 0) {
     const isExclude = section.exclude.some((exclude) => {
-      if (exclude[0] != '^') {
+      if (exclude[0] !== '^') {
         exclude = `^${exclude}`;
       }
-      if (exclude[exclude.length - 1] != '$') {
+      if (exclude[exclude.length - 1] !== '$') {
         exclude += '$';
       }
       const re = runTryCatch(() => new RegExp(exclude));
@@ -304,7 +297,7 @@ function sectionAppliesToUrl(section: StyleSection, url: string) {
     // console.log(section.id + " applies to " + url + " due to URL rules");
     return true;
   }
-  if (section.urlPrefixes.some((prefix) => url.indexOf(prefix) == 0)) {
+  if (section.urlPrefixes.some((prefix) => url.indexOf(prefix) === 0)) {
     // console.log(section.id + " applies to " + url + " due to URL prefix rules");
     return true;
   }
@@ -314,10 +307,10 @@ function sectionAppliesToUrl(section: StyleSection, url: string) {
   }
   const isMatchRegex = section.regexps.some((regexp) => {
     // we want to match the full url, so add ^ and $ if not already present
-    if (regexp[0] != '^') {
+    if (regexp[0] !== '^') {
       regexp = `^${regexp}`;
     }
-    if (regexp[regexp.length - 1] != '$') {
+    if (regexp[regexp.length - 1] !== '$') {
       regexp += '$';
     }
     const re = runTryCatch(() => new RegExp(regexp));
@@ -336,11 +329,84 @@ function sectionAppliesToUrl(section: StyleSection, url: string) {
   return false;
 }
 
-export default {
+
+// update a style
+async function remoteUpdate(style: SavedStyle) {
+  const update = (serverJson: any) => {
+    // update everything but name
+    delete serverJson.name;
+    serverJson.id = style.id;
+    save(serverJson);
+  };
+
+  if (!style.updateUrl) {
+    return;
+  }
+
+  const { updateUrl } = style;
+  // For uso
+  if (updateUrl.includes('userstyles.org') && Object.keys(style.advanced.saved).length > 0) {
+    const style_id = style.md5Url.match(/\/(\d+)\.md5/)[1];
+    const responseText = await fetchUrl({
+      url: `https://userstyles.org/api/v1/styles/${style_id}`,
+    });
+
+    const serverJson = JSON.parse(responseText);
+    const rawCss = serverJson.css;
+    const md5 = await fetchUrl({
+      url: style.md5Url,
+    });
+
+    // TODO
+    // parseStyleFile(rawCss, {
+    //   "name": style.name,
+    //   "md5Url": style.md5Url || null,
+    //   "url": style.url || null,
+    //   "author": style.author || null,
+    //   "originalMd5": md5,
+    //   "updateUrl": updateUrl
+    // }).then((toSave) => {
+    //   update(style, toSave);
+    // });
+    return;
+  }
+
+  // not uso
+  const responseText = await fetchUrl({
+    url: updateUrl,
+  });
+
+  // TODO
+  // parseStyleFile(responseText, {
+  //     "name": style.name,
+  //     "advanced": {
+  //       "saved": style.advanced.saved
+  //     }
+  //   }))
+  //   .then((toSave) => {
+  //     if (!toSave.updateUrl) {
+  //       toSave.updateUrl = updateUrl;
+  //     }
+  //     if (style.md5Url) {
+  //       getURL(style.md5Url).then((md5) => {
+  //         toSave.originalMd5 = md5;
+  //         update(style, toSave);
+  //       });
+  //     } else {
+  //       update(style, toSave);
+  //     }
+  //   });
+  // }
+}
+
+const styles = {
   get,
   getInstalledStyleForDomain,
   invalidateCache,
   save,
   remove,
   install,
+  remoteUpdate,
 };
+
+export default styles;

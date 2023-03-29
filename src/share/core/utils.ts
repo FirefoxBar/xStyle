@@ -158,3 +158,11 @@ export function canStyle(url: string) {
   }
   return true;
 }
+
+export function runTryCatch<T = any>(cb: () => T): T {
+  try {
+    return cb();
+  } catch (e) {
+    // ignore
+  }
+}

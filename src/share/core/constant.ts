@@ -1,6 +1,37 @@
 import { PrefValue } from './types';
 
 export const defaultPrefValue: PrefValue = {
+  'show-badge': true, // display text on popup menu icon
+  'modify-csp': true, // modify csp
+  'auto-update': false, // Auto update styles
+  disableAll: false, // boss key
+  'compact-popup': false,
+  'only-applies-html': false,
+
+  'manage.sort': 'id', // sort styles in management page
+
+  'editor.initAdvanced': 20,
+  'editor.options': {}, // CodeMirror.defaults.*
+  'editor.lineWrapping': true, // word wrap
+  'editor.smartIndent': true, // "smart" indent
+  'editor.indentWithTabs': false, // smart indent with tabs
+  'editor.tabSize': 4, // tab width, in spaces
+  'editor.keyMap':
+      navigator.appVersion.indexOf('Windows') > 0 ? 'sublime' : 'default',
+  'editor.theme': 'default', // CSS theme
+  'editor.beautify': { // CSS beautifier{
+    indent_size: 1,
+    indent_char: '\t',
+    space_around_selector_separator: true,
+    selector_separator_newline: true,
+    end_with_newline: false,
+    newline_between_rules: true,
+  },
+  'editor.lintDelay': 500, // lint gutter marker update delay, ms
+  'editor.lintReportDelay': 2000, // lint report update delay, ms
+  'editor.fontSize': 16, // font size
+  'editor.fontName': 'sans-serif', // font size
+  'editor.gt.port': 4001, // GhostText port
 };
 
 export enum APIs {
@@ -12,6 +43,10 @@ export enum APIs {
   UPDATE_CACHE = 'update_cache',
   SET_PREFS = 'set_pref',
   ON_EVENT = 'event',
+
+  // 这些是发给页面的
+  STYLE_REPLACE_ALL = 'style_replace_all',
+  STYLE_APPLY = 'style_apply',
 }
 
 export enum EVENTs {
