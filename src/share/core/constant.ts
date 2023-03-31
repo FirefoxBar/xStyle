@@ -56,3 +56,16 @@ export enum EVENTs {
 
 export const propertyToCss = { urls: 'url', urlPrefixes: 'url-prefix', domains: 'domain', regexps: 'regexp', exclude: 'exclude' };
 export const cssToProperty = { url: 'urls', 'url-prefix': 'urlPrefixes', domain: 'domains', regexp: 'regexps', exclude: 'exclude' };
+
+export enum ADVANCED_TYPE {
+  TEXT = 'text',
+  COLOR = 'color',
+  IMAGE = 'image',
+  DROPDOWN = 'dropdown',
+}
+
+export enum STYLE_DYNAMIC_TYPE {
+  CSS = 'css',
+  LESS = 'less',
+  SASS = 'sass',
+}

@@ -22,6 +22,7 @@ module.exports = getESLintConfig('react-ts', {
     'no-prototype-builtins': 0,
     'no-return-assign': 0,
     'no-param-reassign': 0,
+    'no-loop-func': 0,
     'unused-imports/no-unused-imports': 'warn',
     'import/order': [
       'warn',

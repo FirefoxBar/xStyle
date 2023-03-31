@@ -1,3 +1,5 @@
+import type { ADVANCED_TYPE, STYLE_DYNAMIC_TYPE } from './constant';
+
 export interface StyleFilterOption {
   url?: string;
   id?: number;
@@ -17,7 +19,7 @@ export interface StyleSection {
 }
 
 export interface BasicStyle {
-  type: 'css' | 'less' | 'sass';
+  type: STYLE_DYNAMIC_TYPE;
   advanced: {
     // TODO
     item: any;
@@ -40,6 +42,25 @@ export interface SavedStyle extends BasicStyle {
   autoUpdate?: boolean;
 }
 
+export interface AdvancedItem {
+  type: ADVANCED_TYPE;
+  title: string;
+}
+
+export interface AdvancedItemTextColor {
+  type: ADVANCED_TYPE.TEXT | ADVANCED_TYPE.COLOR;
+  title: string;
+  default: string;
+}
+
+export interface AdvancedItemImageDropdown {
+  type: ADVANCED_TYPE.IMAGE | ADVANCED_TYPE.DROPDOWN;
+  title: string;
+  option: Record<string, {
+    title: string;
+    value: string;
+  }>;
+}
 
 // navigator.appVersion.indexOf("Windows") > 0 ? "sublime" : "default",
 export interface PrefValue {
