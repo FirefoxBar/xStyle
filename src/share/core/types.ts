@@ -1,5 +1,7 @@
 import type { ADVANCED_TYPE, STYLE_DYNAMIC_TYPE } from './constant';
 
+export type FilteredStyles = SavedStyle[] | Record<string, SavedStyle>;
+
 export interface StyleFilterOption {
   url?: string;
   id?: number;
@@ -7,7 +9,6 @@ export interface StyleFilterOption {
   enabled?: boolean;
   asHash?: boolean;
 }
-
 
 export interface StyleSection {
   urls: string[];

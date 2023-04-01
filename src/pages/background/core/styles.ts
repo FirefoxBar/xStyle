@@ -1,12 +1,10 @@
 import browser from 'webextension-polyfill';
-import { APIs, EVENTs, propertyToCss } from '@/share/core/constant';
+import { APIs, EVENTs, propertyToCss, STYLE_DYNAMIC_TYPE } from '@/share/core/constant';
 import notify from '@/share/core/notify';
 import { prefs } from '@/share/core/prefs';
-import { BasicStyle, SavedStyle, StyleFilterOption, StyleSection } from '@/share/core/types';
+import { BasicStyle, FilteredStyles, SavedStyle, StyleFilterOption, StyleSection } from '@/share/core/types';
 import { canStyle, fetchUrl, isBackground, runTryCatch } from '@/share/core/utils';
 import { getDatabase } from './db';
-
-export type FilteredStyles = SavedStyle[] | Record<string, SavedStyle>;
 
 let cachedStyles = null;
 function get(options: StyleFilterOption): Promise<FilteredStyles> {
@@ -98,6 +96,7 @@ function save(o: Partial<SavedStyle>) {
     getDatabase().then((db) => {
       const tx = db.transaction(['styles'], 'readwrite');
       const os = tx.objectStore('styles');
+      const keys = Object.keys(o);
       // Update
       if (o.id) {
         if (typeof o.enabled !== 'undefined') {
@@ -105,21 +104,22 @@ function save(o: Partial<SavedStyle>) {
         }
         const request = os.get(Number(o.id));
         request.onsuccess = function (event) {
-          const style = request.result || {};
-          for (const prop in o) {
+          const style: Partial<SavedStyle> = request.result || {};
+          for (const prop of keys) {
             if (prop === 'id') {
               continue;
             }
             style[prop] = o[prop];
           }
           if (typeof (style.advanced) === 'undefined') {
-            style.advanced = { item: {}, saved: {}, css: [] };
+            style.advanced = { item: {}, saved: {} };
           }
           const putRequest = os.put(style);
           putRequest.onsuccess = () => {
             invalidateCache();
             notify.tabs({
-              method: 'styleUpdated',
+              method: APIs.ON_EVENT,
+              event: EVENTs.STYLE_UPDATED,
               style,
             });
             resolve(style);
@@ -129,13 +129,13 @@ function save(o: Partial<SavedStyle>) {
       }
       // Create
       // Set optional things to null if they're undefined
-      ['updateUrl', 'md5Url', 'url', 'originalMd5'].filter((att) => {
-        return !(att in o);
-      }).forEach((att) => {
-        o[att] = null;
-      });
-      if (typeof (o.advanced) === 'undefined') {
-        o.advanced = { item: {}, saved: {}, css: [] };
+      ['updateUrl', 'md5Url', 'url', 'originalMd5']
+        .filter((att) => !keys.includes(att))
+        .forEach((att) => {
+          o[att] = null;
+        });
+      if (typeof o.advanced === 'undefined') {
+        o.advanced = { item: {}, saved: {} };
       }
       // Set other optional things to empty array if they're undefined
       o.sections.forEach((section) => {
@@ -146,11 +146,11 @@ function save(o: Partial<SavedStyle>) {
         });
       });
       // Set to enabled if not set
-      if (!('enabled' in o)) {
+      if (!keys.includes('enabled')) {
         o.enabled = true;
       }
-      if (typeof (o.enabled) !== 'boolean') {
-        o.enabled = !!o.enabled;
+      if (typeof o.enabled !== 'boolean') {
+        o.enabled = Boolean(o.enabled);
       }
       // Make sure it's not null - that makes indexeddb sad
       delete o['id'];
@@ -183,11 +183,11 @@ function updateStyleFormat(s: Partial<BasicStyle>) {
   }
   // version 4
   if (!s.type) {
-    s.type = 'css';
+    s.type = STYLE_DYNAMIC_TYPE.CSS;
   }
   if (!s.code) {
     let codeSections = null;
-    if (typeof (s.advanced.css) !== 'undefined' && s.advanced.css.length) {
+    if (typeof s.advanced.css !== 'undefined' && s.advanced.css.length) {
       codeSections = s.advanced.css;
     } else {
       codeSections = s.sections;

@@ -8,8 +8,7 @@ import { AdvancedItem, AdvancedItemImageDropdown, AdvancedItemTextColor, BasicSt
 import { isAdvancedItemImageDropdown, isAdvancedItemTextColor } from '@/share/core/type-utils';
 import { ADVANCED_TYPE, STYLE_DYNAMIC_TYPE } from '@/share/core/constant';
 
-
-// Compile dynamic format like less and more
+// Compile dynamic format like less, sass
 async function compileDynamic(format: STYLE_DYNAMIC_TYPE, content: string) {
   if (format === STYLE_DYNAMIC_TYPE.LESS) {
     const result = await less.render(content);

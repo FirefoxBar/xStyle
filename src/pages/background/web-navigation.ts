@@ -2,7 +2,8 @@ import browser from 'webextension-polyfill';
 import { APIs } from '@/share/core/constant';
 import { prefs } from '@/share/core/prefs';
 import { canStyle, IS_ANDROID, runTryCatch } from '@/share/core/utils';
-import styles, { FilteredStyles } from './core/styles';
+import { FilteredStyles } from '@/share/core/types';
+import styles from './core/styles';
 
 interface MinimalTab {
   id: number;

@@ -51,6 +51,7 @@ export enum APIs {
 
 export enum EVENTs {
   STYLE_ADDED = 'style_added',
+  STYLE_UPDATED = 'style_updated',
   STYLE_DELETED = 'style_deleted',
 }
 

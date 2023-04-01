@@ -1,4 +1,9 @@
 import browser from 'webextension-polyfill';
+import { APIs, EVENTs } from '@/share/core/constant';
+import notify from '@/share/core/notify';
+import { prefs } from '@/share/core/prefs';
+import { FilteredStyles, SavedStyle } from '@/share/core/types';
+import Api from '@/share/pages/api';
 
 const pref = {
   disableAll: false,
@@ -13,81 +18,13 @@ function setPrefs(name, to) {
     disableAll(to);
   }
 }
-let styleElements: Record<string, HTMLStyleElement> = {};
-let iframeObserver;
-let bodyObserver;
-const retiredStyleIds = [];
+let styleElements: Record<string, HTMLElement> = {};
+type IFrameObserver = MutationObserver & {
+  start: () => void;
+};
+let iframeObserver: IFrameObserver;
 
-requestStyles();
-
-function requestStyles() {
-  // If this is a Stylish page (Edit Style or Manage Styles),
-  // we'll request the styles directly to minimize delay and flicker,
-  // unless Chrome still starts up and the background page isn't fully loaded.
-  // (Note: in this case the function may be invoked again from applyStyles.)
-  const request = {
-    method: 'getStyles',
-    matchUrl: location.href,
-    enabled: true,
-  };
-  if (location.href.indexOf(browser.runtime.getURL('')) === 0) {
-    const bg = browser.extension.getBackgroundPage();
-    if (bg && bg.getStyles && bg.prefs) {
-      setPrefs('onlyHtml', bg.prefs.get('only-applies-html'));
-      initObserver();
-      initListener();
-      // apply styles immediately, then proceed with a normal request that will update the icon
-      bg.getStyles(request).then(applyStyles);
-      return;
-    }
-  }
-  browser.runtime.sendMessage({
-    method: 'getPrefs',
-    name: ['only-applies-html', 'disableAll'],
-  }).then((r) => {
-    setPrefs('onlyHtml', r[0]);
-    setPrefs('disableAll', r[1]);
-    initListener();
-    initObserver();
-    browser.runtime.sendMessage(request).then(applyStyles);
-  });
-}
-function initListener() {
-  browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    // Also handle special request just for the pop-up
-    switch (request.method == 'updatePopup' ? request.reason : request.method) {
-      case 'styleDeleted':
-        removeStyle(request.id, document);
-        break;
-      case 'styleUpdated':
-        if (request.style.enabled) {
-          retireStyle(request.style.id);
-          // fallthrough to "styleAdded"
-        } else {
-          removeStyle(request.style.id, document);
-        }
-        break;
-      case 'styleAdded':
-        if (request.style.enabled) {
-          browser.runtime.sendMessage({
-            method: 'getStyles',
-            matchUrl: location.href,
-            enabled: true,
-            id: request.style.id,
-          }).then(applyStyles);
-        }
-        break;
-      case 'styleApply':
-        applyStyles(request.styles);
-        break;
-      case 'styleReplaceAll':
-        replaceAll(request.styles, document);
-        break;
-    }
-  });
-}
-
-function disableAll(to) {
+function disableAll(to: boolean) {
   iframeObserver.disconnect();
 
   disableSheets(to, document);
@@ -96,9 +33,9 @@ function disableAll(to) {
     iframeObserver.start();
   }
 
-  function disableSheets(disable, doc) {
-    Array.prototype.forEach.call(doc.styleSheets, (stylesheet) => {
-      if (stylesheet.ownerNode.classList.contains('xstyle')) {
+  function disableSheets(disable: boolean, doc: Document) {
+    Array.prototype.forEach.call(doc.styleSheets, (stylesheet: CSSStyleSheet) => {
+      if ((stylesheet.ownerNode as HTMLElement).classList.contains('xstyle')) {
         stylesheet.disabled = disable;
       }
     });
@@ -112,24 +49,26 @@ function disableAll(to) {
   }
 }
 
-function removeStyle(id, doc) {
-  const e = doc.getElementById(`xstyle-${id}`);
-  delete styleElements[`xstyle-${id}`];
-  if (e) {
-    e.remove();
+function iframeIsDynamic(f: HTMLIFrameElement) {
+  let href = '';
+  try {
+    href = f.contentDocument.location.href;
+  } catch (ex) {
+    // Cross-origin, so it's not a dynamic iframe
+    return false;
   }
-  if (doc == document && Object.keys(styleElements).length == 0) {
-    iframeObserver.disconnect();
-  }
-  getDynamicIFrames(doc).forEach((iframe) => {
-    removeStyle(id, iframe.contentDocument);
-  });
+  return href === document.location.href || href.indexOf('about:') === 0;
+}
+// Only dynamic iframes get the parent document's styles. Other ones should get styles based on their own URLs.
+function getDynamicIFrames(doc: Document): HTMLIFrameElement[] {
+  return Array.prototype.filter.call(doc.getElementsByTagName('iframe'), iframeIsDynamic);
 }
 
+const retiredStyleIds = [];
 // to avoid page flicker when the style is updated
 // instead of removing it immediately we rename its ID and queue it
 // to be deleted in applyStyles after a new version is fetched and applied
-function retireStyle(id, doc) {
+function retireStyle(id: string, doc?: Document) {
   const deadID = `ghost-${id}`;
   if (!doc) {
     doc = document;
@@ -142,13 +81,40 @@ function retireStyle(id, doc) {
   if (e) {
     e.id = `xstyle-${deadID}`;
   }
-  getDynamicIFrames(doc).forEach((iframe) => {
-    retireStyle(id, iframe.contentDocument);
-  });
+  getDynamicIFrames(doc).forEach((iframe) => retireStyle(id, iframe.contentDocument));
 }
 
-function applyStyles(styles) {
-  if (!styles) { // Chrome is starting up
+function removeStyle(id: string, doc: Document) {
+  const e = doc.getElementById(`xstyle-${id}`);
+  delete styleElements[`xstyle-${id}`];
+  if (e) {
+    e.remove();
+  }
+  if (doc == document && Object.keys(styleElements).length == 0) {
+    iframeObserver.disconnect();
+  }
+  getDynamicIFrames(doc).forEach((iframe) => removeStyle(id, iframe.contentDocument));
+}
+
+function replaceAll(newStyles: FilteredStyles, doc: Document, pass2 = false) {
+  const oldStyles: HTMLStyleElement[] = Array.prototype.slice.call(doc.querySelectorAll(`STYLE.xstyle${pass2 ? "[id$='-ghost']" : ''}`));
+  if (!pass2) {
+    oldStyles.forEach((style) => style.id += '-ghost');
+  }
+  getDynamicIFrames(doc).forEach((iframe) => replaceAll(newStyles, iframe.contentDocument, pass2));
+  if (doc == document && !pass2) {
+    styleElements = {};
+    applyStyles(newStyles);
+    replaceAll(newStyles, doc, true);
+  }
+  if (pass2) {
+    oldStyles.forEach((style) => style.remove());
+  }
+}
+
+function applyStyles(styles: FilteredStyles) {
+  if (!styles) {
+    // Browser is starting up
     requestStyles();
     return;
   }
@@ -169,8 +135,8 @@ function applyStyles(styles) {
   }
 }
 
-function applySections(styleId, sections) {
-  let styleElement: HTMLStyleElement = document.getElementById(`xstyle-${styleId}`);
+function applySections(styleId: string, sections: SavedStyle['sections']) {
+  let styleElement = document.getElementById(`xstyle-${styleId}`);
   // Already there.
   if (styleElement) {
     return;
@@ -183,7 +149,7 @@ function applySections(styleId, sections) {
     }
   } else if (document.documentElement instanceof SVGSVGElement) {
     // SVG document, make an SVG style element.
-    styleElement = document.createElementNS('https://www.w3.org/2000/svg', 'style');
+    styleElement = document.createElementNS('https://www.w3.org/2000/svg', 'style') as HTMLElement;
   } else {
     // This will make an HTML style element. If there's SVG embedded in an HTML document, this works on the SVG too.
     styleElement = document.createElement('style');
@@ -198,11 +164,13 @@ function applySections(styleId, sections) {
   styleElements[styleElement.id] = styleElement;
 }
 
-function addStyleElement(styleElement, doc) {
+function addStyleElement(styleElement: HTMLElement, doc: Document) {
   if (!doc.documentElement || doc.getElementById(styleElement.id)) {
     return;
   }
-  doc.documentElement.appendChild(doc.importNode(styleElement, true)).sheet.disabled = pref.disableAll;
+  const node = doc.importNode(styleElement, true) as HTMLStyleElement;
+  doc.documentElement.appendChild(node);
+  node.sheet.disabled = pref.disableAll;
   getDynamicIFrames(doc).forEach((iframe) => {
     if (iframeIsLoadingSrcDoc(iframe)) {
       addStyleToIFrameSrcDoc(iframe, styleElement);
@@ -212,7 +180,7 @@ function addStyleElement(styleElement, doc) {
   });
 }
 
-function addDocumentStylesToIFrame(iframe) {
+function addDocumentStylesToIFrame(iframe: HTMLIFrameElement) {
   for (const id in styleElements) {
     if (iframeIsLoadingSrcDoc(iframe)) {
       addStyleToIFrameSrcDoc(iframe, styleElements[id]);
@@ -226,28 +194,12 @@ function addDocumentStylesToAllIFrames() {
   getDynamicIFrames(document).forEach(addDocumentStylesToIFrame);
 }
 
-// Only dynamic iframes get the parent document's styles. Other ones should get styles based on their own URLs.
-function getDynamicIFrames(doc) {
-  return Array.prototype.filter.call(doc.getElementsByTagName('iframe'), iframeIsDynamic);
-}
-
-function iframeIsDynamic(f) {
-  let href;
-  try {
-    href = f.contentDocument.location.href;
-  } catch (ex) {
-    // Cross-origin, so it's not a dynamic iframe
-    return false;
-  }
-  return href === document.location.href || href.indexOf('about:') === 0;
-}
-
-function iframeIsLoadingSrcDoc(f) {
+function iframeIsLoadingSrcDoc(f: HTMLIFrameElement) {
   return f.srcdoc && f.contentDocument.all.length <= 3;
   // 3 nodes or less in total (html, head, body) == new empty iframe about to be overwritten by its 'srcdoc'
 }
 
-function addStyleToIFrameSrcDoc(iframe, styleElement) {
+function addStyleToIFrameSrcDoc(iframe: HTMLIFrameElement, styleElement: HTMLElement) {
   if (pref.disableAll) {
     return;
   }
@@ -256,28 +208,7 @@ function addStyleToIFrameSrcDoc(iframe, styleElement) {
   setTimeout(addStyleElement.bind(null, styleElement, iframe.contentDocument), 100);
 }
 
-function replaceAll(newStyles, doc, pass2) {
-  const oldStyles = Array.prototype.slice.call(doc.querySelectorAll(`STYLE.xstyle${pass2 ? "[id$='-ghost']" : ''}`));
-  if (!pass2) {
-    oldStyles.forEach((style) => {
-      style.id += '-ghost';
-    });
-  }
-  getDynamicIFrames(doc).forEach((iframe) => {
-    replaceAll(newStyles, iframe.contentDocument, pass2);
-  });
-  if (doc == document && !pass2) {
-    styleElements = {};
-    applyStyles(newStyles);
-    replaceAll(newStyles, doc, true);
-  }
-  if (pass2) {
-    oldStyles.forEach((style) => {
-      style.remove();
-    });
-  }
-}
-
+let bodyObserver: MutationObserver = null;
 function initBodyObserver() {
   if (bodyObserver) {
     return;
@@ -285,12 +216,12 @@ function initBodyObserver() {
   // move all style elements after body
   bodyObserver = new MutationObserver(() => {
     if (document.body) {
-      let last_xstyle_el = document.body;
+      let lastEl = document.body;
       for (const id in styleElements) {
-        const s = document.getElementById(id);
-        if (s.previousElementSibling !== last_xstyle_el) {
-          last_xstyle_el.parentElement.insertBefore(s, last_xstyle_el.nextSibling);
-          last_xstyle_el = s;
+        const s = document.getElementById(id) as HTMLStyleElement;
+        if (s.previousElementSibling !== lastEl) {
+          lastEl.parentElement.insertBefore(s, lastEl.nextSibling);
+          lastEl = s;
           s.sheet.disabled = pref.disableAll;
         } else {
           break;
@@ -316,14 +247,19 @@ function initObserver() {
     // because some same-domain (!) iframes fail to load when their "contentDocument" is accessed (!)
     // namely gmail's old chat iframe talkgadget.google.com
     setTimeout(process.bind(null, mutations), 0);
-  });
+  }) as IFrameObserver;
 
-  function process(mutations) {
+  iframeObserver.start = () => {
+    // will be ignored by browser if already observing
+    iframeObserver.observe(document, { childList: true, subtree: true });
+  };
+
+  function process(mutations: MutationRecord[]) {
     for (let m = 0, ml = mutations.length; m < ml; m++) {
       const mutation = mutations[m];
       if (mutation.type === 'childList') {
         for (let n = 0, nodes = mutation.addedNodes, nl = nodes.length; n < nl; n++) {
-          const node = nodes[n];
+          const node = nodes[n] as HTMLIFrameElement;
           if (node.localName === 'iframe' && iframeIsDynamic(node)) {
             addDocumentStylesToIFrame(node);
           }
@@ -331,9 +267,58 @@ function initObserver() {
       }
     }
   }
-
-  iframeObserver.start = () => {
-    // will be ignored by browser if already observing
-    iframeObserver.observe(document, { childList: true, subtree: true });
-  };
 }
+
+function initListener() {
+  notify.event.on(EVENTs.STYLE_ADDED, async (request: any) => {
+    if (request.style.enabled) {
+      const styles = await Api.getStyles({
+        matchUrl: location.href,
+        enabled: true,
+        id: request.style.id,
+      });
+      applyStyles(styles);
+    }
+  });
+
+  notify.event.on(EVENTs.STYLE_DELETED, (request: any) => {
+    removeStyle(request.id, document);
+  });
+
+  notify.event.on(EVENTs.STYLE_UPDATED, (request: any) => {
+    if (request.style.enabled) {
+      retireStyle(request.style.id);
+      // fallthrough to "styleAdded"
+    } else {
+      removeStyle(request.style.id, document);
+    }
+  });
+
+  browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    // Also handle special request just for the pop-up
+    switch (request.method) {
+      case APIs.STYLE_APPLY:
+        applyStyles(request.styles);
+        break;
+      case APIs.STYLE_REPLACE_ALL:
+        replaceAll(request.styles, document);
+        break;
+    }
+  });
+}
+function requestStyles() {
+  prefs.ready(() => {
+    setPrefs('onlyHtml', prefs.get('only-applies-html'));
+    setPrefs('disableAll', prefs.get('disableAll'));
+
+    initListener();
+    initObserver();
+
+    Api.getStyles({
+      matchUrl: location.href,
+      enabled: true,
+    }).then(applyStyles);
+  });
+}
+
+requestStyles();
