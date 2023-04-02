@@ -18,6 +18,7 @@ module.exports = getESLintConfig('react-ts', {
     '@iceworks/best-practices/no-js-in-ts-project': 0,
     '@iceworks/best-practices/recommend-functional-component': 0,
     'no-await-in-loop': 0,
+    'no-alert': 0,
     'no-console': 0,
     'no-prototype-builtins': 0,
     'no-return-assign': 0,

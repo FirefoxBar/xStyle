@@ -1,4 +1,3 @@
-import browser from 'webextension-polyfill';
 import { APIs, EVENTs, propertyToCss, STYLE_DYNAMIC_TYPE } from '@/share/core/constant';
 import notify from '@/share/core/notify';
 import { prefs } from '@/share/core/prefs';
@@ -31,12 +30,6 @@ function get(options: StyleFilterOption): Promise<FilteredStyles> {
         };
       });
     }
-  });
-}
-
-function getInstalledStyleForDomain(domain) {
-  return new Promise((resolve, reject) => {
-    browser.runtime.sendMessage({ method: 'get', matchUrl: domain }).then(resolve);
   });
 }
 
@@ -103,7 +96,7 @@ function save(o: Partial<SavedStyle>) {
           o.enabled = !!o.enabled;
         }
         const request = os.get(Number(o.id));
-        request.onsuccess = function (event) {
+        request.onsuccess = () => {
           const style: Partial<SavedStyle> = request.result || {};
           for (const prop of keys) {
             if (prop === 'id') {
@@ -117,11 +110,13 @@ function save(o: Partial<SavedStyle>) {
           const putRequest = os.put(style);
           putRequest.onsuccess = () => {
             invalidateCache();
-            notify.tabs({
+            const data = {
               method: APIs.ON_EVENT,
               event: EVENTs.STYLE_UPDATED,
               style,
-            });
+            };
+            notify.tabs(data);
+            notify.other(data);
             resolve(style);
           };
         };
@@ -155,7 +150,7 @@ function save(o: Partial<SavedStyle>) {
       // Make sure it's not null - that makes indexeddb sad
       delete o['id'];
       const request = os.add(o);
-      request.onsuccess = function (event) {
+      request.onsuccess = (event) => {
         invalidateCache();
         // Give it the ID that was generated
         // @ts-ignore
@@ -212,26 +207,23 @@ function updateStyleFormat(s: Partial<BasicStyle>) {
     }).join('\n\n');
     delete s.advanced.css;
   }
-  return s;
+  return s as BasicStyle;
 }
-function install(json: any) {
-  json = updateStyleFormat(json);
-  if (json.url) {
-    return new Promise((resolve) => {
-      get({ url: json.url }).then((response) => {
-        if (response.length !== 0) {
-          json.id = response[0].id;
-          delete json.name;
-        }
-        if (typeof (json.autoUpdate) === 'undefined') {
-          json.autoUpdate = json.updateUrl !== null;
-        }
-        save(json).then(resolve);
-      });
-    });
+
+async function install(json: BasicStyle | SavedStyle) {
+  const style = updateStyleFormat(json) as SavedStyle;
+  if (style.url) {
+    const resp = await get({ url: json.url });
+    if (resp.length !== 0) {
+      style.id = resp[0].id;
+      delete style.name;
+    }
+    if (typeof (style.autoUpdate) === 'undefined') {
+      style.autoUpdate = style.updateUrl !== null;
+    }
   }
   // Have not URL key, install as a new style
-  return save(json);
+  return save(style);
 }
 
 function remove(_id: string | number): Promise<void> {
@@ -401,7 +393,6 @@ async function remoteUpdate(style: SavedStyle) {
 
 const styles = {
   get,
-  getInstalledStyleForDomain,
   invalidateCache,
   save,
   remove,

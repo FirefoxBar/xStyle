@@ -1,7 +1,8 @@
 import browser from 'webextension-polyfill';
 import logger from '@/share/core/logger';
-import { APIs } from '@/share/core/constant';
+import { APIs, PARSE_STYLE_FORMAT } from '@/share/core/constant';
 import { prefs } from '@/share/core/prefs';
+import { parseStyleFile, parseStyleJSON } from '@/share/pages/style-parser';
 import { openURL } from './utils';
 import { getDatabase } from './core/db';
 import styles from './core/styles';
@@ -35,6 +36,11 @@ function execute(request: any, sender) {
       });
     case APIs.SAVE_STYLE:
       return styles.save(request);
+    case APIs.PARSE_STYLE:
+      if (request.format === PARSE_STYLE_FORMAT.JSON) {
+        return parseStyleJSON(request.code, request.options, request.advanced);
+      }
+      return parseStyleFile(request.code, request.options, request.advanced);
     case APIs.INSTALL_STYLE:
       return styles.install(request);
     case APIs.UPDATE_CACHE:

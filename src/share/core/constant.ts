@@ -38,6 +38,7 @@ export enum APIs {
   HEALTH_CHECK = 'check',
   OPEN_URL = 'open_url',
   GET_STYLES = 'get_styles',
+  PARSE_STYLE = 'parse_style',
   SAVE_STYLE = 'save_style',
   INSTALL_STYLE = 'install_style',
   UPDATE_CACHE = 'update_cache',
@@ -53,6 +54,12 @@ export enum EVENTs {
   STYLE_ADDED = 'style_added',
   STYLE_UPDATED = 'style_updated',
   STYLE_DELETED = 'style_deleted',
+  CLOUD_LOGIN = 'cloud_login',
+}
+
+export enum PARSE_STYLE_FORMAT {
+  JSON = 'json',
+  CSS = 'css',
 }
 
 export const propertyToCss = { urls: 'url', urlPrefixes: 'url-prefix', domains: 'domain', regexps: 'regexp', exclude: 'exclude' };
