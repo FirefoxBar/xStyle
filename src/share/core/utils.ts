@@ -27,6 +27,23 @@ export function getActiveTab(): Promise<Tabs.Tab> {
       .then(resolve);
   });
 }
+
+export function getDomains(url: string) {
+  if (url.indexOf('file:') === 0) {
+    return [];
+  }
+  if (url.indexOf('about:') === 0) {
+    return [/about:(\w+)/.exec(url)[0]];
+  }
+  let d = /.*?:\/*([^/:]+)/.exec(url)[1];
+  const domains = [d];
+  while (d.indexOf('.') !== -1) {
+    d = d.substring(d.indexOf('.') + 1);
+    domains.push(d);
+  }
+  return domains;
+}
+
 export function trimNewLines(s: string) {
   return s.replace(/^[\s\n]+/, '').replace(/[\s\n]+$/, '');
 }

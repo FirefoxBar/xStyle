@@ -25,6 +25,12 @@ const Api = {
       method: APIs.GET_STYLES,
     });
   },
+  saveStyle(style: BasicStyle): Promise<void> {
+    return notify.background({
+      ...style,
+      method: APIs.SAVE_STYLE,
+    });
+  },
   parseStyle(
     format: PARSE_STYLE_FORMAT,
     code: string,
