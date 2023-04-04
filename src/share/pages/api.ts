@@ -25,7 +25,7 @@ const Api = {
       method: APIs.GET_STYLES,
     });
   },
-  saveStyle(style: BasicStyle): Promise<void> {
+  saveStyle(style: Partial<SavedStyle>): Promise<void> {
     return notify.background({
       ...style,
       method: APIs.SAVE_STYLE,
